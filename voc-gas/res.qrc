@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/close.png</file>
+        <file>images/maximize.png</file>
+        <file>images/more.png</file>
+        <file>images/remove.png</file>
+        <file>images/Curve.png</file>
+        <file>images/data.png</file>
+        <file>images/timer.png</file>
+        <file>images/User.png</file>
+        <file>images/Save.png</file>
+        <file>images/Set.png</file>
+        <file>images/calibration.png</file>
+        <file>images/clear.png</file>
+        <file>images/liuliang.png</file>
+        <file>images/liusu.png</file>
+        <file>images/wendu.png</file>
+        <file>images/yali.png</file>
+        <file>images/Off.png</file>
+        <file>images/On.png</file>
+        <file>images/UserManage.png</file>
+    </qresource>
+</RCC>
