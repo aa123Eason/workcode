@@ -1,2 +1,14 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/new/images">
+        <file>image/state_off.png</file>
+        <file>image/state_on.png</file>
+        <file>image/logo.png</file>
+        <file>image/close_hover.png</file>
+        <file>image/keyboard-off.png</file>
+        <file>image/keyboard-on.png</file>
+        <file>image/No_Upan.png</file>
+        <file>image/restart.png</file>
+        <file>image/update.png</file>
+        <file>image/usb.png</file>
+    </qresource>
+</RCC>
