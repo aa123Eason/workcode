@@ -1,0 +1,40 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/caidanmoshi.png</file>
+        <file>images/caidanmoshi2.png</file>
+        <file>images/chenshachi.png</file>
+        <file>images/chuifeng.png</file>
+        <file>images/denglu-3.png</file>
+        <file>images/famen.png</file>
+        <file>images/famen2.png</file>
+        <file>images/fengshan.png</file>
+        <file>images/jiancezhan.png</file>
+        <file>images/jiancezhan2.png</file>
+        <file>images/kongzhi.png</file>
+        <file>images/kongzhi2.png</file>
+        <file>images/liangbei.png</file>
+        <file>images/lishi2.png</file>
+        <file>images/lishi23.png</file>
+        <file>images/login.png</file>
+        <file>images/password.png</file>
+        <file>images/quxian.png</file>
+        <file>images/quxian2.png</file>
+        <file>images/rizhi.png</file>
+        <file>images/rizhi2.png</file>
+        <file>images/shape1.png</file>
+        <file>images/shape2.png</file>
+        <file>images/shape3.png</file>
+        <file>images/shebei.png</file>
+        <file>images/tuichudenglu.png</file>
+        <file>images/user.jpg</file>
+        <file>images/user.png</file>
+        <file>images/wucan.png</file>
+        <file>images/xitongshezhi-2.png</file>
+        <file>images/xitongshezhi-3.png</file>
+        <file>images/yalibiao.png</file>
+        <file>images/yalibiao2.png</file>
+        <file>images/zhuye.png</file>
+        <file>images/blackC.png</file>
+        <file>images/greenC.png</file>
+    </qresource>
+</RCC>
