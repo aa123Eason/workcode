@@ -61,6 +61,8 @@ public:
 
     void VocsHandler();
     void UploadHandler1();
+    void skybluework();
+    void lunanwork();
     // void UploadHandler2();
 
 signals:

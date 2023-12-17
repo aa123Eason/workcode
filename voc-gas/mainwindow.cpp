@@ -186,79 +186,22 @@ void SerialWorker::doWork1() {
             // 01 04 08 00 00 00 00 00 00 00 00 24 0D
             // 总烃0x14 float
             // 甲烷0x16 float
+            skybluework();
 
-            if(serial->isOpen())
-            {
-                QString pAddr = "1"; //01
-                QString pRegAddr = "20"; // 00 14
-                QString pRegs = "4";
-
-                pAddr = QString("%1").arg(pAddr.toUInt(),2,16,QChar('0'));
-
-                QString pFunc = QString("%1").arg(0x04,2,16,QChar('0'));
-                pRegAddr = QString("%1").arg(pRegAddr.toUInt(),4,16,QChar('0'));    //str = "0020"
-                pRegAddr.insert(2," ");
-
-                pRegs = QString("%1").arg(pRegs.toUInt(),4,16,QChar('0'));    //str = "0003"
-                pRegs.insert(2," ");
-
-                QString pCommText = pAddr + pFunc + pRegAddr + pRegs;
-
-                Crc16Class crc16;
-                QString pTx = crc16.crcCalculation(pCommText).toUpper();
-
-                qDebug() << "ReadInputRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
-                serial->flush();
-                serial->writeData(QString2Hex(pTx).data(),8);
-
-                char data[100];
-                int pRetVal = serial->readData(data,13);
-                if(pRetVal > 0)
-                {
-                    QString strTmp;
-                    for(int i = 0; i<13; i++)
-                    {
-                        strTmp +=  QString().sprintf("%02x", (unsigned char)data[i]);
-                    }
-
-                    if(crc16.crc_Checking(strTmp))
-                    {
-                        qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
-                        // parse
-                        QByteArray buf = QString2Hex(strTmp);
-
-                        QByteArray pFunc;
-                        pFunc.append(buf.at(1));
-                        if(pFunc.toHex().toInt() == 0x04)
-                        {
-                            QByteArray arrTH,arrCH4; //默认 ABCD
-                            arrTH[0] = buf.at(6);
-                            arrTH[1] = buf.at(5);
-                            arrTH[2] = buf.at(4);
-                            arrTH[3] = buf.at(3);
-
-                            arrCH4[0] = buf.at(10);
-                            arrCH4[1] = buf.at(9);
-                            arrCH4[2] = buf.at(8);
-                            arrCH4[3] = buf.at(7);
-
-                            float accTH;
-                            memcpy(&accTH, arrTH.data(), 4);
-                            QString pRealDataTH = QString::number(accTH,'f',2);
-
-                            qDebug() << "总烃：" << pRealDataTH;
-
-                            float accCH4;
-                            memcpy(&accCH4, arrCH4.data(), 4);
-                            QString pRealDataCH4 = QString::number(accCH4,'f',2);
-
-                            qDebug() << "甲烷：" << pRealDataCH4;
-
-                        }
-                    }
-                }
-            }
         }
+        else if(g_Sepuyi == "鲁南")
+        {
+            lunanwork();
+        }
+        else if(g_Sepuyi == "VOC")
+        {
+
+        }
+        else if(g_Sepuyi == "VOCS")
+        {
+            VocsHandler();
+        }
+
 
         // 校准
 //        flag212_1 = "C";//校准
@@ -270,6 +213,124 @@ void SerialWorker::doWork1() {
 
         QThread::sleep(2);
     }
+}
+
+void SerialWorker::skybluework()
+{
+    if(serial->isOpen())
+    {
+        QString pAddr = "1"; //01
+        QString pRegAddr = "20"; // 00 14
+        QString pRegs = "4";
+
+        pAddr = QString("%1").arg(pAddr.toUInt(),2,16,QChar('0'));
+
+        QString pFunc = QString("%1").arg(0x04,2,16,QChar('0'));
+        pRegAddr = QString("%1").arg(pRegAddr.toUInt(),4,16,QChar('0'));    //str = "0020"
+        pRegAddr.insert(2," ");
+
+        pRegs = QString("%1").arg(pRegs.toUInt(),4,16,QChar('0'));    //str = "0003"
+        pRegs.insert(2," ");
+
+        QString pCommText = pAddr + pFunc + pRegAddr + pRegs;
+
+        Crc16Class crc16;
+        QString pTx = crc16.crcCalculation(pCommText).toUpper();
+
+        qDebug() << "ReadInputRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
+        serial->flush();
+        serial->writeData(QString2Hex(pTx).data(),8);
+
+        char data[100];
+        int pRetVal = serial->readData(data,13);
+        if(pRetVal > 0)
+        {
+            QString strTmp;
+            for(int i = 0; i<13; i++)
+            {
+                strTmp +=  QString().sprintf("%02x", (unsigned char)data[i]);
+            }
+
+            if(crc16.crc_Checking(strTmp))
+            {
+                qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
+                // parse
+                QByteArray buf = QString2Hex(strTmp);
+
+                QByteArray pFunc;
+                pFunc.append(buf.at(1));
+                if(pFunc.toHex().toInt() == 0x04)
+                {
+                    QByteArray arrTH,arrCH4,arrNMTH; //默认 ABCD
+                    arrTH[0] = buf.at(4);
+                    arrTH[1] = buf.at(3);
+                    arrTH[2] = buf.at(6);
+                    arrTH[3] = buf.at(5);
+
+                    arrCH4[0] = buf.at(8);
+                    arrCH4[1] = buf.at(7);
+                    arrCH4[2] = buf.at(10);
+                    arrCH4[3] = buf.at(9);
+
+                    arrNMTH[0] = buf.at(12);
+                    arrNMTH[1] = buf.at(11);
+                    arrNMTH[2] = buf.at(14);
+                    arrNMTH[3] = buf.at(13);
+
+                    float accTH;
+                    memcpy(&accTH, arrTH.data(), 4);
+                    QString pRealDataTH = QString::number(accTH,'f',2);
+
+                    qDebug() << "总烃：" << pRealDataTH;
+
+                    float accCH4;
+                    memcpy(&accCH4, arrCH4.data(), 4);
+                    QString pRealDataCH4 = QString::number(accCH4,'f',2);
+
+                    qDebug() << "甲烷：" << pRealDataCH4;
+
+                    float accNMTH;
+                    memcpy(&accNMTH, arrNMTH.data(), 4);
+                    QString pRealDataNMTH = QString::number(accNMTH,'f',2);
+
+                    qDebug() << "非甲烷总烃：" << pRealDataNMTH;
+
+                    if(map_Factors.contains("总烃"))
+                    {
+                        map_Factors["总烃"]->m_value = pRealDataTH;
+                        if(map_Factors.contains("总烃干值")&&map_Factors.contains("烟气湿度"))
+                        {
+                            map_Factors["总烃干值"]->m_value = map_Factors["总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                        }
+                    }
+
+                    if(map_Factors.contains("甲烷"))
+                    {
+                        map_Factors["甲烷"]->m_value = pRealDataCH4;
+                        if(map_Factors.contains("甲烷干值")&&map_Factors.contains("烟气湿度"))
+                        {
+                            map_Factors["甲烷干值"]->m_value = map_Factors["甲烷"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                        }
+                    }
+
+                    if(map_Factors.contains("非甲烷总烃"))
+                    {
+                        map_Factors["非甲烷总烃"]->m_value = pRealDataNMTH;
+                        if(map_Factors.contains("非甲烷总烃干值")&&map_Factors.contains("烟气湿度"))
+                        {
+                            map_Factors["非甲烷总烃干值"]->m_value = map_Factors["非甲烷总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+void SerialWorker::lunanwork()
+{
+
 }
 
 void SerialWorker::VocsHandler() {
@@ -312,7 +373,7 @@ void SerialWorker::VocsHandler() {
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
 
-        char data[100];
+        char data[37];
         int pRetVal = serial->readData(data,37);
         if(pRetVal > 0)
         {
@@ -335,13 +396,20 @@ void SerialWorker::VocsHandler() {
                     int16_t parMa[7] = {0};
                     qDebug() << "000001";
 
-                    parMa[0] = buf[map_Factors["烟气温度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气温度"]->m_Chan * 2 + 2];//烟气温度初始值
-                    parMa[1] = buf[map_Factors["烟气压力"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气压力"]->m_Chan * 2 + 2];//烟气压力初始值
-                    parMa[2] = buf[map_Factors["烟气流速"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气流速"]->m_Chan * 2 + 2];//烟气流速初始值
-                    parMa[3] = buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 2];//烟尘湿值初始值
-                    parMa[4] = buf[map_Factors["氧气含量"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["氧气含量"]->m_Chan * 2 + 2];//氧气含量初始值
-                    parMa[5] = buf[map_Factors["烟气湿度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气湿度"]->m_Chan * 2 + 2];//烟气湿度度初始值
-                    parMa[6] = buf[map_Factors["硫化氢"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["硫化氢"]->m_Chan * 2 + 2];//硫化氢初始值
+                    if(map_Factors.contains("烟气温度"))
+                        parMa[0] = buf[map_Factors["烟气温度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气温度"]->m_Chan * 2 + 2];//烟气温度初始值
+                    if(map_Factors.contains("烟气压力"))
+                        parMa[1] = buf[map_Factors["烟气压力"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气压力"]->m_Chan * 2 + 2];//烟气压力初始值
+                    if(map_Factors.contains("烟气流速"))
+                        parMa[2] = buf[map_Factors["烟气流速"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气流速"]->m_Chan * 2 + 2];//烟气流速初始值
+                    if(map_Factors.contains("烟尘湿值"))
+                        parMa[3] = buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 2];//烟尘湿值初始值
+                    if(map_Factors.contains("氧气含量"))
+                        parMa[4] = buf[map_Factors["氧气含量"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["氧气含量"]->m_Chan * 2 + 2];//氧气含量初始值
+                    if(map_Factors.contains("烟气湿度"))
+                        parMa[5] = buf[map_Factors["烟气湿度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气湿度"]->m_Chan * 2 + 2];//烟气湿度度初始值
+                    if(map_Factors.contains("硫化氢"))
+                        parMa[6] = buf[map_Factors["硫化氢"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["硫化氢"]->m_Chan * 2 + 2];//硫化氢初始值
 
                     for (int i = 0; i < 6; i++)
                     {
@@ -349,35 +417,56 @@ void SerialWorker::VocsHandler() {
                         if (parMa[i] < 5530) parMa[i] = 5530;
                     }
 
-                    map_Factors["烟气温度"]->m_value = QString::number(((float)(parMa[0] - 5530) / 22118 * map_Factors["烟气温度"]->m_LC) + map_Factors["烟气温度"]->m_RangeLower,'f',2);//烟气温度最终值
-                    map_Factors["烟气压力"]->m_value = QString::number(((float)(parMa[1] - 5530) / 22118 * map_Factors["烟气压力"]->m_LC) + map_Factors["烟气压力"]->m_RangeLower,'f',2);//烟气压力最终值
-                    map_Factors["烟气流速"]->m_value = QString::number(((float)(parMa[2] - 5530) / 22118 * map_Factors["烟气流速"]->m_LC) + map_Factors["烟气流速"]->m_RangeLower,'f',2);//烟气流速最终值
-                    map_Factors["烟尘湿值"]->m_value = QString::number(((float)(parMa[3] - 5530) / 22118 * map_Factors["烟尘湿值"]->m_LC) + map_Factors["烟尘湿值"]->m_RangeLower,'f',2);//烟尘湿值最终值
-                    map_Factors["氧气含量"]->m_value = QString::number(((float)(parMa[4] - 5530) / 22118 * map_Factors["氧气含量"]->m_LC) + map_Factors["氧气含量"]->m_RangeLower,'f',2);//氧气含量最终值
+                    if(map_Factors.contains("烟气湿度"))
+                        map_Factors["烟气温度"]->m_value = QString::number(((float)(parMa[0] - 5530) / 22118 * map_Factors["烟气温度"]->m_LC) + map_Factors["烟气温度"]->m_RangeLower,'f',2);//烟气温度最终值
+                    if(map_Factors.contains("烟气压力"))
+                        map_Factors["烟气压力"]->m_value = QString::number(((float)(parMa[1] - 5530) / 22118 * map_Factors["烟气压力"]->m_LC) + map_Factors["烟气压力"]->m_RangeLower,'f',2);//烟气压力最终值
+                    if(map_Factors.contains("烟气流速"))
+                        map_Factors["烟气流速"]->m_value = QString::number(((float)(parMa[2] - 5530) / 22118 * map_Factors["烟气流速"]->m_LC) + map_Factors["烟气流速"]->m_RangeLower,'f',2);//烟气流速最终值
+                    if(map_Factors.contains("烟尘湿值"))
+                        map_Factors["烟尘湿值"]->m_value = QString::number(((float)(parMa[3] - 5530) / 22118 * map_Factors["烟尘湿值"]->m_LC) + map_Factors["烟尘湿值"]->m_RangeLower,'f',2);//烟尘湿值最终值
+                    if(map_Factors.contains("氧气含量"))
+                        map_Factors["氧气含量"]->m_value = QString::number(((float)(parMa[4] - 5530) / 22118 * map_Factors["氧气含量"]->m_LC) + map_Factors["氧气含量"]->m_RangeLower,'f',2);//氧气含量最终值
 
                     qDebug() << "000002";
                     // 是否选中！！
-                    if(g_IsChecked) map_Factors["烟气湿度"]->m_value = g_Xsw;
-                    else map_Factors["烟气湿度"]->m_value = QString::number(((float)(parMa[5] - 5530) / 22118 * map_Factors["烟气湿度"]->m_LC) + map_Factors["烟气湿度"]->m_RangeLower,'f',2);//烟气湿度最终值;
-                    map_Factors["硫化氢"]->m_value = QString::number(((float)(parMa[6] - 5530) / 22118 * map_Factors["硫化氢"]->m_LC) + map_Factors["硫化氢"]->m_RangeLower,'f',2);//氧气含量最终值
+                    if(map_Factors.contains("烟气湿度"))
+                    {
+                        if(g_IsChecked) map_Factors["烟气湿度"]->m_value = g_Xsw;
+                        else map_Factors["烟气湿度"]->m_value = QString::number(((float)(parMa[5] - 5530) / 22118 * map_Factors["烟气湿度"]->m_LC) + map_Factors["烟气湿度"]->m_RangeLower,'f',2);//烟气湿度最终值;
+                    }
+                    if(map_Factors.contains("硫化氢"))
+                        map_Factors["硫化氢"]->m_value = QString::number(((float)(parMa[6] - 5530) / 22118 * map_Factors["硫化氢"]->m_LC) + map_Factors["硫化氢"]->m_RangeLower,'f',2);//氧气含量最终值
 
                     Kv = g_Kv;
-                    Vp = map_Factors["烟气流速"]->m_value.toDouble();
+                    if(map_Factors.contains("烟气流速"))
+                        Vp = map_Factors["烟气流速"]->m_value.toDouble();
                     Vs = Kv * Vp;
                     F = g_F;
                     Ba = g_Ba;
-                    Ps = map_Factors["烟气压力"]->m_value.toDouble();
-                    ts = map_Factors["烟气温度"]->m_value.toDouble();
+                    if(map_Factors.contains("烟气压力"))
+                        Ps = map_Factors["烟气压力"]->m_value.toDouble();
+                    if(map_Factors.contains("烟气温度"))
+                        ts = map_Factors["烟气温度"]->m_value.toDouble();
                     Xsw = g_Xsw;
 
                     qDebug() << "000003";
 
-//                    float Qs = 3600 * F * Kv * Vp;
-//                    map_Factors["工况流量"]->m_value = QString::number(Qs,'f',2);
-//                    map_Factors["标况流量"]->m_value = QString::number(Qs*(273/(273+ts))*((Ba+Ps)/101325)*(1-Xsw/100),'f',2);
-//                    map_Factors["烟尘干值"]->m_value = QString::number(map_Factors["烟尘湿值"]->m_value.toDouble() / (1-Xsw),'f',2);
-//                    map_Factors["烟尘排放量"]->m_value = QString::number( map_Factors["烟尘湿值"]->m_value.toDouble() * map_Factors["标况流量"]->m_value.toDouble() / 1000000,'f',2);
 
+
+                    float Qs = 3600 * F * Kv * Vp;
+                    if(map_Factors.contains("工况流量"))
+                        map_Factors["工况流量"]->m_value = QString::number(Qs,'f',2);
+                    if(map_Factors.contains("标况流量"))
+                        map_Factors["标况流量"]->m_value = QString::number(Qs*(273/(273+ts))*((Ba+Ps)/101325)*(1-Xsw/100),'f',2);
+                    if(map_Factors.contains("烟尘干值")&&map_Factors.contains("烟尘湿值"))
+                        map_Factors["烟尘干值"]->m_value = QString::number(map_Factors["烟尘湿值"]->m_value.toDouble() / (1-Xsw),'f',2);
+                    if(map_Factors.contains("烟尘排放量")&&map_Factors.contains("烟尘湿值")&&map_Factors.contains("标况流量"))
+                        map_Factors["烟尘排放量"]->m_value = QString::number( map_Factors["烟尘湿值"]->m_value.toDouble() * map_Factors["标况流量"]->m_value.toDouble() / 1000000,'f',2);
+                    if(map_Factors.contains("氧气含量干值")&&map_Factors.contains("氧气含量"))
+                        map_Factors["氧气含量干值"]->m_value = QString::number(map_Factors["氧气含量"]->m_value.toDouble() / (1-Xsw),'f',2);
+                    if(map_Factors.contains("硫化氢干值")&&map_Factors.contains("硫化氢湿值"))
+                        map_Factors["硫化氢干值"]->m_value = QString::number(map_Factors["硫化氢"]->m_value.toDouble() / (1-Xsw),'f',2);
 
                     //
                     qDebug() << "000004";
@@ -427,6 +516,18 @@ void SerialWorker::doWork2() {
         {
             qDebug() << "plc debug.....";
             VocsHandler();
+        }
+        else if(g_PLC == "鲁南")
+        {
+            lunanwork();
+        }
+        else if(g_PLC == "天蓝")
+        {
+            skybluework();
+        }
+        else if(g_PLC == "VOC")
+        {
+
         }
 
         QThread::sleep(2);
