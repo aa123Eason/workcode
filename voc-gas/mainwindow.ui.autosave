@@ -549,11 +549,11 @@ QTableWidget {
 
 
 
-color : rgb(1,37,116);
+color : black;
 
 border: 2px solid rgb(100, 188, 238);
 
-background: rgb(248,248,248);
+background: white;
 
 gridline-color: rgb(196,226,255);
 
@@ -563,6 +563,8 @@ outline:0px; /*禁止焦点*/
 
 	
 	font: 75 14pt &quot;微软雅黑&quot;;
+	
+	alternate-background-color: rgb(144, 144, 144);
 
 }
 
