@@ -1223,26 +1223,33 @@ void MainWindow::setTableContents()
         // qDebug() << iterator.key() << ":::::::" << iterator.value();
 
         FactorInfo* pItemInfo = facseqlist.at(index);
+        QFont font;
+        font.setPointSize(16);
+        font.setBold(true);
 
         pItem1 = new QTableWidgetItem(pItemInfo->m_name);
         pItem1->setTextAlignment(Qt::AlignCenter);
         pItem1->setFlags(Qt::ItemIsEditable);
+        pItem1->setFont(font);
         ui->tableWidget->setItem(index, 0, pItem1);
 
         pItem2 = new QTableWidgetItem(pItemInfo->m_value);
         //        pItem2 = new QTableWidgetItem(QString::number(num++));
         pItem2->setFlags(Qt::ItemIsEditable);
         pItem2->setTextAlignment(Qt::AlignCenter);
+        pItem2->setFont(font);
         ui->tableWidget->setItem(index, 1, pItem2);
 
         pItem3 = new QTableWidgetItem(pItemInfo->m_unit);
         pItem3->setFlags(Qt::ItemIsEditable);
         pItem3->setTextAlignment(Qt::AlignCenter);
+        pItem3->setFont(font);
         ui->tableWidget->setItem(index, 2, pItem3);
 
         pItem4 = new QTableWidgetItem(pItemInfo->m_state);
         pItem4->setFlags(Qt::ItemIsEditable);
         pItem4->setTextAlignment(Qt::AlignCenter);
+        pItem4->setFont(font);
         ui->tableWidget->setItem(index, 3, pItem4);
 
         index++;
