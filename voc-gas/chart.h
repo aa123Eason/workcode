@@ -32,9 +32,20 @@
 
 #include <QtCharts/QChart>
 #include <QtCore/QTimer>
+#include <QtCharts/QSplineSeries>
+#include <QtCharts/QAbstractAxis>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QString>
+#include <QMap>
+#include "factorinfo.h"
+#include <QDebug>
+#include <QStringList>
+
 
 QT_CHARTS_BEGIN_NAMESPACE
 class QLineSeries;
+class QSplineSeries;
 class QValueAxis;
 QT_CHARTS_END_NAMESPACE
 
@@ -45,21 +56,23 @@ class Chart: public QChart
 {
     Q_OBJECT
 public:
-    Chart(QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = 0);
+    Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent = 0, Qt::WindowFlags wFlags = 0);
     virtual ~Chart();
+    void getmapFactor(QMap<QString,FactorInfo *> &map);
 
 public slots:
     void handleTimeout();
 
 private:
     QTimer m_timer;
-    QLineSeries *m_series;
+    QLineSeries *sYQWD,*sYQLS,*sYQYL,*sYQSD,*sYQHL,*sBKLL;
     QStringList m_titles;
     QValueAxis *m_axisX;
     QValueAxis *m_axisY;
     qreal m_step;
-    qreal m_x;
-    qreal m_y;
+    qreal xYQWD,xYQLS,xYQYL,xYQSD,xYQHL,xBKLL;
+    qreal yYQWD,yYQLS,yYQYL,yYQSD,yYQHL,yBKLL;
+    QMap<QString,FactorInfo *> paramsMap;
 };
 //![1]
 

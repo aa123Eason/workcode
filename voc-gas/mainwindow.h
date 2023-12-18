@@ -110,6 +110,8 @@ public:
     void printFactors(QMap<QString,FactorInfo *>);
     int countFactordisplay(QMap<QString,FactorInfo *>);
     bool datebaseinit();
+    void chartinit();
+
 private slots:
     void on_pushButton_3_clicked();
     void on_pushButton_clicked();

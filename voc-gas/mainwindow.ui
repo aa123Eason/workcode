@@ -458,7 +458,7 @@ QPushButton:hover
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>560</x>
@@ -573,8 +573,17 @@ outline:0px; /*禁止焦点*/
 
 </string>
        </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::MultiSelection</enum>
+       </property>
+       <property name="textElideMode">
+        <enum>Qt::ElideNone</enum>
        </property>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>

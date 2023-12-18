@@ -28,40 +28,82 @@
 ****************************************************************************/
 
 #include "chart.h"
-#include <QtCharts/QAbstractAxis>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
+
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QDebug>
 
-Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags wFlags):
+Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFlags wFlags):
     QChart(QChart::ChartTypeCartesian, parent, wFlags),
-    m_series(0),
+    sYQWD(0),sYQLS(0),sYQYL(0),sYQSD(0),sYQHL(0),sBKLL(0),
     m_axisX(new QValueAxis()),
     m_axisY(new QValueAxis()),
     m_step(0),
-    m_x(5),
-    m_y(1)
+    xYQWD(0),xYQLS(0),xYQYL(0),xYQSD(0),xYQHL(0),xBKLL(0),
+    yYQWD(0),yYQLS(0),yYQYL(0),yYQSD(0),yYQHL(0),yBKLL(0)
 {
 
+    getmapFactor(map);
     QObject::connect(&m_timer, &QTimer::timeout, this, &Chart::handleTimeout);
     m_timer.setInterval(5000);
 
-    m_series = new QLineSeries(this);
-    QPen green(Qt::red);
-    green.setWidth(3);
-    m_series->setPen(green);
-    m_series->append(m_x, m_y);
+    sYQWD = new QLineSeries(this);
+    sYQLS = new QLineSeries(this);
+    sYQYL = new QLineSeries(this);
+    sYQSD = new QLineSeries(this);
+    sYQHL = new QLineSeries(this);
+    sYQWD = new QLineSeries(this);
+    sBKLL = new QLineSeries(this);
 
-    addSeries(m_series);
+    QPen pYQWD(Qt::red);pYQWD.setWidth(3);
+    QPen pYQLS(Qt::green);pYQLS.setWidth(3);
+    QPen pYQYL(Qt::blue);pYQYL.setWidth(3);
+    QPen pYQSD(Qt::cyan);pYQSD.setWidth(3);
+    QPen pYQHL(Qt::magenta);pYQHL.setWidth(3);
+    QPen pBKLL(Qt::darkGray);pBKLL.setWidth(3);
+
+    sYQWD->setPen(pYQWD);
+    sYQLS->setPen(pYQLS);
+    sYQYL->setPen(pYQYL);
+    sYQSD->setPen(pYQSD);
+    sYQHL->setPen(pYQHL);
+    sBKLL->setPen(pBKLL);
+
+    sYQWD->append(xYQWD, yYQWD);
+    sYQLS->append(xYQLS, yYQLS);
+    sYQYL->append(xYQYL, yYQYL);
+    sYQSD->append(xYQSD, yYQSD);
+    sYQHL->append(xYQHL, yYQHL);
+    sBKLL->append(xBKLL, yBKLL);
+
+    addSeries(sYQWD);
+    addSeries(sYQLS);
+    addSeries(sYQYL);
+    addSeries(sYQSD);
+    addSeries(sYQHL);
+    addSeries(sBKLL);
 
     addAxis(m_axisX,Qt::AlignBottom);
     addAxis(m_axisY,Qt::AlignLeft);
-    m_series->attachAxis(m_axisX);
-    m_series->attachAxis(m_axisY);
-    m_axisX->setTickCount(5);
-    m_axisX->setRange(0, 10);
-    m_axisY->setRange(-5, 10);
+
+
+    sYQWD->attachAxis(m_axisX);
+    sYQLS->attachAxis(m_axisX);
+    sYQYL->attachAxis(m_axisX);
+    sYQSD->attachAxis(m_axisX);
+    sYQHL->attachAxis(m_axisX);
+    sBKLL->attachAxis(m_axisX);
+
+    sYQWD->attachAxis(m_axisY);
+    sYQLS->attachAxis(m_axisY);
+    sYQYL->attachAxis(m_axisY);
+    sYQSD->attachAxis(m_axisY);
+    sYQHL->attachAxis(m_axisY);
+    sBKLL->attachAxis(m_axisY);
+
+
+    m_axisX->setTickCount(10);
+    m_axisX->setRange(0, 100);
+    m_axisY->setRange(-20, 100);
 
     m_timer.start();
 }
@@ -74,12 +116,65 @@ Chart::~Chart()
 void Chart::handleTimeout()
 {
 
-    qreal x = plotArea().width() / m_axisX->tickCount();
+    qreal x = 20;
     qreal y = (m_axisX->max() - m_axisX->min()) / m_axisX->tickCount();
-    m_x += y;
-    m_y = QRandomGenerator::global()->bounded(5) - 2.5;
-    m_series->append(m_x, m_y);
+//    xYQWD(0),xYQLS(0),xYQYL(0),xYQSD(0),xYQHL(0),xBKLL(0),
+//    yYQWD(0),yYQLS(0),yYQYL(0),yYQSD(0),yYQHL(0),yBKLL(0)
+    xYQWD += yYQWD;
+    xYQLS += yYQLS;
+    xYQYL += yYQYL;
+    xYQSD += yYQSD;
+    xYQHL += yYQHL;
+    xBKLL += yBKLL;
+
+    if(paramsMap.contains("烟气温度"))
+        yYQWD = paramsMap["烟气温度"]->m_value.toDouble();
+    if(paramsMap.contains("烟气流速"))
+        yYQLS = paramsMap["烟气流速"]->m_value.toDouble();
+    if(paramsMap.contains("烟气压力"))
+        yYQYL = paramsMap["烟气压力"]->m_value.toDouble();
+    if(paramsMap.contains("烟气湿度"))
+        yYQSD = paramsMap["烟气湿度"]->m_value.toDouble();
+    if(paramsMap.contains("氧气含量"))
+        yYQHL = paramsMap["氧气含量"]->m_value.toDouble();
+    if(paramsMap.contains("标况流量"))
+        yBKLL = paramsMap["标况流量"]->m_value.toDouble();
+
+    qDebug()<<__LINE__<<"烟气温度"<<yYQWD<<endl;
+    qDebug()<<__LINE__<<"烟气流速"<<yYQLS<<endl;
+    qDebug()<<__LINE__<<"烟气压力"<<yYQYL<<endl;
+    qDebug()<<__LINE__<<"烟气湿度"<<yYQSD<<endl;
+    qDebug()<<__LINE__<<"氧气含量"<<yYQHL<<endl;
+    qDebug()<<__LINE__<<"标况流量"<<yBKLL<<endl;
+
+    sYQWD->append(xYQWD, yYQWD);
+    sYQLS->append(xYQLS, yYQLS);
+    sYQYL->append(xYQYL, yYQYL);
+    sYQSD->append(xYQSD, yYQSD);
+    sYQHL->append(xYQHL, yYQHL);
+    sBKLL->append(xBKLL, yBKLL);
+
     scroll(x, 0);
-    if (m_x == 100)
+    if (xYQWD == 100 || xYQLS == 100 ||
+        xYQYL == 100 || xYQSD == 100 ||
+        xYQHL == 100 || xBKLL == 100)
         m_timer.stop();
+}
+
+void Chart::getmapFactor(QMap<QString,FactorInfo *> &map)
+{
+    qDebug()<<__LINE__<<map<<endl;
+    QStringList tmpList;
+    tmpList<<"烟气温度"<<"烟气流速"<<"烟气压力"<<"烟气湿度"<<"氧气含量"<<"标况流量";
+
+    for(int i=0;i<tmpList.count();++i)
+    {
+        QString paraName = tmpList[i];
+        if(map.contains(paraName))
+            paramsMap.insert(paraName,map[paraName]);
+    }
+
+
+
+
 }

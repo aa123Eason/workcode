@@ -51,17 +51,12 @@ MainWindow::MainWindow(QWidget *parent)
     Widget_Init();
     Setting_Init();
 
-    Chart *chart = new Chart();
-    chart->setTitle("历史曲线");
-    chart->legend()->hide();
-    chart->setAnimationOptions(QChart::AllAnimations);
-
-    QChartView *chartView = new QChartView(chart,ui->widget);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setFixedSize(500,400);
-
     InitComm();
     InitFactorMaps();
+
+    chartinit();
+
+
 
     setTableHeader();
     setTableContents();
@@ -147,6 +142,18 @@ void MainWindow::timerEvent(QTimerEvent * ev)
     {
         setTableContents();
     }
+}
+
+void MainWindow::chartinit()
+{
+    Chart *chart = new Chart(map_Factors);
+    chart->setTitle("烟气参数实时动态曲线");
+    chart->legend()->hide();
+    chart->setAnimationOptions(QChart::AllAnimations);
+
+    QChartView *chartView = new QChartView(chart,ui->widget);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setFixedSize(500,400);
 }
 
 
@@ -1171,15 +1178,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::setTableHeader()
 {
-    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#1B89A1}"
-                                  "QHeaderView::section,QTableCornerButton:section{ \
-                                  padding:3px; margin:0px; color:#DCDCDC;  border:1px solid #242424; \
-    border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
-background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
-"QTableWidget{background-color:white;border:none;}");
+//    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#1B89A1}"
+//                                  "QHeaderView::section,QTableCornerButton:section{ \
+//                                  padding:3px; margin:0px; color:#DCDCDC;  border:1px solid #242424; \
+//    border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
+//background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
+//"QTableWidget{background-color:white;border:none;}");
 //设置表头
 QStringList headerText;
-headerText << QStringLiteral("名称") << QStringLiteral("数值") << QStringLiteral("单位")
+headerText << QStringLiteral("因子名称") << QStringLiteral("实时值") << QStringLiteral("单位")
            << QStringLiteral("状态");
 int cnt = headerText.count();
 ui->tableWidget->setColumnCount(cnt);
@@ -1195,14 +1202,15 @@ ui->tableWidget->horizontalHeader()->setFont(font);
 
 ui->tableWidget->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
 
-int widths[] = {85, 85, 85, 85};
+int widths[] = {130, 100, 100, 85};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget->setColumnWidth(i, widths[i]);
 }
 
-ui->tableWidget->setStyleSheet(qssTV);
-ui->tableWidget->horizontalHeader()->setVisible(true);
-ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
+//ui->tableWidget->setStyleSheet(qssTV);
+//ui->tableWidget->resizeRowsToContents();
+//ui->tableWidget->resizeColumnsToContents();
+
 }
 
 void MainWindow::setTableContents()
@@ -1213,24 +1221,26 @@ void MainWindow::setTableContents()
     QTableWidgetItem *pItem1=nullptr,*pItem2=nullptr,*pItem3=nullptr,*pItem4=nullptr;
     int numDisplayed = map_Factors.count();
     ui->tableWidget->setRowCount(numDisplayed);    // FIXME:
+    ui->tableWidget->setWordWrap(true);
 
     int index = 0;
 //    printFactors(map_Factors);
 
     while (index<seqlist.count()) {
 
-        qDebug()<<__LINE__<<index<<endl;
+//        qDebug()<<__LINE__<<index<<endl;
         // qDebug() << iterator.key() << ":::::::" << iterator.value();
 
         FactorInfo* pItemInfo = facseqlist.at(index);
         QFont font;
-        font.setPointSize(16);
+        font.setPointSize(12);
         font.setBold(true);
 
         pItem1 = new QTableWidgetItem(pItemInfo->m_name);
         pItem1->setTextAlignment(Qt::AlignCenter);
         pItem1->setFlags(Qt::ItemIsEditable);
         pItem1->setFont(font);
+
         ui->tableWidget->setItem(index, 0, pItem1);
 
         pItem2 = new QTableWidgetItem(pItemInfo->m_value);
@@ -1251,6 +1261,8 @@ void MainWindow::setTableContents()
         pItem4->setTextAlignment(Qt::AlignCenter);
         pItem4->setFont(font);
         ui->tableWidget->setItem(index, 3, pItem4);
+
+        ui->tableWidget->setRowHeight(index,65);
 
         index++;
 
