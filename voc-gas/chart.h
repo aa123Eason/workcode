@@ -36,6 +36,9 @@
 #include <QtCharts/QAbstractAxis>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QValueAxis>
+#include <QtCharts/QLegend>
+#include <QtCharts/QLegendMarker>
+#include <QtCharts/QXYLegendMarker>
 #include <QString>
 #include <QMap>
 #include "factorinfo.h"

@@ -16,6 +16,22 @@
 #include <QList>
 #include <QString>
 #include <QStringList>
+#include <QDateTime>
+#include <QToolTip>
+
+#include "msgbox.h"
+#include "Crc16Class.h"
+
+#include "chart.h"
+#include <QtCharts/QChartView>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
+#include <QBrush>
+#include "historychartview.h"
+
+
+
+QT_CHARTS_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -80,6 +96,7 @@ private:
     QMutex lock;
     /* 标志位 */
     bool isCanRun;
+
 };
 
 
@@ -111,6 +128,10 @@ public:
     int countFactordisplay(QMap<QString,FactorInfo *>);
     bool datebaseinit();
     void chartinit();
+    void connectMarkers();
+    void disconnectMarkers();
+
+
 
 private slots:
     void on_pushButton_3_clicked();
@@ -119,6 +140,7 @@ private slots:
     void HandleDateTimeout();
     void on_pushButton_Set_clicked();
     void handleResults(const QString & results);
+    void handleMarkersClicked();
 
 signals:
     /* 工人开始工作（做些耗时的操作 ） */
@@ -126,12 +148,16 @@ signals:
     void startWork2();
     void startWork3();
     void startWork4();
+    void sendGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors);
 
 private:
     Ui::MainWindow *ui;
     QTimer *m_pDateTimer = nullptr;
     Logger *logger;
     QProcess my_Process;
+    Chart *chart = nullptr;
+    HistoryChartView *histoyChartView = nullptr;
+
 
     int id1; //定时器1的唯一标示
 

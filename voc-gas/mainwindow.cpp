@@ -1,17 +1,6 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDateTime>
-#include <QToolTip>
 
-#include "msgbox.h"
-#include "Crc16Class.h"
-
-#include "chart.h"
-#include <QtCharts/QChartView>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
-
-QT_CHARTS_USE_NAMESPACE
 
 QString g_Sepuyi;
 QString g_PLC;
@@ -146,14 +135,85 @@ void MainWindow::timerEvent(QTimerEvent * ev)
 
 void MainWindow::chartinit()
 {
-    Chart *chart = new Chart(map_Factors);
+    chart = new Chart(map_Factors);
     chart->setTitle("烟气参数实时动态曲线");
-    chart->legend()->hide();
+//    chart->legend()->hide();
     chart->setAnimationOptions(QChart::AllAnimations);
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignLeft);
+    chart->legend()->setMarkerShape(QLegend::MarkerShapeRectangle);
+
+    connectMarkers();
+
+
 
     QChartView *chartView = new QChartView(chart,ui->widget);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setFixedSize(500,400);
+    chartView->setRubberBand(QChartView::VerticalRubberBand);
+}
+
+void MainWindow::connectMarkers()
+{
+    const auto markers = chart->legend()->markers();
+    for(QLegendMarker *marker:markers)
+    {
+        QObject::disconnect(marker,&QLegendMarker::clicked,this,&MainWindow::handleMarkersClicked);
+        QObject::connect(marker,&QLegendMarker::clicked,this,&MainWindow::handleMarkersClicked);
+
+    }
+}
+
+void MainWindow::disconnectMarkers()
+{
+    const auto markers = chart->legend()->markers();
+    for(QLegendMarker *marker:markers)
+    {
+        QObject::disconnect(marker,&QLegendMarker::clicked,this,&MainWindow::handleMarkersClicked);
+    }
+}
+
+void MainWindow::handleMarkersClicked()
+{
+    QLegendMarker *marker = qobject_cast<QLegendMarker *>(sender());
+    Q_ASSERT(marker);
+
+    switch(marker->type())
+    {
+    case QLegendMarker::LegendMarkerTypeXY:
+    {
+        marker->series()->setVisible(!marker->series()->isVisible());
+        marker->setVisible(true);
+
+        qreal alpha = 1.0;
+        if(!marker->series()->isVisible())
+        {
+            alpha = 0.5;
+        }
+            QColor color;
+            QBrush brush = marker->labelBrush();
+            color = brush.color();
+            color.setAlphaF(alpha);
+            brush.setColor(color);
+            marker->setLabelBrush(brush);
+            brush = marker->brush();
+            color = brush.color();
+            color.setAlphaF(alpha);
+            brush.setColor(color);
+            marker->setBrush(brush);
+            QPen pen = marker->pen();
+            color = pen.color();
+            color.setAlphaF(alpha);
+            pen.setColor(color);
+            marker->setPen(pen);
+
+            break;
+
+
+    }
+    default:
+        break;
+    }
 }
 
 
@@ -704,6 +764,17 @@ void MainWindow::InitFactorMaps()
         }
     }
 
+
+    connect(ui->pushButton_7,&QPushButton::clicked,this,[=]()
+    {
+        histoyChartView = new HistoryChartView(db);
+        connect(this,&MainWindow::sendGlobalMapAndList,histoyChartView,&HistoryChartView::onReceiveGlobalMapAndList);
+        emit sendGlobalMapAndList(g_FactorsNameList,map_Factors);
+        histoyChartView->show();
+    });
+
+
+
      qDebug() << "map_Factors==>" << map_Factors;
      qDebug() << "seqlist==>" << seqlist;
      qDebug() << "nameseqlist==>" << nameseqlist;
@@ -1070,6 +1141,7 @@ void MainWindow::Widget_Init()
 
     ui->pushButton_7->setAttribute(Qt::WA_Hover,true);
     ui->pushButton_7->installEventFilter(this);
+
 
     ui->pushButton_4->setAttribute(Qt::WA_Hover,true);
     ui->pushButton_4->installEventFilter(this);

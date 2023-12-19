@@ -75,6 +75,14 @@ Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFl
     sYQHL->append(xYQHL, yYQHL);
     sBKLL->append(xBKLL, yBKLL);
 
+    sYQWD->setName("烟气温度");
+    sYQLS->setName("烟气流速");
+    sYQYL->setName("烟气压力");
+    sYQSD->setName("烟气湿度");
+    sYQHL->setName("氧气含量");
+    sBKLL->setName("标况流量");
+
+
     addSeries(sYQWD);
     addSeries(sYQLS);
     addSeries(sYQYL);
@@ -84,7 +92,6 @@ Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFl
 
     addAxis(m_axisX,Qt::AlignBottom);
     addAxis(m_axisY,Qt::AlignLeft);
-
 
     sYQWD->attachAxis(m_axisX);
     sYQLS->attachAxis(m_axisX);
@@ -105,6 +112,11 @@ Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFl
     m_axisX->setRange(0, 100);
     m_axisY->setRange(-20, 100);
 
+    m_axisX->setLabelsVisible(false);
+
+
+
+
     m_timer.start();
 }
 
@@ -120,12 +132,12 @@ void Chart::handleTimeout()
     qreal y = (m_axisX->max() - m_axisX->min()) / m_axisX->tickCount();
 //    xYQWD(0),xYQLS(0),xYQYL(0),xYQSD(0),xYQHL(0),xBKLL(0),
 //    yYQWD(0),yYQLS(0),yYQYL(0),yYQSD(0),yYQHL(0),yBKLL(0)
-    xYQWD += yYQWD;
-    xYQLS += yYQLS;
-    xYQYL += yYQYL;
-    xYQSD += yYQSD;
-    xYQHL += yYQHL;
-    xBKLL += yBKLL;
+    xYQWD += y;
+    xYQLS += y;
+    xYQYL += y;
+    xYQSD += y;
+    xYQHL += y;
+    xBKLL += y;
 
     if(paramsMap.contains("烟气温度"))
         yYQWD = paramsMap["烟气温度"]->m_value.toDouble();
@@ -140,12 +152,12 @@ void Chart::handleTimeout()
     if(paramsMap.contains("标况流量"))
         yBKLL = paramsMap["标况流量"]->m_value.toDouble();
 
-    qDebug()<<__LINE__<<"烟气温度"<<yYQWD<<endl;
-    qDebug()<<__LINE__<<"烟气流速"<<yYQLS<<endl;
-    qDebug()<<__LINE__<<"烟气压力"<<yYQYL<<endl;
-    qDebug()<<__LINE__<<"烟气湿度"<<yYQSD<<endl;
-    qDebug()<<__LINE__<<"氧气含量"<<yYQHL<<endl;
-    qDebug()<<__LINE__<<"标况流量"<<yBKLL<<endl;
+    qDebug()<<__LINE__<<"烟气温度"<<yYQWD;
+    qDebug()<<"烟气流速"<<yYQLS;
+    qDebug()<<"烟气压力"<<yYQYL;
+    qDebug()<<"烟气湿度"<<yYQSD;
+    qDebug()<<"氧气含量"<<yYQHL;
+    qDebug()<<"标况流量"<<yBKLL;
 
     sYQWD->append(xYQWD, yYQWD);
     sYQLS->append(xYQLS, yYQLS);
@@ -155,10 +167,10 @@ void Chart::handleTimeout()
     sBKLL->append(xBKLL, yBKLL);
 
     scroll(x, 0);
-    if (xYQWD == 100 || xYQLS == 100 ||
-        xYQYL == 100 || xYQSD == 100 ||
-        xYQHL == 100 || xBKLL == 100)
-        m_timer.stop();
+//    if (xYQWD == 100 || xYQLS == 100 ||
+//        xYQYL == 100 || xYQSD == 100 ||
+//        xYQHL == 100 || xBKLL == 100)
+//        m_timer.stop();
 }
 
 void Chart::getmapFactor(QMap<QString,FactorInfo *> &map)

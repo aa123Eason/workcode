@@ -14,6 +14,7 @@ SOURCES += \
     Crc16Class.cpp \
     chart.cpp \
     factorinfo.cpp \
+    historychartview.cpp \
     hj212.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     chart.h \
     common.h \
     factorinfo.h \
+    historychartview.h \
     hj212.h \
     mainwindow.h \
     msgbox.h \
@@ -35,6 +37,7 @@ HEADERS += \
     win_qextserialport.h
 
 FORMS += \
+    historychartview.ui \
     mainwindow.ui \
     paramset.ui
 
