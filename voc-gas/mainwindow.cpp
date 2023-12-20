@@ -763,7 +763,8 @@ void MainWindow::InitFactorMaps()
             facseqlist.append(pItemInfo);
         }
     }
-
+//    histoyChartView = new HistoryChartView(db);
+//    emit sendGlobalMapAndList(g_FactorsNameList,map_Factors);
 
     connect(ui->pushButton_7,&QPushButton::clicked,this,[=]()
     {

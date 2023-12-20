@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
@@ -54,12 +54,12 @@ Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFl
     sYQWD = new QLineSeries(this);
     sBKLL = new QLineSeries(this);
 
-    QPen pYQWD(Qt::red);pYQWD.setWidth(3);
-    QPen pYQLS(Qt::green);pYQLS.setWidth(3);
-    QPen pYQYL(Qt::blue);pYQYL.setWidth(3);
-    QPen pYQSD(Qt::cyan);pYQSD.setWidth(3);
-    QPen pYQHL(Qt::magenta);pYQHL.setWidth(3);
-    QPen pBKLL(Qt::darkGray);pBKLL.setWidth(3);
+    QPen pYQWD(Qt::red);pYQWD.setWidthF(1);
+    QPen pYQLS(Qt::green);pYQLS.setWidthF(1.5);
+    QPen pYQYL(Qt::blue);pYQYL.setWidthF(2);
+    QPen pYQSD(Qt::cyan);pYQSD.setWidthF(2.5);
+    QPen pYQHL(Qt::magenta);pYQHL.setWidthF(3);
+    QPen pBKLL(Qt::darkGray);pBKLL.setWidthF(3.5);
 
     sYQWD->setPen(pYQWD);
     sYQLS->setPen(pYQLS);
@@ -158,6 +158,27 @@ void Chart::handleTimeout()
     qDebug()<<"烟气湿度"<<yYQSD;
     qDebug()<<"氧气含量"<<yYQHL;
     qDebug()<<"标况流量"<<yBKLL;
+
+    QList<double> valuelist;
+    valuelist<<yYQWD<<yYQLS<<yYQYL<<yYQSD<<yYQHL<<yBKLL;
+
+    qreal minValue = -20,maxValue = 100;
+    for(double value:valuelist)
+    {
+        if(minValue>value)
+            minValue = value;
+
+        if(maxValue<value)
+            maxValue = value;
+    }
+
+
+    m_axisY->setRange(minValue, maxValue);
+
+
+
+
+
 
     sYQWD->append(xYQWD, yYQWD);
     sYQLS->append(xYQLS, yYQLS);

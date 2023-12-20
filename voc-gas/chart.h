@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
@@ -68,10 +68,10 @@ public slots:
 
 private:
     QTimer m_timer;
-    QLineSeries *sYQWD,*sYQLS,*sYQYL,*sYQSD,*sYQHL,*sBKLL;
+    QLineSeries *sYQWD=nullptr,*sYQLS=nullptr,*sYQYL=nullptr,*sYQSD=nullptr,*sYQHL=nullptr,*sBKLL=nullptr;
     QStringList m_titles;
-    QValueAxis *m_axisX;
-    QValueAxis *m_axisY;
+    QValueAxis *m_axisX=nullptr;
+    QValueAxis *m_axisY=nullptr;
     qreal m_step;
     qreal xYQWD,xYQLS,xYQYL,xYQSD,xYQHL,xBKLL;
     qreal yYQWD,yYQLS,yYQYL,yYQSD,yYQHL,yBKLL;

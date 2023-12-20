@@ -19,5 +19,16 @@
         <file>images/Off.png</file>
         <file>images/On.png</file>
         <file>images/UserManage.png</file>
+        <file>images/Log.png</file>
+        <file>images/LOGO_NOBG_icon.png</file>
+        <file>images/logosim.png</file>
+        <file>images/UartAssist.exe</file>
+        <file>images/bk.png</file>
+        <file>images/ls.png</file>
+        <file>images/o2.png</file>
+        <file>images/sd.png</file>
+        <file>images/yl.png</file>
+        <file>images/wd.png</file>
+        <file>images/checkboxstyle.qss</file>
     </qresource>
 </RCC>

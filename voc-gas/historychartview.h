@@ -1,4 +1,4 @@
-#ifndef HISTORYCHARTVIEW_H
+﻿#ifndef HISTORYCHARTVIEW_H
 #define HISTORYCHARTVIEW_H
 
 #include <QWidget>
@@ -10,17 +10,23 @@
 #include <QMap>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QFile>
+#include <QByteArray>
+#include <QTime>
 
 #include <QtCharts/QSplineSeries>
 #include <QtCharts/QLegend>
 #include <QtCharts/QLegendMarker>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QCategoryAxis>
+#include <QtCharts/QDateTimeAxis>
 #include <QtCharts/QXYLegendMarker>
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlRecord>
+#include <QSqlResult>
 
 #include "common.h"
 #include "factorinfo.h"
@@ -50,6 +56,11 @@ public:
     void getLocalDB(QSqlDatabase &);
 
     void connectevent();
+    QString loadStyleSheet(QString qsspath);
+    void paintCharts();
+    QColor randomColor();
+
+    static QMap<QString,QString> facNameMap();
 
 signals:
 
@@ -65,8 +76,15 @@ private:
     QMap<QString,FactorInfo *> selFactorsMap;
     QSqlDatabase curdb;
     QVBoxLayout *layout = new QVBoxLayout();
+    QHBoxLayout *chartlayout = new QHBoxLayout();
     QStringList gFactorsNameList;
+    QStringList dateTimeList;
     QMap<QString, FactorInfo*> mapFactors;
+    QMap<QString,QList<qreal>> mapQueryResult;
+    QValueAxis *m_axisX=nullptr;
+    QValueAxis *m_axisY=nullptr;
+    QChart *chart = nullptr;
+    QString queryFormat;
 };
 
 #endif // HISTORYCHARTVIEW_H
