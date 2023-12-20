@@ -26,7 +26,8 @@ void HistoryChartView::widgetInit()
 {
     this->setWindowState(Qt::WindowMaximized);
 
-    QDateTime defaultSDT = QDateTime::currentDateTime();
+//    QDateTime defaultSDT = QDateTime::currentDateTime();
+    QDateTime defaultSDT = QDateTime::fromString("2023-07-16 09:00","yyyy-MM-dd HH:mm");
     QDateTime defaultSDT1 = defaultSDT.addDays(1);
 
     ui->startDT->setDateTime(defaultSDT);
@@ -88,21 +89,7 @@ void HistoryChartView::connectevent()
         connect(w,&MainWindow::sendGlobalMapAndList,this,&HistoryChartView::onReceiveGlobalMapAndList);
     }
 
-    QMap<QString,QCheckBox *>::iterator it = legendBoxMap.begin();
-    int index = 0;
-    while(it!=legendBoxMap.end())
-    {
-        if(it.value()!=nullptr)
-        {
-            connect(it.value(),&QCheckBox::stateChanged,this,[=](int state)
-            {
-                const auto markers = chart->legend()->markers();
-                markers.at(index)->series()->setVisible(state);
-            });
-        }
-        index++;
-        it++;
-    }
+
 }
 
 QString HistoryChartView::loadStyleSheet(QString qsspath)
@@ -211,66 +198,87 @@ void HistoryChartView::on_pushbutton_query()
         rangeStartDT = dt_begin.toString(queryFormat);
         rangeEndDT = dt_end.toString(queryFormat);
 
+        //获取勾选的因子复选框
+        QMap<QString,QCheckBox *>::iterator it = legendBoxMap.begin();
+        while(it!=legendBoxMap.end())
+        {
+            if(it.value()!=nullptr)
+            {
+                if(it.value()->isChecked())
+                {
+                    selBoxMap.insert(it.key(),it.value());
+                }
+            }
+            it++;
+        }
 
-    if(!curdb.isOpen())
-    {
-        QMessageBox::warning(this,"查询错误提示","查询失败，本地数据库异常");
-        return;
-    }
-    //拼接查询语句
-    QString queStr = "select HistoryTime,";
-    for(QString fac:gFactorsNameList)
-    {
-        QString realName = HistoryChartView::facNameMap().key(fac);
-        qDebug()<<__LINE__<<fac<<"--"<<realName<<endl;
-        queStr += realName;
-        if(fac != gFactorsNameList.last())
-            queStr += ",";
 
-    }
-    queStr += " from "+tableName+" where HistoryTime between \'";
-    queStr += rangeStartDT + "\' and \'"+ rangeEndDT + "\';";
 
-    qDebug()<<__LINE__<<queStr<<endl;
-
-    QSqlQuery query(queStr);
-    query.exec();
-    QSqlRecord records = query.record();
-
-    qDebug()<<__LINE__<<"result size:"<<records.count()<<endl;
-
-    int num = 0;
-    while(query.next())
-    {
-        for(QString fac:gFactorsNameList)
+        if(!curdb.isOpen())
+        {
+            QMessageBox::warning(this,"查询错误提示","查询失败，本地数据库异常");
+            return;
+        }
+        //拼接查询语句
+        QString queStr = "select ";
+        qDebug()<<"==================x"<<endl;
+        for(QString fac:selBoxMap.keys())
         {
             QString realName = HistoryChartView::facNameMap().key(fac);
-            QString facRecord = query.value(realName).toString();
-//            if(facRecord.isEmpty())
-//                facRecord = QString::number(0.00,'f');
-
-            mapQueryResult[realName]<< facRecord.toDouble();
+            qDebug()<<__LINE__<<fac<<"--"<<realName<<endl;
+            queStr += realName;
+            if(fac != selBoxMap.keys().last())
+                queStr += ",";
 
         }
+        qDebug()<<"==================xx"<<endl;
+        queStr += " from "+tableName+" where HistoryTime between \'";
+        queStr += rangeStartDT + "\' and \'"+ rangeEndDT + "\';";
 
-        if(num < records.count())
+        qDebug()<<__LINE__<<queStr<<endl;
+
+        QSqlQuery query(queStr);
+        query.exec();
+        QSqlRecord records = query.record();
+
+        qDebug()<<__LINE__<<"result size:"<<records.count()<<endl;
+
+
+
+        int num = 0;
+        mapQueryResult.clear();
+        while(query.next())
         {
-            dateTimeList<<query.value("HistoryTime").toString();
-        }
-        num++;
-    }
 
-    qDebug()<<__LINE__<<mapQueryResult<<endl;
-    qDebug()<<__LINE__<<dateTimeList<<endl;
-    paintCharts();
+            for(QString fac:selBoxMap.keys())
+            {
+                QString realName = HistoryChartView::facNameMap().key(fac);
+                QString facRecord = query.value(realName).toString();
+                //            if(facRecord.isEmpty())
+                //                facRecord = QString::number(0.00,'f');
+                mapQueryResult[realName]<<facRecord.toDouble();
+
+
+            }
+
+
+            num++;
+        }
+
+        qDebug()<<__LINE__<<mapQueryResult[0].count()<<mapQueryResult<<endl;
+
+
+        paintCharts();
 
 
 }
 
 void HistoryChartView::paintCharts()
 {
+    qDebug()<<__LINE__<<chart->series().count()<<endl;
+
     qreal minValue =-20,maxValue = 100;
-    int xMax = mapQueryResult.count();
+    int xMax = mapQueryResult[0].count();
     if(xMax==0)
         return;
     for(QList<qreal> valuelist:mapQueryResult.values())
@@ -284,8 +292,9 @@ void HistoryChartView::paintCharts()
         }
     }
 
-    m_axisX->setTickCount(10);
     m_axisX->setRange(0,xMax);
+    m_axisX->setTickCount(10);
+
 
 
     m_axisY->setRange(minValue,maxValue);
@@ -293,10 +302,12 @@ void HistoryChartView::paintCharts()
     int xvalue = 0;
     int index = 0;
 
+
+
     for(QList<qreal> valuelist:mapQueryResult.values())
     {
 
-        QSplineSeries *series = new QSplineSeries(this);
+        QLineSeries *series = new QLineSeries(this);
         QString realName = facNameMap()[mapQueryResult.keys()[index]];
         series->setName(realName);
         QPen pen;
@@ -309,19 +320,30 @@ void HistoryChartView::paintCharts()
 
         for(qreal value:valuelist)
         {
-            series->append(xvalue++,value);
+            series->append(xvalue,value);
 
         }
 
         series->attachAxis(m_axisX);
         series->attachAxis(m_axisY);
 
+        for(auto series0:chart->series())
+        {
+            if(series0->name()==series->name())
+            {
+                chart->removeSeries(series0);
+            }
+        }
+
+        qDebug()<<__LINE__<<series->name();
         chart->addSeries(series);
-        chart->addAxis(m_axisX,Qt::AlignBottom);
-        chart->addAxis(m_axisY,Qt::AlignLeft);
+
+        xvalue++;
         index++;
     }
 
+    chart->addAxis(m_axisX,Qt::AlignBottom);
+    chart->addAxis(m_axisY,Qt::AlignLeft);
 
 
 }

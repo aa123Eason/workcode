@@ -9,11 +9,11 @@ QCheckBox::indicator{/*选择框尺寸*/
 	height: 32px;
 }
 QCheckBox:enabled:checked{
-	color: rgb(255, 0, 0);
+        color: rgb(255, 255, 255);
 }
 QCheckBox:enabled:!checked{
 	color: rgb(100, 100, 100);
-	background-color:darkblue;
+
 }
 QCheckBox:enabled:hover{
  	font 13px "黑体";

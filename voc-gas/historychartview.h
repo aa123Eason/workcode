@@ -73,6 +73,7 @@ public slots:
 private:
     Ui::HistoryChartView *ui;
     QMap<QString,QCheckBox *> legendBoxMap;
+    QMap<QString,QCheckBox *> selBoxMap;
     QMap<QString,FactorInfo *> selFactorsMap;
     QSqlDatabase curdb;
     QVBoxLayout *layout = new QVBoxLayout();
