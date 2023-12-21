@@ -15,6 +15,7 @@ SOURCES += \
     chart.cpp \
     factorinfo.cpp \
     historychartview.cpp \
+    historydataquery.cpp \
     hj212.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     common.h \
     factorinfo.h \
     historychartview.h \
+    historydataquery.h \
     hj212.h \
     mainwindow.h \
     msgbox.h \
@@ -38,6 +40,7 @@ HEADERS += \
 
 FORMS += \
     historychartview.ui \
+    historydataquery.ui \
     mainwindow.ui \
     paramset.ui
 

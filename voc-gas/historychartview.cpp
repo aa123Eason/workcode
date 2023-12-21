@@ -27,9 +27,8 @@ void HistoryChartView::widgetInit()
     this->setWindowState(Qt::WindowMaximized);
 
 //    QDateTime defaultSDT = QDateTime::currentDateTime();
-    QDateTime defaultSDT = QDateTime::fromString("2023-07-16 09:00","yyyy-MM-dd HH:mm");
-    QDateTime defaultSDT1 = defaultSDT.addDays(1);
-
+    QDateTime defaultSDT = QDateTime::fromString("2023-07-11 03:00","yyyy-MM-dd HH:mm");
+    QDateTime defaultSDT1 = defaultSDT.addSecs(3600);
     ui->startDT->setDateTime(defaultSDT);
     ui->endDT->setDateTime(defaultSDT1);
 
@@ -45,15 +44,10 @@ void HistoryChartView::chartInit()
     chart->legend()->setAlignment(Qt::AlignRight);
     chart->legend()->setMarkerShape(QLegend::MarkerShapeRectangle);
 
-
     m_axisX = new QValueAxis();
     m_axisY = new QValueAxis();
     m_axisX->setGridLineVisible(true);
     m_axisY->setGridLineVisible(true);
-
-
-
-
 
     QChartView *mainChartView = new QChartView(chart,ui->chartWidget);
     mainChartView->setRenderHint(QPainter::Antialiasing);
@@ -199,6 +193,7 @@ void HistoryChartView::on_pushbutton_query()
         rangeEndDT = dt_end.toString(queryFormat);
 
         //获取勾选的因子复选框
+        selBoxMap.clear();
         QMap<QString,QCheckBox *>::iterator it = legendBoxMap.begin();
         while(it!=legendBoxMap.end())
         {
@@ -206,11 +201,14 @@ void HistoryChartView::on_pushbutton_query()
             {
                 if(it.value()->isChecked())
                 {
-                    selBoxMap.insert(it.key(),it.value());
+                    selBoxMap[it.key()]=it.value();
                 }
+
             }
             it++;
         }
+
+        qDebug()<<__LINE__<<selBoxMap.keys()<<endl;
 
 
 
@@ -244,28 +242,24 @@ void HistoryChartView::on_pushbutton_query()
         qDebug()<<__LINE__<<"result size:"<<records.count()<<endl;
 
 
-
-        int num = 0;
+        int num0 = 0;
         mapQueryResult.clear();
         while(query.next())
         {
-
+            qDebug()<<__LINE__<<query.record().count()<<endl;
             for(QString fac:selBoxMap.keys())
             {
                 QString realName = HistoryChartView::facNameMap().key(fac);
-                QString facRecord = query.value(realName).toString();
-                //            if(facRecord.isEmpty())
-                //                facRecord = QString::number(0.00,'f');
-                mapQueryResult[realName]<<facRecord.toDouble();
+                qDebug()<<__LINE__<<fac<<"["<<num0<<"]"<<query.value(realName).toString()<<endl;
+                QString realValue = query.value(realName).toString();
+                qDebug()<<__LINE__<<realValue<<endl;
 
-
+                mapQueryResult[realName].append(realValue.toDouble());
             }
-
-
-            num++;
+            num0++;
         }
 
-        qDebug()<<__LINE__<<mapQueryResult[0].count()<<mapQueryResult<<endl;
+        qDebug()<<__LINE__<<mapQueryResult<<endl;
 
 
         paintCharts();
@@ -277,8 +271,14 @@ void HistoryChartView::paintCharts()
 {
     qDebug()<<__LINE__<<chart->series().count()<<endl;
 
-    qreal minValue =-20,maxValue = 100;
-    int xMax = mapQueryResult[0].count();
+
+    chart->removeAllSeries();
+    chart->legend()->markers().clear();
+
+    double minValue =-50,maxValue = 1000;
+    if(mapQueryResult.values().count()==0)
+        return;
+    int xMax = mapQueryResult.values()[0].count();
     if(xMax==0)
         return;
     for(QList<qreal> valuelist:mapQueryResult.values())
@@ -293,57 +293,59 @@ void HistoryChartView::paintCharts()
     }
 
     m_axisX->setRange(0,xMax);
-    m_axisX->setTickCount(10);
-
-
-
     m_axisY->setRange(minValue,maxValue);
 
+
+
+    qDebug()<<__LINE__<< minValue<<","<< maxValue<<endl;
+
     int xvalue = 0;
-    int index = 0;
 
-
-
-    for(QList<qreal> valuelist:mapQueryResult.values())
+    QMap<QString,QList<qreal>>::iterator it = mapQueryResult.begin();
+    QList<QLineSeries*> serieslist;
+    while(it!=mapQueryResult.end())
     {
-
         QLineSeries *series = new QLineSeries(this);
-        QString realName = facNameMap()[mapQueryResult.keys()[index]];
+        QString realName = facNameMap()[it.key()];
         series->setName(realName);
-        QPen pen;
-        QColor color = randomColor();
-        pen.setColor(color);
-        QTime time= QTime::currentTime();
-        qsrand(time.msec()+time.second()*1000);
-        pen.setWidthF(qrand()%5);
+
+        QPen pen(randomColor());
+        pen.setWidth(2);
         series->setPen(pen);
 
-        for(qreal value:valuelist)
+        QList<qreal> values = it.value();
+        for(double value:values)
         {
+            qDebug()<<__LINE__<<"("<<xvalue<<","<<value<<")"<<endl;
             series->append(xvalue,value);
-
+            xvalue++;
         }
+
+
+
+
+        chart->addAxis(m_axisX,Qt::AlignBottom);
+        chart->addAxis(m_axisY,Qt::AlignLeft);
+
 
         series->attachAxis(m_axisX);
         series->attachAxis(m_axisY);
+        serieslist.append(series);
 
-        for(auto series0:chart->series())
-        {
-            if(series0->name()==series->name())
-            {
-                chart->removeSeries(series0);
-            }
-        }
-
-        qDebug()<<__LINE__<<series->name();
-        chart->addSeries(series);
-
-        xvalue++;
-        index++;
+        it++;
     }
 
-    chart->addAxis(m_axisX,Qt::AlignBottom);
-    chart->addAxis(m_axisY,Qt::AlignLeft);
+
+    for(auto series:serieslist)
+    {
+        chart->addSeries(series);
+
+    }
+
+
+
+
+
 
 
 }
@@ -373,7 +375,7 @@ void HistoryChartView::onReceiveGlobalMapAndList(QStringList &g_FactorsNameList,
         {
             QCheckBox *box = new QCheckBox(fac);
             box->setCheckable(true);
-            box->setChecked(Qt::Checked);
+            box->setChecked(Qt::Unchecked);
             QString checkStyleSheet = loadStyleSheet(":/images/checkboxstyle.qss");
             box->setStyleSheet(checkStyleSheet);
             QFont font;

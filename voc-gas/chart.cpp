@@ -172,13 +172,7 @@ void Chart::handleTimeout()
             maxValue = value;
     }
 
-
     m_axisY->setRange(minValue, maxValue);
-
-
-
-
-
 
     sYQWD->append(xYQWD, yYQWD);
     sYQLS->append(xYQLS, yYQLS);

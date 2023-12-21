@@ -774,6 +774,14 @@ void MainWindow::InitFactorMaps()
         histoyChartView->show();
     });
 
+    connect(ui->pushButton_6,&QPushButton::clicked,this,[=]()
+    {
+        historyDateQuery = new HistoryDataQuery();
+
+
+        historyDateQuery->show();
+    });
+
 
 
      qDebug() << "map_Factors==>" << map_Factors;

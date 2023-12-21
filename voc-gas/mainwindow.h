@@ -28,6 +28,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QBrush>
 #include "historychartview.h"
+#include "historydataquery.h"
 
 
 
@@ -157,7 +158,7 @@ private:
     QProcess my_Process;
     Chart *chart = nullptr;
     HistoryChartView *histoyChartView = nullptr;
-
+    HistoryDataQuery *historyDateQuery = nullptr;
 
     int id1; //定时器1的唯一标示
 
