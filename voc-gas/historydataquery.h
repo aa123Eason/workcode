@@ -42,11 +42,13 @@ public:
     void connectevent();
     void databaseinit();
     //构造表格
-    void buildDefaultTable();
+    void buildDefaultTable(int rows,int cols);
     void mergeCell(int rows,int cols);
     void fillindfttxt(int rows,int cols);
     void modifyTable();
-
+    void editDataRow(QDateTime dt_start,QDateTime dt_end);
+    void filldateTime(QDateTime dt_start,QDateTime dt_end);
+    void fillinDatas();
 signals:
 
 

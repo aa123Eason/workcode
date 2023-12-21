@@ -31,7 +31,7 @@ void HistoryDataQuery::widgetinit()
     ui->startDT->setDateTime(defaultSDT);
     ui->endDT->setDateTime(defaultSDT1);
 
-    buildDefaultTable();
+    buildDefaultTable(12,16);
 
 }
 
@@ -76,11 +76,10 @@ void HistoryDataQuery::modifyTable()
     }
 }
 
-void HistoryDataQuery::buildDefaultTable()
+void HistoryDataQuery::buildDefaultTable(int rows,int cols)
 {
     //确定缺省表格的行列数
-    int cols = 16;
-    int rows = 21;
+
     ui->mainTable->setRowCount(rows);
     ui->mainTable->setColumnCount(cols);
 //    ui->mainTable->resizeRowsToContents();
@@ -226,8 +225,21 @@ void HistoryDataQuery::onQuery()
         return;
     }
 
+    if(ui->queryDTType->currentText()=="请选择查询方式")
+    {
+        QMessageBox::warning(this,"提示","请选择查询方式");
+        return;
+    }
+
     QString dtStr1 = dt1.toString(queryFormat);
-    QString dtStr2 = dt1.toString(queryFormat);
+    QString dtStr2 = dt2.toString(queryFormat);
+
+    qDebug()<<__LINE__<<dtStr1<<dtStr2<<endl;
+
+    //补充数据区域的行
+    editDataRow(dt1,dt2);
+    //填入日期时间点
+    filldateTime(dt1,dt2);
 
     if(!curdb.isOpen())
     {
@@ -237,7 +249,7 @@ void HistoryDataQuery::onQuery()
 
     QString queStr = "select HistoryTime,";
     QStringList queFactors;
-    queFactors<<"甲烷"<<"甲烷干值"<<"总烃"<<"总烃干值"<<"非甲烷总烃"<<"折算非甲烷总烃"
+    queFactors<<"甲烷"<<"甲烷干值"<<"总烃"<<"总烃干值"<<"非甲烷总烃"<<"非甲烷总烃干值"<<"非甲烷总烃排放量"
              <<"标况流量"<<"氧气含量"<<"烟气温度"<<"烟气湿度"<<"烟气压力";
     for(QString fac:queFactors)
     {
@@ -272,10 +284,273 @@ void HistoryDataQuery::onQuery()
     qDebug()<<__LINE__<<resMap<<endl;
     qDebug()<<__LINE__<<tableName<<endl;
     qDebug()<<__LINE__<<queryFormat<<endl;
+
+    fillinDatas();
+
 }
 
 void HistoryDataQuery::onExport()
 {
+
+}
+
+void HistoryDataQuery::fillinDatas()
+{
+    if(resMap.count()==0)
+    {
+        QMessageBox::warning(this,"提示","查无数据");
+        return;
+    }
+
+    QFont font;
+    font.setPointSize(12);
+    font.setBold(true);
+    font.setFamily("微软雅黑");
+    qDebug()<<__LINE__<<resMap.count()<<endl;
+    qDebug()<<__LINE__<<resMap["HistoryTime"]<<endl;
+
+    for(int i=0;i<resMap.count();++i)
+    {
+        QString historyTime = resMap["HistoryTime"][i];
+        for(int j=5;j<ui->mainTable->rowCount()-6;++j)
+        {
+            QString dt = ui->mainTable->item(j,0)->text();
+            qDebug()<<__LINE__<<historyTime<<dt<<endl;
+            if(dt.split("~").count()>1)
+            {
+
+                if(historyTime == dt.split("~")[0])
+                {
+                    qDebug()<<__LINE__<<j<<historyTime<<endl;
+                    QString ch4 = resMap["甲烷"][i];
+                    QString ch4_dry = resMap["甲烷干值"][i];
+                    QString nmch4 = resMap["非甲烷总烃"][i];
+                    QString nmch4_dry = resMap["非甲烷总烃干值"][i];
+//                    QString nmch4_emiss = resMap["非甲烷总烃排放量"][i];
+                    QString thc = resMap["总烃"][i];
+                    QString thc_dry = resMap["总烃干值"][i];
+                    QString flow = resMap["标况流量"][i];
+                    QString oxygen = resMap["氧气含量"][i];
+                    QString fluTmp = resMap["烟气温度"][i];
+                    QString fluHum = resMap["烟气湿度"][i];
+                    QString flupress = resMap["烟气压力"][i];
+
+
+
+                    QTableWidgetItem *item_ch4 = new QTableWidgetItem(ch4);
+                    item_ch4->setFont(font);
+                    item_ch4->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_ch4_dry = new QTableWidgetItem(ch4_dry);
+                    item_ch4_dry->setFont(font);
+                    item_ch4_dry->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_nmch4 = new QTableWidgetItem(nmch4);
+                    item_nmch4->setFont(font);
+                    item_nmch4->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_nmch4_dry = new QTableWidgetItem(nmch4_dry);
+                    item_nmch4_dry->setFont(font);
+                    item_nmch4_dry->setTextAlignment(Qt::AlignCenter);
+
+//                    QTableWidgetItem *item_nmch4_emiss = new QTableWidgetItem(nmch4_emiss);
+//                    item_nmch4_emiss->setFont(font);
+//                    item_nmch4_emiss->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_thc = new QTableWidgetItem(thc);
+                    item_thc->setFont(font);
+                    item_thc->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_thc_dry = new QTableWidgetItem(thc_dry);
+                    item_thc_dry->setFont(font);
+                    item_thc_dry->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_flow = new QTableWidgetItem(flow);
+                    item_flow->setFont(font);
+                    item_flow->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_oxygen = new QTableWidgetItem(oxygen);
+                    item_oxygen->setFont(font);
+                    item_oxygen->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_fluTmp = new QTableWidgetItem(fluTmp);
+                    item_fluTmp->setFont(font);
+                    item_fluTmp->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_fluHum = new QTableWidgetItem(fluHum);
+                    item_fluHum->setFont(font);
+                    item_fluHum->setTextAlignment(Qt::AlignCenter);
+
+                    QTableWidgetItem *item_flupress = new QTableWidgetItem(flupress);
+                    item_flupress->setFont(font);
+                    item_flupress->setTextAlignment(Qt::AlignCenter);
+
+                    ui->mainTable->setItem(j,1,item_ch4);
+                    ui->mainTable->setItem(j,2,item_ch4_dry);
+                    ui->mainTable->setItem(j,4,item_nmch4);
+                    ui->mainTable->setItem(j,5,item_nmch4_dry);
+//                    ui->mainTable->setItem(j,6,item_nmch4_emiss);
+                    ui->mainTable->setItem(j,7,item_thc);
+                    ui->mainTable->setItem(j,8,item_thc_dry);
+                    ui->mainTable->setItem(j,10,item_flow);
+                    ui->mainTable->setItem(j,11,item_oxygen);
+                    ui->mainTable->setItem(j,12,item_fluTmp);
+                    ui->mainTable->setItem(j,13,item_fluHum);
+                    ui->mainTable->setItem(j,14,item_flupress);
+
+
+
+                }
+            }
+        }
+    }
+}
+
+void HistoryDataQuery::editDataRow(QDateTime dt_start,QDateTime dt_end)
+{
+
+    qint64 delta_dt = dt_start.secsTo(dt_end);
+    qDebug()<<__LINE__<<dt_start<<dt_end<<delta_dt<<endl;
+    QString curText = ui->queryDTType->currentText();
+    qint64 dataRows;
+    if(curText == "分钟查询")
+    {
+        dataRows = delta_dt/60;
+    }
+    else if(curText == "小时查询")
+    {
+        dataRows = delta_dt/3600;
+    }
+    else if(curText == "日查询")
+    {
+        QList<int> big_month={1,3,5,7,8,10,12};
+        QList<int> small_mouth = {4,6,9,11};
+        int year = dt_start.date().year();
+        int month = dt_start.date().month();
+        bool isSimYear = (year%4==0)&&(year%100!=0)||(year%400==0);
+
+        if(big_month.contains(month))
+        {
+            dataRows = 31;
+        }
+        else if(small_mouth.contains(month))
+        {
+            dataRows = 30;
+        }
+        else if(month == 2)
+        {
+            if(isSimYear)
+            {
+                dataRows = 29;
+            }
+            else
+            {
+                dataRows = 28;
+            }
+        }
+    }
+    else if(curText == "月查询")
+    {
+        dataRows = 12;
+    }
+    else
+    {
+        dataRows = 0;
+    }
+
+    ui->mainTable->setRowCount(0);
+    ui->mainTable->setColumnCount(0);
+
+    if(dataRows>0)
+    {
+        buildDefaultTable(11+dataRows,16);
+        on_comboBox_currentChanged(curText);
+        modifyTable();
+
+    }
+
+}
+
+void HistoryDataQuery::filldateTime(QDateTime dt_start,QDateTime dt_end)
+{
+
+    QString curText = ui->queryDTType->currentText();
+    QString dtformat,dtformat1;
+    if(curText == "分钟查询")
+    {
+        dtformat = "yyyy年MM月dd日 HH时";
+        dtformat1 = "yyyy-MM-dd HH:mm";
+    }
+    else if(curText == "小时查询")
+    {
+        dtformat = "yyyy年MM月dd日";
+        dtformat1 = "yyyy-MM-dd HH";
+    }
+    else if(curText == "日查询")
+    {
+        dtformat = "yyyy年MM月";
+        dtformat1 = "yyyy-MM-dd";
+    }
+    else if(curText == "月查询")
+    {
+        dtformat = "yyyy年";
+        dtformat1 = "yyyy-MM";
+    }
+    else
+    {
+        dtformat = "yyyy年MM月dd日 HH时";
+        dtformat1 = "yyyy-MM-dd HH:mm";
+    }
+
+    QString str_start = dt_start.toString(dtformat);
+    QString str_end = dt_end.toString(dtformat);
+
+    QFont font;
+    font.setPointSize(12);
+    font.setBold(true);
+    font.setFamily("微软雅黑");
+
+
+    QString checkTimeRange = str_start+"~"+str_end;
+    QTableWidgetItem *itemCheckTimeRange = new QTableWidgetItem(checkTimeRange);
+    itemCheckTimeRange->setTextAlignment(Qt::AlignCenter);
+    itemCheckTimeRange->setFont(font);
+    ui->mainTable->setItem(2,11,itemCheckTimeRange);
+
+    int datarows = ui->mainTable->rowCount()-11;
+    int baserow = 5;
+
+    for(int k=0;k<datarows;++k)
+    {
+        QString dt_k;
+        if(curText == "分钟查询")
+        {
+            dt_k = dt_start.addSecs(k*60).toString(dtformat1)+"~"+dt_start.addSecs((k+1)*60).toString(dtformat1);
+        }
+        else if(curText == "小时查询")
+        {
+            dt_k = dt_start.addSecs(k*3600).toString(dtformat1)+"~"+dt_start.addSecs((k+1)*3600).toString(dtformat1);
+        }
+        else if(curText == "日查询")
+        {
+            dt_k = QString::number(k+1)+"日~";
+        }
+        else if(curText == "月查询")
+        {
+            dt_k = QString::number(k+1)+"月~";
+        }
+
+        QTableWidgetItem *itemDT = new QTableWidgetItem(dt_k);
+        itemDT->setTextAlignment(Qt::AlignCenter);
+        itemDT->setFont(font);
+        ui->mainTable->setColumnWidth(0,220);
+        ui->mainTable->setRowHeight(baserow+k,84);
+        ui->mainTable->setItem(baserow+k,0,itemDT);
+
+
+    }
+
+
 
 }
 
