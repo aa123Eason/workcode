@@ -16,6 +16,7 @@ public:
     ~FactorInfo();
 
     QString m_name;
+    QString m_code;
     QString m_value;
     QString m_state;
     QString m_unit;

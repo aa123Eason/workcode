@@ -11,6 +11,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QByteArray>
+#include "common.h"
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QMessageBox>
+
+
 
 namespace Ui {
 class ParamSet;
@@ -46,6 +52,9 @@ public:
 
     void loadfactorsInfo();
 
+signals:
+    void sendUpLoadType(int);
+
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_10_clicked();
@@ -53,6 +62,9 @@ private slots:
     void on_pushButton_8_clicked();
     void on_pushButton_11_clicked();
     void on_pushButton_12_clicked();
+    void onReceiveUpLoadType(int);
+
+
 
 private:
     Ui::ParamSet *ui;

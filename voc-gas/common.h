@@ -22,12 +22,12 @@ extern string g_StrQN;
 #include"QsLog/QsLogDest.h"
 using namespace QsLogging;
 
-#define FACTORS_SETTING_FILE "D:/voc-factors.json"
-#define COMM_SETTING_FILE "D:/voc-comm.json"
-#define SYSTEM_SETTING_FILE "D:/voc-system.json"
-#define FAN_SETTING_FILE "D:/voc-fan.json"
-#define USERS_SETTING_FILE "D:/voc-users.json"
-#define LOG_PATH "D:/voc-log/"
+#define FACTORS_SETTING_FILE "voc-factors.json"
+#define COMM_SETTING_FILE "voc-comm.json"
+#define SYSTEM_SETTING_FILE "voc-system.json"
+#define FAN_SETTING_FILE "voc-fan.json"
+#define USERS_SETTING_FILE "voc-users.json"
+#define LOG_PATH "voc-log/"
 
 #define FACTORS "factors"
 #define UNIT "Unit"
@@ -40,6 +40,7 @@ using namespace QsLogging;
 #define USED "Used"
 #define INDEX "Index"
 #define VALUE "Value"
+#define STATE "State
 
 #define PORTSUP "ports-up"
 #define PORTSDOWN "ports-down"
@@ -84,6 +85,11 @@ using namespace QsLogging;
 #define FAN_SET "fan_set"
 #define FAN_LAST "fan_last"
 
-
+enum UPLOAD_TYPE
+{
+    UPLOAD_WET = 0,
+    UPLOAD_DRY,
+    UPLOAD_ALL
+};
 
 #endif // COMMON_H

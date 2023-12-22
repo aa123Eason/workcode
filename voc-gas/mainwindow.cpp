@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
 
     initLogger();   //初始化日志
 
@@ -73,7 +74,7 @@ MainWindow::~MainWindow()
     {
         m_pSerialCom1->close();
         delete m_pSerialCom1;
-        m_pSerialCom1 = nullptr;
+//        m_pSerialCom1 = nullptr;
     }
 
     /* 打断线程再退出 */
@@ -88,7 +89,7 @@ MainWindow::~MainWindow()
     {
         m_pSerialCom2->close();
         delete m_pSerialCom2;
-        m_pSerialCom2 = nullptr;
+//        m_pSerialCom2 = nullptr;
     }
 
     /* 打断线程再退出 */
@@ -103,7 +104,7 @@ MainWindow::~MainWindow()
     {
         m_pSerialCom3->close();
         delete m_pSerialCom3;
-        m_pSerialCom3 = nullptr;
+//        m_pSerialCom3 = nullptr;
     }
 
     /* 打断线程再退出 */
@@ -118,11 +119,11 @@ MainWindow::~MainWindow()
     {
         m_pSerialCom4->close();
         delete m_pSerialCom4;
-        m_pSerialCom4 = nullptr;
+//        m_pSerialCom4 = nullptr;
     }
 
-    if(db.isOpen())
-        db.close();
+
+     db.close();
 }
 
 void MainWindow::timerEvent(QTimerEvent * ev)
@@ -282,6 +283,27 @@ void SerialWorker::doWork1() {
     }
 }
 
+void SerialWorker::writeinLog(QString str)
+{
+    QFile file(QApplication::applicationDirPath()+"/voclog.txt");
+
+    if(!file.exists())
+    {
+        QDir dir;
+        dir.mkdir(QApplication::applicationDirPath()+"/voclog.txt");
+    }
+
+    QString logStr = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
+    logStr += str +"\r\n";
+
+    QByteArray bytArr;
+    bytArr.append(logStr);
+
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    file.write(bytArr);
+    file.close();
+}
+
 void SerialWorker::skybluework()
 {
     if(serial->isOpen())
@@ -307,6 +329,7 @@ void SerialWorker::skybluework()
         qDebug() << "ReadInputRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
+        writeinLog("[天蓝:S]"+QString2Hex(pTx));
 
         char data[100];
         int pRetVal = serial->readData(data,13);
@@ -317,6 +340,7 @@ void SerialWorker::skybluework()
             {
                 strTmp +=  QString().sprintf("%02x", (unsigned char)data[i]);
             }
+            writeinLog("[天蓝:R]"+QString2Hex(strTmp));
 
             if(crc16.crc_Checking(strTmp))
             {
@@ -329,20 +353,20 @@ void SerialWorker::skybluework()
                 if(pFunc.toHex().toInt() == 0x04)
                 {
                     QByteArray arrTH,arrCH4,arrNMTH; //默认 ABCD
-                    arrTH[0] = buf.at(4);
-                    arrTH[1] = buf.at(3);
-                    arrTH[2] = buf.at(6);
-                    arrTH[3] = buf.at(5);
+                    arrTH[0] = buf.at(6);
+                    arrTH[1] = buf.at(5);
+                    arrTH[2] = buf.at(4);
+                    arrTH[3] = buf.at(3);
 
-                    arrCH4[0] = buf.at(8);
-                    arrCH4[1] = buf.at(7);
-                    arrCH4[2] = buf.at(10);
-                    arrCH4[3] = buf.at(9);
+                    arrCH4[0] = buf.at(10);
+                    arrCH4[1] = buf.at(9);
+                    arrCH4[2] = buf.at(8);
+                    arrCH4[3] = buf.at(7);
 
-                    arrNMTH[0] = buf.at(12);
-                    arrNMTH[1] = buf.at(11);
-                    arrNMTH[2] = buf.at(14);
-                    arrNMTH[3] = buf.at(13);
+                    arrNMTH[0] = buf.at(14);
+                    arrNMTH[1] = buf.at(13);
+                    arrNMTH[2] = buf.at(12);
+                    arrNMTH[3] = buf.at(11);
 
                     float accTH;
                     memcpy(&accTH, arrTH.data(), 4);
@@ -367,7 +391,7 @@ void SerialWorker::skybluework()
                         map_Factors["总烃"]->m_value = pRealDataTH;
                         if(map_Factors.contains("总烃干值")&&map_Factors.contains("烟气湿度"))
                         {
-                            map_Factors["总烃干值"]->m_value = map_Factors["总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                            map_Factors["总烃干值"]->m_value = QString::number(map_Factors["总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble()),'f',2);
                         }
                     }
 
@@ -376,7 +400,7 @@ void SerialWorker::skybluework()
                         map_Factors["甲烷"]->m_value = pRealDataCH4;
                         if(map_Factors.contains("甲烷干值")&&map_Factors.contains("烟气湿度"))
                         {
-                            map_Factors["甲烷干值"]->m_value = map_Factors["甲烷"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                            map_Factors["甲烷干值"]->m_value = QString::number(map_Factors["甲烷"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble()),'f',2);
                         }
                     }
 
@@ -385,7 +409,7 @@ void SerialWorker::skybluework()
                         map_Factors["非甲烷总烃"]->m_value = pRealDataNMTH;
                         if(map_Factors.contains("非甲烷总烃干值")&&map_Factors.contains("烟气湿度"))
                         {
-                            map_Factors["非甲烷总烃干值"]->m_value = map_Factors["非甲烷总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble());
+                            map_Factors["非甲烷总烃干值"]->m_value = QString::number(map_Factors["非甲烷总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble()),'f',2);
                         }
                     }
 
@@ -398,6 +422,14 @@ void SerialWorker::skybluework()
 void SerialWorker::lunanwork()
 {
 
+}
+
+void SerialWorker::setFacState(QString name,QString stateNote)
+{
+    if(map_Factors.contains(name))
+    {
+        map_Factors[name]->m_state = stateNote;
+    }
 }
 
 void SerialWorker::VocsHandler() {
@@ -439,6 +471,7 @@ void SerialWorker::VocsHandler() {
         qDebug() << "==>>> ReadHoldingRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
+        writeinLog("[VOCs:S]"+QString2Hex(pTx));
 
         char data[37];
         int pRetVal = serial->readData(data,37);
@@ -455,11 +488,25 @@ void SerialWorker::VocsHandler() {
                 qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
                 // parse
                 QByteArray buf = QString2Hex(strTmp);
+                writeinLog("[VOCs:R]"+QString2Hex(strTmp));
 
                 QByteArray pFunc;
                 pFunc.append(buf.at(1));
                 if(pFunc.toHex().toInt() == 0x04)
                 {
+                    setFacState("烟气温度","N");
+                    setFacState("烟气压力","N");
+                    setFacState("烟气流速","N");
+                    setFacState("烟尘湿值","N");
+                    setFacState("氧气含量","N");
+                    setFacState("硫化氢","N");
+                    setFacState("工况流量","N");
+                    setFacState("烟尘干值","N");
+                    setFacState("烟尘排放量","N");
+                    setFacState("氧气含量干值","N");
+                    setFacState("硫化氢干值","N");
+
+
                     int16_t parMa[7] = {0};
                     qDebug() << "000001";
 
@@ -540,7 +587,49 @@ void SerialWorker::VocsHandler() {
 
 
                 }
+                else
+                {
+                    setFacState("烟气温度","D");
+                    setFacState("烟气压力","D");
+                    setFacState("烟气流速","D");
+                    setFacState("烟尘湿值","D");
+                    setFacState("氧气含量","D");
+                    setFacState("硫化氢","D");
+                    setFacState("工况流量","D");
+                    setFacState("烟尘干值","D");
+                    setFacState("烟尘排放量","D");
+                    setFacState("氧气含量干值","D");
+                    setFacState("硫化氢干值","D");
+                }
             }
+            else
+            {
+                setFacState("烟气温度","D");
+                setFacState("烟气压力","D");
+                setFacState("烟气流速","D");
+                setFacState("烟尘湿值","D");
+                setFacState("氧气含量","D");
+                setFacState("硫化氢","D");
+                setFacState("工况流量","D");
+                setFacState("烟尘干值","D");
+                setFacState("烟尘排放量","D");
+                setFacState("氧气含量干值","D");
+                setFacState("硫化氢干值","D");
+            }
+        }
+        else
+        {
+            setFacState("烟气温度","T");
+            setFacState("烟气压力","T");
+            setFacState("烟气流速","T");
+            setFacState("烟尘湿值","T");
+            setFacState("氧气含量","T");
+            setFacState("硫化氢","T");
+            setFacState("工况流量","T");
+            setFacState("烟尘干值","T");
+            setFacState("烟尘排放量","T");
+            setFacState("氧气含量干值","T");
+            setFacState("硫化氢干值","T");
         }
     }
 }
@@ -601,42 +690,108 @@ void SerialWorker::doWork2() {
     }
 }
 
+QString MainWindow::queryFacCode(QString facName)
+{
+    QString facCode;
+    QFile file(QApplication::applicationDirPath()+"/facinfo.json");
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        facCode = "";
+    }
+
+    QByteArray bytArr;
+    bytArr.append(file.readAll());
+    file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(bytArr);
+    QJsonObject jObj = jDoc.object();
+
+    QJsonObject::iterator it = jObj.begin();
+    while(it != jObj.end())
+    {
+        QJsonObject subObj = it.value().toObject();
+        QString refName = subObj.value("name").toString();
+        if(facName == refName)
+        {
+            facCode = subObj.value("code").toString();
+            break;
+        }
+
+        it++;
+    }
+
+    return facCode;
+
+}
+
 void SerialWorker::UploadHandler1()
 {
 
-//            HJ212_PARAM_SET hj212_param;
-//            HJ212_DATA_PARAM hj212_data_param;
+    HJ212_PARAM_SET hj212_param;
+    HJ212_DATA_PARAM hj212_data_param;
 
-//            hj212_data_param.DataTime = g_DateTime;
-//            QString pRtnData;
+    hj212_data_param.DataTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm").toStdString();
+    QString pRtnData;
 
-//                QMap<QString,CFactor *>::iterator itFa;
+    QMap<QString,FactorInfo *>::iterator itFa;
 
-//                int n=0;
-//                for (itFa = mapFactorList.begin(); itFa != mapFactorList.end(); itFa++) {
-//                    n++;
-//                    CFactor *pFactor = itFa.value();
+    int n=0;
+    for (itFa = map_Factors.begin(); itFa != map_Factors.end(); itFa++) {
+        n++;
+        FactorInfo *pFactor = itFa.value();
+        pFactor->printFactor();
+        if(pFactor)
+        {
 
-//                    if(pFactor)
-//                    {
-//                        QString prop = pFactor->getProperty();
-//                        if(prop.toUInt() == 0)
-//                        {
-//                            QString pFactorCode =  pFactor->getFactorCode();
-//                            // qDebug() << "pFactorCode===>>" << pFactorCode;
+            QString pFactorCode =  pFactor->m_code;
+            // qDebug() << "pFactorCode===>>" << pFactorCode;
+            if(!pFactorCode.isEmpty())
+            {
+                if(isUpLoadWet)
+                {
+                    if(!pFactorCode.contains("dry"))
+                    {
+                        pRtnData += pFactorCode+HJ212_FIELD_NAME_DATA_RTD + pFactor->m_value+"," + pFactorCode+HJ212_FIELD_NAME_DATA_FLAG + HJ212_DATA_FLAG_RUN;
+                        pRtnData += ";";
+                    }
+                }
 
-//                            pRtnData += pFactorCode+HJ212_FIELD_NAME_DATA_RTD + pFactor->getFactorData()+"," + pFactorCode+HJ212_FIELD_NAME_DATA_FLAG + HJ212_DATA_FLAG_RUN;
+                if(isUpLoadDry)
+                {
+                    if(pFactorCode.contains("dry"))
+                    {
+                        pRtnData += pFactorCode+HJ212_FIELD_NAME_DATA_RTD + pFactor->m_value+"," + pFactorCode+HJ212_FIELD_NAME_DATA_FLAG + HJ212_DATA_FLAG_RUN;
+                        pRtnData += ";";
+                    }
+                }
 
-                            // pRtnData += ";"; *****************
-//                        }
-//                    }
-//                }
+            }
 
-//            hj212_data_param.Rtd = pRtnData.toStdString();
+        }
+    }
 
-//            hj212_param = hj212_set_params(HJ212_DEF_VAL_ST, HJ212_CN_RTD_DATA, HJ212_FLAG_ACK_EN, &hj212_data_param, Passwordlist[i].toStdString(), m_MN.toStdString());
-//            string rep = hj212_frame_assemble(&hj212_param);
-//            this->sendMessages(SocketList[i], QString::fromStdString(rep));
+    if(pRtnData.isEmpty())
+        return;
+    qDebug()<<__LINE__<<pRtnData<<endl;
+
+    hj212_data_param.Rtd = pRtnData.toStdString();
+
+    hj212_param = hj212_set_params(HJ212_DEF_VAL_ST, HJ212_CN_RTD_DATA, HJ212_FLAG_ACK_EN, &hj212_data_param, "12345", "LC2023RK100033");
+    string rep = hj212_frame_assemble(&hj212_param);
+    QString msg = QString::fromStdString(rep);
+    msg.remove("\r\n");
+    qDebug()<<__LINE__<<"msg==>"<<msg<<endl;
+    if(serial!=nullptr)
+    {
+        while(!serial->waitForBytesWritten(3000))
+        {
+            serial->flush();
+            QThread::sleep(3);
+        }
+
+        serial->write(QString2Hex(msg));
+    }
+
 
 }
 
@@ -656,7 +811,8 @@ void SerialWorker::doWork3() {
         }
 
         qDebug() << "serial thread...HJ212 2017";
-
+        //读上传状态
+        getuploadstate();
         UploadHandler1();
 
         QThread::sleep(2);
@@ -743,7 +899,7 @@ void MainWindow::InitFactorMaps()
         FactorInfo *pItemInfo = new FactorInfo();
         pItemInfo->m_name = pItemName;
         pItemInfo->m_value = "0.00";
-        pItemInfo->m_state = "D";
+//        pItemInfo->m_state = "D";
         pItemInfo->m_unit = pUnit;
         pItemInfo->m_used = pUsed;
         pItemInfo->m_display = pDisplay;
@@ -782,6 +938,54 @@ void MainWindow::InitFactorMaps()
         historyDateQuery->show();
     });
 
+    //查出所有显示因子的编码
+    QStringList specialNameList;
+    specialNameList<<"总烃干值"<<"甲烷干值"<<"非甲烷总烃干值"<<"氧气含量干值"<<"硫化氢干值"
+                   <<"折算非甲烷总烃干值"<<"非甲烷总烃排放量"<<"烟尘干值"<<"烟尘湿值"<<"烟尘排放量";
+    QMap<QString,FactorInfo*>::iterator it_fac = map_Factors.begin();
+    while(it_fac != map_Factors.end())
+    {
+
+        if(it_fac.value()!=nullptr)
+        {
+            QString facCode = queryFacCode(it_fac.key());
+            if(specialNameList.contains(it_fac.key()))
+            {
+                if(it_fac.key().contains("干值")&&!it_fac.key().contains("烟尘"))
+                {
+                    QString oriName = it_fac.key().split("干值")[0];
+                    if(!queryFacCode(oriName).isEmpty())
+                        facCode = queryFacCode(oriName)+"_dry";
+                    else
+                        facCode = oriName+"_dry";
+                }
+                else if(it_fac.key()=="非甲烷总烃排放量")
+                {
+                    QString oriName = it_fac.key().split("排放量")[0];
+                    facCode = queryFacCode("非甲烷总烃")+"_emiss";
+                }
+                else
+                {
+                    facCode = it_fac.key();
+                }
+            }
+            else
+            {
+                facCode = queryFacCode(it_fac.key());
+            }
+
+            if(facCode.isEmpty())
+                facCode = it_fac.key();
+
+            if(it_fac.value()->m_code.isEmpty())
+            {
+                it_fac.value()->m_code = facCode;
+            }
+        }
+
+        it_fac++;
+    }
+
 
 
      qDebug() << "map_Factors==>" << map_Factors;
@@ -806,7 +1010,7 @@ void MainWindow::InitFactorMaps()
 
 void MainWindow::InitSysSetting()
 {
-    QFile file(SYSTEM_SETTING_FILE);    // FIXME: 只读一次 检测文件修改更新
+    QFile file(QApplication::applicationDirPath()+"/"+SYSTEM_SETTING_FILE);    // FIXME: 只读一次 检测文件修改更新
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -979,6 +1183,8 @@ void MainWindow::InitComm()
                     // 将串口和子类一同移入子线程
                     serialWorker3->moveToThread(&serialThread_3);
 
+
+
                     // 2.连接信号和槽
                     connect(&serialThread_3, &QThread::finished,
                             serialWorker3, &QObject::deleteLater);           // 线程结束，自动删除对象
@@ -1053,6 +1259,23 @@ void MainWindow::InitComm()
     }
 }
 
+void SerialWorker::getuploadstate()
+{
+    QFile file(QApplication::applicationDirPath()+"/uploadstate.json");
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray bytArr;
+    bytArr.append(file.readAll());
+    QJsonDocument jDoc = QJsonDocument::fromJson(bytArr);
+    QJsonObject jObj = jDoc.object();
+    isUpLoadDry = jObj.value("upload_Dry").toBool();
+    isUpLoadWet = jObj.value("upload_Wet").toBool();
+    file.close();
+}
+
 bool MainWindow::OpenCom(Win_QextSerialPort *m_pSerialCom,QString pItemName,QString pItemBaud,QString pItemDataBit,QString pItemStopBit,QString pItemParity)
 {
 
@@ -1109,11 +1332,11 @@ void MainWindow::printFactors(QMap<QString,FactorInfo *> map)
 
 void MainWindow::Setting_Init()
 {
-    Setting_Check(FACTORS_SETTING_FILE);
-    Setting_Check(COMM_SETTING_FILE);
-    Setting_Check(SYSTEM_SETTING_FILE);
-    Setting_Check(FAN_SETTING_FILE);
-    Setting_Check(USERS_SETTING_FILE);
+    Setting_Check(QApplication::applicationDirPath()+"/"+FACTORS_SETTING_FILE);
+    Setting_Check(QApplication::applicationDirPath()+"/"+COMM_SETTING_FILE);
+    Setting_Check(QApplication::applicationDirPath()+"/"+SYSTEM_SETTING_FILE);
+    Setting_Check(QApplication::applicationDirPath()+"/"+FAN_SETTING_FILE);
+    Setting_Check(QApplication::applicationDirPath()+"/"+USERS_SETTING_FILE);
 }
 
 void MainWindow::Setting_Check(QString filename)
@@ -1169,6 +1392,8 @@ void MainWindow::Widget_Init()
 
     ui->label_User->setAttribute(Qt::WA_Hover,true);
     ui->label_User->installEventFilter(this);
+
+    connect(ui->pushButton_3,&QPushButton::clicked,this,&MainWindow::on_pushButton_3_clicked);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -1340,6 +1565,22 @@ void MainWindow::setTableContents()
         pItem4 = new QTableWidgetItem(pItemInfo->m_state);
         pItem4->setFlags(Qt::ItemIsEditable);
         pItem4->setTextAlignment(Qt::AlignCenter);
+        if(pItemInfo->m_state == "N")
+        {
+            pItem4->setTextColor(Qt::darkGreen);
+        }
+        else if(pItemInfo->m_state == "D")
+        {
+            pItem4->setTextColor(Qt::darkRed);
+        }
+        else if(pItemInfo->m_state == "C")
+        {
+            pItem4->setTextColor(Qt::magenta);
+        }
+        else if(pItemInfo->m_state == "T")
+        {
+            pItem4->setTextColor(Qt::cyan);
+        }
         pItem4->setFont(font);
         ui->tableWidget->setItem(index, 3, pItem4);
 

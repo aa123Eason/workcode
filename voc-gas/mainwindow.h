@@ -18,6 +18,7 @@
 #include <QStringList>
 #include <QDateTime>
 #include <QToolTip>
+#include <QDir>
 
 #include "msgbox.h"
 #include "Crc16Class.h"
@@ -29,6 +30,8 @@
 #include <QBrush>
 #include "historychartview.h"
 #include "historydataquery.h"
+#include <QJsonDocument>
+#include <QJsonObject>
 
 
 
@@ -81,6 +84,10 @@ public:
     void skybluework();
     void lunanwork();
     // void UploadHandler2();
+    void getuploadstate();
+    void writeinLog(QString);
+    void setFacState(QString name,QString stateNote);
+
 
 signals:
     /* 工人工作函数状态的信号 */
@@ -97,6 +104,9 @@ private:
     QMutex lock;
     /* 标志位 */
     bool isCanRun;
+
+    bool isUpLoadWet = true;
+    bool isUpLoadDry = true;
 
 };
 
@@ -131,6 +141,8 @@ public:
     void chartinit();
     void connectMarkers();
     void disconnectMarkers();
+
+    QString queryFacCode(QString facName);
 
 
 
@@ -181,5 +193,7 @@ private:
     QSqlDatabase db;
     QStringList seqlist,nameseqlist;
     QList<FactorInfo *> facseqlist;
+
+
 };
 #endif // MAINWINDOW_H

@@ -12,6 +12,7 @@ FactorInfo::~FactorInfo()
 void FactorInfo::printFactor()
 {
     qDebug()<<__LINE__<<"Name"<<this->m_name<<endl;
+    qDebug()<<__LINE__<<"Code"<<this->m_code<<endl;
     qDebug()<<__LINE__<<"Unit"<<this->m_unit<<endl;
     qDebug()<<__LINE__<<"Display"<<this->m_display<<endl;
     qDebug()<<__LINE__<<"Sort"<<this->m_Alias<<endl;

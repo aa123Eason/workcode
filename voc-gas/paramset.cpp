@@ -32,6 +32,25 @@ ParamSet::ParamSet(QWidget *parent) :
     Fanchui_Display();
 
     ui->dateEdit->setDate(QDate::currentDate());
+
+    connect(this,&ParamSet::sendUpLoadType,this,&ParamSet::onReceiveUpLoadType);
+
+    connect(ui->uploadwet,&QPushButton::clicked,this,[=]()
+    {
+        qDebug()<<__LINE__<<"只上传湿值"<<endl;
+        emit sendUpLoadType(UPLOAD_WET);
+    });
+    connect(ui->uploaddry,&QPushButton::clicked,this,[=]()
+    {
+        qDebug()<<__LINE__<<"只上传干值"<<endl;
+        emit sendUpLoadType(UPLOAD_DRY);
+    });
+    connect(ui->uploadall,&QPushButton::clicked,this,[=]()
+    {
+        qDebug()<<__LINE__<<"上传所有值"<<endl;
+        emit sendUpLoadType(UPLOAD_ALL);
+    });
+
 }
 
 ParamSet::~ParamSet()
@@ -43,7 +62,7 @@ ParamSet::~ParamSet()
 void ParamSet::System_Display()
 {
 
-    QString dir_file = SYSTEM_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+SYSTEM_SETTING_FILE;
     QFile file(dir_file);
 
     if(file.exists())
@@ -1183,7 +1202,7 @@ void ParamSet::on_pushButton_10_clicked()
 
 bool ParamSet::Save_CommSet()
 {
-    QFile file(COMM_SETTING_FILE);
+    QFile file(QApplication::applicationDirPath()+"/voc-comm.json");
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -1369,7 +1388,7 @@ void ParamSet::on_pushButton_7_clicked()
 
 bool ParamSet::Save_SysSet()
 {
-    QFile file(SYSTEM_SETTING_FILE);
+    QFile file(QApplication::applicationDirPath()+"/"+SYSTEM_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -1492,7 +1511,7 @@ void ParamSet::on_pushButton_8_clicked()
 
 bool ParamSet::Save_FanSet()
 {
-    QFile file(FAN_SETTING_FILE);
+    QFile file(QApplication::applicationDirPath()+"/"+FAN_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -1553,7 +1572,7 @@ void ParamSet::on_pushButton_11_clicked()
 
 bool ParamSet::Save_UserSet()
 {
-    QFile file(USERS_SETTING_FILE);
+    QFile file(QApplication::applicationDirPath()+"/"+USERS_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -1735,3 +1754,48 @@ void ParamSet::on_pushButton_12_clicked()
     }
 }
 
+void ParamSet::onReceiveUpLoadType(int uploadtype)
+{
+    QString path = QApplication::applicationDirPath()+"/uploadstate.json";
+    QFile file(path);
+    QJsonObject jObj;
+    switch(uploadtype)
+    {
+
+    case UPLOAD_WET:
+        jObj.insert("upload_Wet",true);
+        jObj.insert("upload_Dry",false);
+        break;
+    case UPLOAD_DRY:
+        jObj.insert("upload_Wet",false);
+        jObj.insert("upload_Dry",true);
+        break;
+    case UPLOAD_ALL:
+    default:
+        jObj.insert("upload_Wet",true);
+        jObj.insert("upload_Dry",true);
+        break;
+    }
+
+    QJsonDocument jDoc;
+    jDoc.setObject(jObj);
+
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file.write(jDoc.toJson());
+    file.close();
+
+    switch(uploadtype)
+    {
+
+    case UPLOAD_WET:
+        QMessageBox::about(this,"提示","只上传湿值设置成功");
+        break;
+    case UPLOAD_DRY:
+        QMessageBox::about(this,"提示","只上传干值设置成功");
+        break;
+    case UPLOAD_ALL:
+    default:
+        QMessageBox::about(this,"提示","上传所有值设置成功");
+        break;
+    }
+}
