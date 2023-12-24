@@ -89,9 +89,11 @@ public:
     void setFacState(QString name,QString stateNote);
 
 
+
 signals:
     /* 工人工作函数状态的信号 */
     void resultReady(const QString &result);
+    void sendFluParams(QMap<QString,QString> &paramsMap);
 
 public slots:
     void doWork1();
@@ -107,6 +109,7 @@ private:
 
     bool isUpLoadWet = true;
     bool isUpLoadDry = true;
+    QMap<QString,QString> flusmap;
 
 };
 
@@ -154,6 +157,7 @@ private slots:
     void on_pushButton_Set_clicked();
     void handleResults(const QString & results);
     void handleMarkersClicked();
+    void onReceiveFluParamsMap(QMap<QString,QString>&);
 
 signals:
     /* 工人开始工作（做些耗时的操作 ） */

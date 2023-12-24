@@ -51,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent)
     setTableHeader();
     setTableContents();
 
+
+
     id1 = startTimer(1000);
 }
 
@@ -124,6 +126,7 @@ MainWindow::~MainWindow()
 
 
      db.close();
+     this->deleteLater();
 }
 
 void MainWindow::timerEvent(QTimerEvent * ev)
@@ -131,6 +134,39 @@ void MainWindow::timerEvent(QTimerEvent * ev)
     if(ev->timerId() == id1)
     {
         setTableContents();
+    }
+}
+
+void MainWindow::onReceiveFluParamsMap(QMap<QString,QString> &map)
+{
+    if(map.contains("烟气温度"))
+    {
+        ui->label_12->setText(map["烟气温度"]);
+    }
+
+    if(map.contains("烟气流速"))
+    {
+        ui->label_14->setText(map["烟气流速"]);
+    }
+
+    if(map.contains("烟气压力"))
+    {
+        ui->label_13->setText(map["烟气压力"]);
+    }
+
+    if(map.contains("烟气湿度"))
+    {
+        ui->label_17->setText(map["烟气湿度"]);
+    }
+
+    if(map.contains("氧气含量"))
+    {
+        ui->label_15->setText(map["氧气含量"]);
+    }
+
+    if(map.contains("标况流量"))
+    {
+        ui->label_20->setText(map["标况流量"]);
     }
 }
 
@@ -352,6 +388,16 @@ void SerialWorker::skybluework()
                 pFunc.append(buf.at(1));
                 if(pFunc.toHex().toInt() == 0x04)
                 {
+                    setFacState("甲烷","N");
+                    setFacState("甲烷干值","N");
+                    setFacState("总烃","N");
+                    setFacState("总烃干值","N");
+                    setFacState("非甲烷总烃","N");
+                    setFacState("非甲烷总烃干值","N");
+                    setFacState("折算非甲烷总烃","N");
+                    setFacState("折算非甲烷总烃干值","N");
+                    setFacState("非甲烷总烃排放量","N");
+
                     QByteArray arrTH,arrCH4,arrNMTH; //默认 ABCD
                     arrTH[0] = buf.at(6);
                     arrTH[1] = buf.at(5);
@@ -404,17 +450,72 @@ void SerialWorker::skybluework()
                         }
                     }
 
+                    //if(map_Factors.contains("烟尘排放量")&&map_Factors.contains("烟尘湿值")&&map_Factors.contains("标况流量"))
+//                    map_Factors["烟尘排放量"]->m_value = QString::number( map_Factors["烟尘湿值"]->m_value.toDouble() * map_Factors["标况流量"]->m_value.toDouble() / 1000000,'f',2);
+
                     if(map_Factors.contains("非甲烷总烃"))
                     {
                         map_Factors["非甲烷总烃"]->m_value = pRealDataNMTH;
                         if(map_Factors.contains("非甲烷总烃干值")&&map_Factors.contains("烟气湿度"))
                         {
                             map_Factors["非甲烷总烃干值"]->m_value = QString::number(map_Factors["非甲烷总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble()),'f',2);
+                            if(map_Factors.contains("折算非甲烷总烃")&&map_Factors.contains("非甲烷总烃干值"))
+                            {
+                                map_Factors["折算非甲烷总烃"]->m_value = map_Factors["非甲烷总烃干值"]->m_value;
+                                if(map_Factors.contains("折算非甲烷总烃干值"))
+                                {
+                                    map_Factors["折算非甲烷总烃干值"]->m_value = QString::number(map_Factors["折算非甲烷总烃"]->m_value.toDouble()/(1-map_Factors["烟气湿度"]->m_value.toDouble()),'f',2);
+                                }
+                            }
+
                         }
+
+                        if(map_Factors.contains("非甲烷总烃排放量")&&map_Factors.contains("标况流量"))
+                        {
+                                map_Factors["非甲烷总烃排放量"]->m_value = QString::number( map_Factors["非甲烷总烃"]->m_value.toDouble() * map_Factors["标况流量"]->m_value.toDouble() / 1000000,'f',2);
+                        }
+
+
                     }
 
                 }
+                else
+                {
+                    setFacState("甲烷","D");
+                    setFacState("甲烷干值","D");
+                    setFacState("总烃","D");
+                    setFacState("总烃干值","D");
+                    setFacState("非甲烷总烃","D");
+                    setFacState("非甲烷总烃干值","D");
+                    setFacState("折算非甲烷总烃","D");
+                    setFacState("折算非甲烷总烃干值","D");
+                    setFacState("非甲烷总烃排放量","D");
+                }
             }
+            else
+            {
+                setFacState("甲烷","T");
+                setFacState("甲烷干值","T");
+                setFacState("总烃","T");
+                setFacState("总烃干值","T");
+                setFacState("非甲烷总烃","D");
+                setFacState("非甲烷总烃干值","T");
+                setFacState("折算非甲烷总烃","T");
+                setFacState("折算非甲烷总烃干值","T");
+                setFacState("非甲烷总烃排放量","T");
+            }
+        }
+        else
+        {
+            setFacState("甲烷","D");
+            setFacState("甲烷干值","D");
+            setFacState("总烃","D");
+            setFacState("总烃干值","D");
+            setFacState("非甲烷总烃","D");
+            setFacState("非甲烷总烃干值","D");
+            setFacState("折算非甲烷总烃","D");
+            setFacState("折算非甲烷总烃干值","D");
+            setFacState("非甲烷总烃排放量","D");
         }
     }
 }
@@ -532,15 +633,30 @@ void SerialWorker::VocsHandler() {
                     }
 
                     if(map_Factors.contains("烟气湿度"))
+                    {
                         map_Factors["烟气温度"]->m_value = QString::number(((float)(parMa[0] - 5530) / 22118 * map_Factors["烟气温度"]->m_LC) + map_Factors["烟气温度"]->m_RangeLower,'f',2);//烟气温度最终值
+                        flusmap["烟气温度"]=map_Factors["烟气温度"]->m_value;
+                    }
                     if(map_Factors.contains("烟气压力"))
+                    {
                         map_Factors["烟气压力"]->m_value = QString::number(((float)(parMa[1] - 5530) / 22118 * map_Factors["烟气压力"]->m_LC) + map_Factors["烟气压力"]->m_RangeLower,'f',2);//烟气压力最终值
+                        flusmap["烟气压力"]=map_Factors["烟气压力"]->m_value;
+                    }
                     if(map_Factors.contains("烟气流速"))
+                    {
                         map_Factors["烟气流速"]->m_value = QString::number(((float)(parMa[2] - 5530) / 22118 * map_Factors["烟气流速"]->m_LC) + map_Factors["烟气流速"]->m_RangeLower,'f',2);//烟气流速最终值
+                        flusmap["烟气流速"]=map_Factors["烟气流速"]->m_value;
+                    }
                     if(map_Factors.contains("烟尘湿值"))
+                    {
                         map_Factors["烟尘湿值"]->m_value = QString::number(((float)(parMa[3] - 5530) / 22118 * map_Factors["烟尘湿值"]->m_LC) + map_Factors["烟尘湿值"]->m_RangeLower,'f',2);//烟尘湿值最终值
+                        flusmap["烟尘湿值"]=map_Factors["烟尘湿值"]->m_value;
+                    }
                     if(map_Factors.contains("氧气含量"))
+                    {
                         map_Factors["氧气含量"]->m_value = QString::number(((float)(parMa[4] - 5530) / 22118 * map_Factors["氧气含量"]->m_LC) + map_Factors["氧气含量"]->m_RangeLower,'f',2);//氧气含量最终值
+                        flusmap["氧气含量"]=map_Factors["氧气含量"]->m_value;
+                    }
 
                     qDebug() << "000002";
                     // 是否选中！！
@@ -548,6 +664,7 @@ void SerialWorker::VocsHandler() {
                     {
                         if(g_IsChecked) map_Factors["烟气湿度"]->m_value = g_Xsw;
                         else map_Factors["烟气湿度"]->m_value = QString::number(((float)(parMa[5] - 5530) / 22118 * map_Factors["烟气湿度"]->m_LC) + map_Factors["烟气湿度"]->m_RangeLower,'f',2);//烟气湿度最终值;
+
                     }
                     if(map_Factors.contains("硫化氢"))
                         map_Factors["硫化氢"]->m_value = QString::number(((float)(parMa[6] - 5530) / 22118 * map_Factors["硫化氢"]->m_LC) + map_Factors["硫化氢"]->m_RangeLower,'f',2);//氧气含量最终值
@@ -572,7 +689,10 @@ void SerialWorker::VocsHandler() {
                     if(map_Factors.contains("工况流量"))
                         map_Factors["工况流量"]->m_value = QString::number(Qs,'f',2);
                     if(map_Factors.contains("标况流量"))
+                    {
                         map_Factors["标况流量"]->m_value = QString::number(Qs*(273/(273+ts))*((Ba+Ps)/101325)*(1-Xsw/100),'f',2);
+                        flusmap["标况流量"]=map_Factors["标况流量"]->m_value;
+                    }
                     if(map_Factors.contains("烟尘干值")&&map_Factors.contains("烟尘湿值"))
                         map_Factors["烟尘干值"]->m_value = QString::number(map_Factors["烟尘湿值"]->m_value.toDouble() / (1-Xsw),'f',2);
                     if(map_Factors.contains("烟尘排放量")&&map_Factors.contains("烟尘湿值")&&map_Factors.contains("标况流量"))
@@ -585,6 +705,18 @@ void SerialWorker::VocsHandler() {
                     //
                     qDebug() << "000004";
 
+                    QMap<QString,QString>::iterator it = flusmap.begin();
+                    bool isEmpty = false;
+                    while(it!=flusmap.end())
+                    {
+                        isEmpty = isEmpty && it.value().isEmpty();
+                        it++;
+                    }
+
+                    if(!isEmpty)
+                    {
+                        emit sendFluParams(flusmap);
+                    }
 
                 }
                 else
@@ -631,6 +763,20 @@ void SerialWorker::VocsHandler() {
             setFacState("氧气含量干值","T");
             setFacState("硫化氢干值","T");
         }
+    }
+    else
+    {
+        setFacState("烟气温度","D");
+        setFacState("烟气压力","D");
+        setFacState("烟气流速","D");
+        setFacState("烟尘湿值","D");
+        setFacState("氧气含量","D");
+        setFacState("硫化氢","D");
+        setFacState("工况流量","D");
+        setFacState("烟尘干值","D");
+        setFacState("烟尘排放量","D");
+        setFacState("氧气含量干值","D");
+        setFacState("硫化氢干值","D");
     }
 }
 
@@ -1093,6 +1239,8 @@ void MainWindow::InitComm()
                     /* 接收到 worker 发送过来的信号 */
                     connect(serialWorker1, SIGNAL(resultReady(QString)),
                             this, SLOT(handleResults(QString)));
+
+                    connect(serialWorker1,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
                 }
 
                 /* 判断线程是否在运行 */
@@ -1141,6 +1289,8 @@ void MainWindow::InitComm()
                     /* 接收到 worker 发送过来的信号 */
                     connect(serialWorker2, SIGNAL(resultReady(QString)),
                             this, SLOT(handleResults(QString)));
+
+                    connect(serialWorker2,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
                 }
 
                 /* 判断线程是否在运行 */

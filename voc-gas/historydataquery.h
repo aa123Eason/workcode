@@ -20,12 +20,14 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QScrollBar>
 
 #include "xlsxworksheet.h"
 #include "xlsxformat.h"
 #include "common.h"
 #include "factorinfo.h"
 #include "historychartview.h"
+#include "xlsxdocument.h"
 
 namespace Ui {
 class HistoryDataQuery;
@@ -49,6 +51,8 @@ public:
     void editDataRow(QDateTime dt_start,QDateTime dt_end);
     void filldateTime(QDateTime dt_start,QDateTime dt_end);
     void fillinDatas();
+    void calStastics();
+
 signals:
 
 

@@ -40,17 +40,34 @@ void HistoryDataQuery::connectevent()
     connect(ui->queryBtn,&QPushButton::clicked,this,&HistoryDataQuery::onQuery);
     connect(ui->exportBtn,&QPushButton::clicked,this,&HistoryDataQuery::onExport);
     connect(ui->queryDTType,&QComboBox::currentTextChanged,this,&HistoryDataQuery::on_comboBox_currentChanged);
+    connect(ui->htop,&QPushButton::clicked,this,[=]()
+    {
+        ui->mainTable->horizontalScrollBar()->setValue(ui->mainTable->horizontalScrollBar()->minimum());
+    });
+    connect(ui->hbottom,&QPushButton::clicked,this,[=]()
+    {
+        ui->mainTable->horizontalScrollBar()->setValue(ui->mainTable->horizontalScrollBar()->maximum());
+    });
+    connect(ui->vtop,&QPushButton::clicked,this,[=]()
+    {
+        ui->mainTable->verticalScrollBar()->setValue(ui->mainTable->verticalScrollBar()->minimum());
+    });
+    connect(ui->vbottom,&QPushButton::clicked,this,[=]()
+    {
+        ui->mainTable->verticalScrollBar()->setValue(ui->mainTable->verticalScrollBar()->maximum());
+    });
 }
 
 void HistoryDataQuery::databaseinit()
 {
+    qDebug()<<__LINE__<<QApplication::applicationDirPath()<<endl;
     if(!curdb.isOpen())
     {
         curdb = QSqlDatabase::addDatabase("QSQLITE");
         curdb.setDatabaseName(QApplication::applicationDirPath()+"/VocGas.db");
         curdb.open();
     }
-    qDebug()<<__LINE__<<curdb.databaseName()<<curdb.isOpen()<<endl;
+
 }
 
 void HistoryDataQuery::modifyTable()
@@ -214,7 +231,7 @@ void HistoryDataQuery::fillindfttxt(int rows,int cols)
 void HistoryDataQuery::onQuery()
 {
     qDebug()<<__LINE__<<"开始查询"<<endl;
-
+    resMap.clear();
 
     QDateTime dt1 = ui->startDT->dateTime();
     QDateTime dt2 = ui->endDT->dateTime();
@@ -268,6 +285,8 @@ void HistoryDataQuery::onQuery()
     queStr += "from " + tableName + " where HistoryTime between ";
     queStr += "\'" + dtStr1 + "\' and \'" + dtStr2 + "\';";
 
+    qDebug()<<__LINE__<<queStr<<endl;
+
     QSqlQuery q(queStr);
     q.exec();
 
@@ -277,22 +296,109 @@ void HistoryDataQuery::onQuery()
         for(QString fac:queFactors)
         {
             QString code = HistoryChartView::facNameMap().key(fac);
-            resMap[fac]<< q.value(code).toString();
+            //qDebug()<<__LINE__<<code<<":"<<q.value(code).toString()<<endl;
+
+            if(q.value(code).toString() != "ú")
+            {
+                resMap[fac]<< q.value(code).toString();
+            }
+            else
+            {
+                resMap[fac]<< QString::number(0,'f',2);
+            }
         }
     }
 
-    qDebug()<<__LINE__<<resMap<<endl;
+
     qDebug()<<__LINE__<<tableName<<endl;
     qDebug()<<__LINE__<<queryFormat<<endl;
 
     fillinDatas();
 
+    calStastics();
+
 }
 
 void HistoryDataQuery::onExport()
 {
+    int rows = ui->mainTable->rowCount();
+    int cols = ui->mainTable->columnCount();
+    QString cutText = ui->queryDTType->currentText();
+    if(rows==0||cols==0||cutText=="请选择查询方式")
+    {
+        QMessageBox::warning(this,"提示","导出无效");
+        return;
+    }
+
+    QString tableTitle = ui->mainTable->item(0,0)->text();
+    QString queryDT = ui->mainTable->item(2,11)->text();
+    if(queryDT.contains("~"))
+        queryDT = queryDT.replace("~","_");
+    if(queryDT.contains(" "))
+        queryDT = queryDT.replace(" ","");
+    if(tableTitle.isEmpty()||queryDT.isEmpty())
+    {
+        QMessageBox::warning(this,"提示","导出无效");
+        return;
+    }
+    QString fileName = tableTitle+"_"+queryDT+".xlsx";
+    QString filePath = QApplication::applicationDirPath()+"/export/"+fileName;
+
+    QXlsx::Document xlsx;
+    xlsx.addSheet(tableTitle);
+
+    qDebug()<<__LINE__<<endl;
+
+    for(int i=1;i<=rows;++i)
+    {
+        for(int j=1;j<=cols;++j)
+        {
+            if(ui->mainTable->item(i-1,j-1)!=nullptr)
+                xlsx.write(i,j,ui->mainTable->item(i-1,j-1)->text());
+
+        }
+    }
+
+    qDebug()<<__LINE__<<endl;
+
+    //制作表头
+    xlsx.mergeCells(QXlsx::CellRange(1,1,1,cols));
+    xlsx.mergeCells(QXlsx::CellRange(2,1,2,2));
+    xlsx.mergeCells(QXlsx::CellRange(3,1,3,2));
+    xlsx.mergeCells(QXlsx::CellRange(2,1,2,cols-2));
+    xlsx.mergeCells(QXlsx::CellRange(3,3,3,9));
+    xlsx.mergeCells(QXlsx::CellRange(3,10,3,11));
+    xlsx.mergeCells(QXlsx::CellRange(3,12,3,16));
+    xlsx.mergeCells(QXlsx::CellRange(4,1,5,1));
+    xlsx.mergeCells(QXlsx::CellRange(4,2,4,4));
+    xlsx.mergeCells(QXlsx::CellRange(4,5,4,7));
+    xlsx.mergeCells(QXlsx::CellRange(4,8,4,10));
+    xlsx.mergeCells(QXlsx::CellRange(4,11,5,11));
+    xlsx.mergeCells(QXlsx::CellRange(4,12,5,12));
+    xlsx.mergeCells(QXlsx::CellRange(4,13,5,13));
+    xlsx.mergeCells(QXlsx::CellRange(4,14,5,14));
+    xlsx.mergeCells(QXlsx::CellRange(4,15,5,15));
+    xlsx.mergeCells(QXlsx::CellRange(4,16,5,16));
+
+    //最后一行
+    xlsx.mergeCells(QXlsx::CellRange(rows,1,rows+1,2));
+    xlsx.mergeCells(QXlsx::CellRange(rows,3,rows+1,cols));
+
+    qDebug()<<__LINE__<<filePath<<endl;
+
+    if(xlsx.saveAs(filePath))
+    {
+        QMessageBox::about(this,"提示","导出成功:\r\n"+filePath);
+    }
+    else
+    {
+        QMessageBox::warning(this,"提示","导出失败:\r\n"+filePath);
+    }
+
 
 }
+
+
 
 void HistoryDataQuery::fillinDatas()
 {
@@ -302,31 +408,128 @@ void HistoryDataQuery::fillinDatas()
         return;
     }
 
+    qDebug()<<__LINE__<<"resMap"<<resMap<<endl;
+
     QFont font;
     font.setPointSize(12);
     font.setBold(true);
     font.setFamily("微软雅黑");
-    qDebug()<<__LINE__<<resMap.count()<<endl;
+    qDebug()<<__LINE__<<resMap.count()<<resMap["HistoryTime"].count()<<endl;
     qDebug()<<__LINE__<<resMap["HistoryTime"]<<endl;
 
-    for(int i=0;i<resMap.count();++i)
+    if(ui->queryDTType->currentText() == "分钟查询")
+    {
+        if(resMap["HistoryTime"].count()>1440)
+        {
+            QMessageBox::warning(this,"提示","查询量过大，会拖慢运行速度，建议缩短时间范围");
+            return;
+        }
+    }
+
+    for(int i=0;i<resMap["HistoryTime"].count();++i)
     {
         QString historyTime = resMap["HistoryTime"][i];
         for(int j=5;j<ui->mainTable->rowCount()-6;++j)
         {
             QString dt = ui->mainTable->item(j,0)->text();
-            qDebug()<<__LINE__<<historyTime<<dt<<endl;
-            if(dt.split("~").count()>1)
+            if(dt.contains("~"))
             {
-
-                if(historyTime == dt.split("~")[0])
+                if(dt.split("~").count()>1)
                 {
-                    qDebug()<<__LINE__<<j<<historyTime<<endl;
+
+                    if(historyTime == dt.split("~")[0])
+                    {
+                        //                    qDebug()<<__LINE__<<"YES:"<<i<<j<<historyTime<<dt<<endl;
+                        QString ch4 = resMap["甲烷"][i];
+                        QString ch4_dry = resMap["甲烷干值"][i];
+                        QString nmch4 = resMap["非甲烷总烃"][i];
+                        QString nmch4_dry = resMap["非甲烷总烃干值"][i];
+                        //                    QString nmch4_emiss = resMap["非甲烷总烃排放量"][i];
+                        QString thc = resMap["总烃"][i];
+                        QString thc_dry = resMap["总烃干值"][i];
+                        QString flow = resMap["标况流量"][i];
+                        QString oxygen = resMap["氧气含量"][i];
+                        QString fluTmp = resMap["烟气温度"][i];
+                        QString fluHum = resMap["烟气湿度"][i];
+                        QString flupress = resMap["烟气压力"][i];
+
+                        QTableWidgetItem *item_ch4 = new QTableWidgetItem(ch4);
+                        item_ch4->setFont(font);
+                        item_ch4->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_ch4_dry = new QTableWidgetItem(ch4_dry);
+                        item_ch4_dry->setFont(font);
+                        item_ch4_dry->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_nmch4 = new QTableWidgetItem(nmch4);
+                        item_nmch4->setFont(font);
+                        item_nmch4->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_nmch4_dry = new QTableWidgetItem(nmch4_dry);
+                        item_nmch4_dry->setFont(font);
+                        item_nmch4_dry->setTextAlignment(Qt::AlignCenter);
+
+                        //                    QTableWidgetItem *item_nmch4_emiss = new QTableWidgetItem(nmch4_emiss);
+                        //                    item_nmch4_emiss->setFont(font);
+                        //                    item_nmch4_emiss->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_thc = new QTableWidgetItem(thc);
+                        item_thc->setFont(font);
+                        item_thc->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_thc_dry = new QTableWidgetItem(thc_dry);
+                        item_thc_dry->setFont(font);
+                        item_thc_dry->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_flow = new QTableWidgetItem(flow);
+                        item_flow->setFont(font);
+                        item_flow->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_oxygen = new QTableWidgetItem(oxygen);
+                        item_oxygen->setFont(font);
+                        item_oxygen->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_fluTmp = new QTableWidgetItem(fluTmp);
+                        item_fluTmp->setFont(font);
+                        item_fluTmp->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_fluHum = new QTableWidgetItem(fluHum);
+                        item_fluHum->setFont(font);
+                        item_fluHum->setTextAlignment(Qt::AlignCenter);
+
+                        QTableWidgetItem *item_flupress = new QTableWidgetItem(flupress);
+                        item_flupress->setFont(font);
+                        item_flupress->setTextAlignment(Qt::AlignCenter);
+
+                        ui->mainTable->setItem(j,1,item_ch4);
+                        ui->mainTable->setItem(j,2,item_ch4_dry);
+                        ui->mainTable->setItem(j,4,item_nmch4);
+                        ui->mainTable->setItem(j,5,item_nmch4_dry);
+                        //                    ui->mainTable->setItem(j,6,item_nmch4_emiss);
+                        ui->mainTable->setItem(j,7,item_thc);
+                        ui->mainTable->setItem(j,8,item_thc_dry);
+                        ui->mainTable->setItem(j,10,item_flow);
+                        ui->mainTable->setItem(j,11,item_oxygen);
+                        ui->mainTable->setItem(j,12,item_fluTmp);
+                        ui->mainTable->setItem(j,13,item_fluHum);
+                        ui->mainTable->setItem(j,14,item_flupress);
+
+
+
+                    }
+
+                }
+            }
+            else
+            {
+                if(historyTime == dt)
+                {
+                    //                    qDebug()<<__LINE__<<"YES:"<<i<<j<<historyTime<<dt<<endl;
                     QString ch4 = resMap["甲烷"][i];
                     QString ch4_dry = resMap["甲烷干值"][i];
                     QString nmch4 = resMap["非甲烷总烃"][i];
                     QString nmch4_dry = resMap["非甲烷总烃干值"][i];
-//                    QString nmch4_emiss = resMap["非甲烷总烃排放量"][i];
+                    //                    QString nmch4_emiss = resMap["非甲烷总烃排放量"][i];
                     QString thc = resMap["总烃"][i];
                     QString thc_dry = resMap["总烃干值"][i];
                     QString flow = resMap["标况流量"][i];
@@ -334,8 +537,6 @@ void HistoryDataQuery::fillinDatas()
                     QString fluTmp = resMap["烟气温度"][i];
                     QString fluHum = resMap["烟气湿度"][i];
                     QString flupress = resMap["烟气压力"][i];
-
-
 
                     QTableWidgetItem *item_ch4 = new QTableWidgetItem(ch4);
                     item_ch4->setFont(font);
@@ -353,9 +554,9 @@ void HistoryDataQuery::fillinDatas()
                     item_nmch4_dry->setFont(font);
                     item_nmch4_dry->setTextAlignment(Qt::AlignCenter);
 
-//                    QTableWidgetItem *item_nmch4_emiss = new QTableWidgetItem(nmch4_emiss);
-//                    item_nmch4_emiss->setFont(font);
-//                    item_nmch4_emiss->setTextAlignment(Qt::AlignCenter);
+                    //                    QTableWidgetItem *item_nmch4_emiss = new QTableWidgetItem(nmch4_emiss);
+                    //                    item_nmch4_emiss->setFont(font);
+                    //                    item_nmch4_emiss->setTextAlignment(Qt::AlignCenter);
 
                     QTableWidgetItem *item_thc = new QTableWidgetItem(thc);
                     item_thc->setFont(font);
@@ -389,7 +590,7 @@ void HistoryDataQuery::fillinDatas()
                     ui->mainTable->setItem(j,2,item_ch4_dry);
                     ui->mainTable->setItem(j,4,item_nmch4);
                     ui->mainTable->setItem(j,5,item_nmch4_dry);
-//                    ui->mainTable->setItem(j,6,item_nmch4_emiss);
+                    //                    ui->mainTable->setItem(j,6,item_nmch4_emiss);
                     ui->mainTable->setItem(j,7,item_thc);
                     ui->mainTable->setItem(j,8,item_thc_dry);
                     ui->mainTable->setItem(j,10,item_flow);
@@ -406,9 +607,103 @@ void HistoryDataQuery::fillinDatas()
     }
 }
 
+void HistoryDataQuery::calStastics()
+{
+    if(resMap.count()==0)
+    {
+        QMessageBox::warning(this,"提示","查无数据");
+        return;
+    }
+
+    qDebug()<<__LINE__<<"resMap"<<resMap<<endl;
+
+    QFont font;
+    font.setPointSize(12);
+    font.setBold(true);
+    font.setFamily("微软雅黑");
+    qDebug()<<__LINE__<<resMap.count()<<resMap["HistoryTime"].count()<<endl;
+    qDebug()<<__LINE__<<resMap["HistoryTime"]<<endl;
+
+    QList<int> facIndexList;
+    facIndexList<<1<<2<<4<<5<<7<<8<<10<<11<<12<<13<<14;
+    qDebug()<<__LINE__<<facIndexList<<endl;
+    for(int i=0;i<facIndexList.count();++i)
+    {
+        QList<qreal> values={0,0,0,0,0};
+        //0:avg,1:max,2:min,3:num,4:sum
+        qreal avg = 0.0,max = 0.0,min = 0.0,num = 0,sum = 0.0;
+        for(int j=5;j<=ui->mainTable->rowCount()-6;++j)
+        {
+            if(ui->mainTable->item(j,facIndexList[i])!=nullptr)
+            {
+                QString value = ui->mainTable->item(j,facIndexList[i])->text();
+
+                if(!value.isEmpty())
+                {
+                    qDebug()<<__LINE__<<facIndexList[i]<<j<<value<<endl;
+                    num++;
+
+                    sum += value.toDouble();
+
+                    if(max<value.toDouble())
+                    {
+                        max = value.toDouble();
+                    }
+
+                    if(min>value.toDouble())
+                    {
+                        min = value.toDouble();
+                    }
+                }
+            }
+
+
+        }
+        if(num+0)
+            avg = sum/(double)num;
+        else
+            avg = 0;
+
+
+
+        values[0] = avg;
+        values[1] = max;
+        values[2] = min;
+        values[3] = num;
+        values[4] = sum;
+        qDebug()<<__LINE__<<values<<endl;
+        QTableWidgetItem *itemAVG = new QTableWidgetItem(QString::number(values[0],'f',3));
+        itemAVG->setFont(font);
+        itemAVG->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem *itemMAX = new QTableWidgetItem(QString::number(values[1],'f',3));
+        itemMAX->setFont(font);
+        itemMAX->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem *itemMIN = new QTableWidgetItem(QString::number(values[2],'f',3));
+        itemMIN->setFont(font);
+        itemMIN->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem *itemNUM = new QTableWidgetItem(QString::number(values[3]));
+        itemNUM->setFont(font);
+        itemNUM->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem *itemSUM = new QTableWidgetItem(QString::number(values[4],'f',3));
+        itemSUM->setFont(font);
+        itemSUM->setTextAlignment(Qt::AlignCenter);
+
+        int rowindex = ui->mainTable->rowCount()-6;
+        ui->mainTable->setItem(rowindex,facIndexList[i],itemAVG);
+        ui->mainTable->setItem(rowindex+1,facIndexList[i],itemMAX);
+        ui->mainTable->setItem(rowindex+2,facIndexList[i],itemMIN);
+        ui->mainTable->setItem(rowindex+3,facIndexList[i],itemNUM);
+        ui->mainTable->setItem(rowindex+4,facIndexList[i],itemSUM);
+        qDebug()<<__LINE__<<facIndexList<<endl;
+    }
+}
+
 void HistoryDataQuery::editDataRow(QDateTime dt_start,QDateTime dt_end)
 {
-
     qint64 delta_dt = dt_start.secsTo(dt_end);
     qDebug()<<__LINE__<<dt_start<<dt_end<<delta_dt<<endl;
     QString curText = ui->queryDTType->currentText();
@@ -511,7 +806,11 @@ void HistoryDataQuery::filldateTime(QDateTime dt_start,QDateTime dt_end)
     font.setFamily("微软雅黑");
 
 
-    QString checkTimeRange = str_start+"~"+str_end;
+    QString checkTimeRange;
+    if(curText == "分钟查询"||curText == "小时查询")
+        checkTimeRange = str_start+"~"+str_end;
+    else
+        checkTimeRange = str_start;
     QTableWidgetItem *itemCheckTimeRange = new QTableWidgetItem(checkTimeRange);
     itemCheckTimeRange->setTextAlignment(Qt::AlignCenter);
     itemCheckTimeRange->setFont(font);
@@ -533,11 +832,11 @@ void HistoryDataQuery::filldateTime(QDateTime dt_start,QDateTime dt_end)
         }
         else if(curText == "日查询")
         {
-            dt_k = QString::number(k+1)+"日~";
+            dt_k = QString::number(k+1)+"日";
         }
         else if(curText == "月查询")
         {
-            dt_k = QString::number(k+1)+"月~";
+            dt_k = QString::number(k+1)+"月";
         }
 
         QTableWidgetItem *itemDT = new QTableWidgetItem(dt_k);

@@ -59,6 +59,8 @@ public:
     QString loadStyleSheet(QString qsspath);
     void paintCharts();
     QColor randomColor();
+    void connectMarkers();
+    void disconnectMarkers();
 
     static QMap<QString,QString> facNameMap();
 
@@ -69,7 +71,7 @@ public slots:
     void on_comboboxDTType_currentChanged(const QString &text);
     void on_pushbutton_query();
     void onReceiveGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors);
-
+    void handleMarkersClicked();
 private:
     Ui::HistoryChartView *ui;
     QMap<QString,QCheckBox *> legendBoxMap;

@@ -44,17 +44,25 @@ void HistoryChartView::chartInit()
     chart->legend()->setAlignment(Qt::AlignRight);
     chart->legend()->setMarkerShape(QLegend::MarkerShapeRectangle);
 
-    m_axisX = new QValueAxis();
-    m_axisY = new QValueAxis();
+    QFont font;
+    font.setPointSize(14);
+    font.setBold(true);
+    font.setFamily("微软雅黑");
+    chart->legend()->setFont(font);
+
+    m_axisX = new QValueAxis(chart);
+    m_axisY = new QValueAxis(chart);
     m_axisX->setGridLineVisible(true);
     m_axisY->setGridLineVisible(true);
+
+
 
     QChartView *mainChartView = new QChartView(chart,ui->chartWidget);
     mainChartView->setRenderHint(QPainter::Antialiasing);
 //    qDebug()<<__LINE__<<ui->chartWidget->width()<<ui->chartWidget->height()<<endl;
     mainChartView->setFixedSize(1440,960);
 //    mainChartView->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    mainChartView->setRubberBand(QChartView::VerticalRubberBand);
+//    mainChartView->setRubberBand(QChartView::VerticalRubberBand);
 
 }
 
@@ -264,6 +272,7 @@ void HistoryChartView::on_pushbutton_query()
 
         paintCharts();
 
+        connectMarkers();
 
 }
 
@@ -281,66 +290,63 @@ void HistoryChartView::paintCharts()
     int xMax = mapQueryResult.values()[0].count();
     if(xMax==0)
         return;
-    for(QList<qreal> valuelist:mapQueryResult.values())
-    {
-        for(qreal value:valuelist)
-        {
-            if(minValue>value)
-                minValue = value;
-            if(maxValue<value)
-                maxValue = value;
-        }
-    }
+//    for(QList<qreal> valuelist:mapQueryResult.values())
+//    {
+//        for(qreal value:valuelist)
+//        {
+//            if(minValue<value)
+//                minValue = value;
+//            if(maxValue<value)
+//                maxValue = value;
+//        }
+//    }
 
     m_axisX->setRange(0,xMax);
-    m_axisY->setRange(minValue,maxValue);
-
-
-
-    qDebug()<<__LINE__<< minValue<<","<< maxValue<<endl;
-
-    int xvalue = 0;
 
     QMap<QString,QList<qreal>>::iterator it = mapQueryResult.begin();
-    QList<QLineSeries*> serieslist;
+
     while(it!=mapQueryResult.end())
     {
         QLineSeries *series = new QLineSeries(this);
         QString realName = facNameMap()[it.key()];
         series->setName(realName);
-
-        QPen pen(randomColor());
-        pen.setWidth(2);
-        series->setPen(pen);
-
-        QList<qreal> values = it.value();
-        for(double value:values)
-        {
-            qDebug()<<__LINE__<<"("<<xvalue<<","<<value<<")"<<endl;
-            series->append(xvalue,value);
-            xvalue++;
-        }
-
-
-
+        chart->addSeries(series);
 
         chart->addAxis(m_axisX,Qt::AlignBottom);
         chart->addAxis(m_axisY,Qt::AlignLeft);
 
+        QPen pen(randomColor());
+        pen.setWidth(2);
+        series->setPen(pen);
+        int xvalue = 0;
+        QList<qreal> values = it.value();
+        for(double value:values)
+        {
+            if(minValue>value)
+                minValue = value;
+
+            if(maxValue<value)
+                maxValue = value;
+
+            qDebug()<<__LINE__<<realName<<"("<<xvalue<<","<<value<<")"<<endl;
+
+            series->append(xvalue,value);
+            xvalue++;
+        }
+
+        qDebug()<<__LINE__<< minValue<<","<< maxValue<<endl;
+        m_axisY->setRange(minValue, maxValue);
+
 
         series->attachAxis(m_axisX);
         series->attachAxis(m_axisY);
-        serieslist.append(series);
+
 
         it++;
     }
 
 
-    for(auto series:serieslist)
-    {
-        chart->addSeries(series);
 
-    }
 
 
 
@@ -359,6 +365,26 @@ QColor HistoryChartView::randomColor()
     int b = qrand() % 256;
 
     return QColor(r,g,b);
+}
+
+void HistoryChartView::connectMarkers()
+{
+    const auto markers = chart->legend()->markers();
+    for(QLegendMarker *marker:markers)
+    {
+        QObject::disconnect(marker,&QLegendMarker::clicked,this,&HistoryChartView::handleMarkersClicked);
+        QObject::connect(marker,&QLegendMarker::clicked,this,&HistoryChartView::handleMarkersClicked);
+
+    }
+}
+
+void HistoryChartView::disconnectMarkers()
+{
+    const auto markers = chart->legend()->markers();
+    for(QLegendMarker *marker:markers)
+    {
+        QObject::disconnect(marker,&QLegendMarker::clicked,this,&HistoryChartView::handleMarkersClicked);
+    }
 }
 
 void HistoryChartView::onReceiveGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors)
@@ -401,4 +427,47 @@ void HistoryChartView::onReceiveGlobalMapAndList(QStringList &g_FactorsNameList,
     }
 
     ui->groupBox->setLayout(layout);
+}
+
+void HistoryChartView::handleMarkersClicked()
+{
+    QLegendMarker *marker = qobject_cast<QLegendMarker *>(sender());
+    Q_ASSERT(marker);
+
+    switch(marker->type())
+    {
+    case QLegendMarker::LegendMarkerTypeXY:
+    {
+        marker->series()->setVisible(!marker->series()->isVisible());
+        marker->setVisible(true);
+
+        qreal alpha = 1.0;
+        if(!marker->series()->isVisible())
+        {
+            alpha = 0.5;
+        }
+            QColor color;
+            QBrush brush = marker->labelBrush();
+            color = brush.color();
+            color.setAlphaF(alpha);
+            brush.setColor(color);
+            marker->setLabelBrush(brush);
+            brush = marker->brush();
+            color = brush.color();
+            color.setAlphaF(alpha);
+            brush.setColor(color);
+            marker->setBrush(brush);
+            QPen pen = marker->pen();
+            color = pen.color();
+            color.setAlphaF(alpha);
+            pen.setColor(color);
+            marker->setPen(pen);
+
+            break;
+
+
+    }
+    default:
+        break;
+    }
 }

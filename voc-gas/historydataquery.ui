@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>838</width>
+    <width>950</width>
     <height>461</height>
    </rect>
   </property>
@@ -197,6 +197,9 @@ selection-color: rgb(255, 255, 255);
          <string notr="true">background-color: rgb(255, 255, 255);
 font: 75 16pt &quot;微软雅黑&quot;;</string>
         </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::PlusMinus</enum>
+        </property>
        </widget>
       </item>
       <item>
@@ -252,6 +255,9 @@ font: 75 16pt &quot;微软雅黑&quot;;</string>
         <property name="styleSheet">
          <string notr="true">background-color: rgb(255, 255, 255);
 font: 75 16pt &quot;微软雅黑&quot;;</string>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::PlusMinus</enum>
         </property>
        </widget>
       </item>
