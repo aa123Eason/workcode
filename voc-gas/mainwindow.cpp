@@ -6,6 +6,8 @@ QString g_Sepuyi;
 QString g_PLC;
 QString g_Forward1;
 QString g_Forward2;
+QString g_valueseq = "ABCD";
+bool isJSModeOn = false;
 
 bool g_IsChecked = false;
 bool g_IsRadioBtn1Checked = false;
@@ -41,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     Widget_Init();
     Setting_Init();
 
+
     InitComm();
     InitFactorMaps();
 
@@ -51,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     setTableHeader();
     setTableContents();
 
-
+    connectevent();
 
     id1 = startTimer(1000);
 }
@@ -68,14 +71,16 @@ MainWindow::~MainWindow()
     serialWorker1->stopWork();
     serialThread_1.quit();
     /* 阻塞线程 2000ms，判断线程是否结束 */
-    if (serialThread_1.wait(5000)) {
-        qDebug()<<"自动监控线程 Modbus 结束";
-    }
+//    if (serialThread_1.wait(5000)) {
+//        qDebug()<<"自动监控线程 Modbus 结束";
+//    }
 
     if(m_pSerialCom1)
     {
+        m_pSerialCom1->moveToThread(nullptr);
         m_pSerialCom1->close();
-        delete m_pSerialCom1;
+        m_pSerialCom1->deleteLater();
+
 //        m_pSerialCom1 = nullptr;
     }
 
@@ -83,14 +88,16 @@ MainWindow::~MainWindow()
     serialWorker2->stopWork();
     serialThread_2.quit();
     /* 阻塞线程 2000ms，判断线程是否结束 */
-    if (serialThread_2.wait(5000)) {
-        qDebug()<<"自动监控线程 PLC 结束";
-    }
+//    if (serialThread_2.wait(5000)) {
+//        qDebug()<<"自动监控线程 PLC 结束";
+//    }
 
     if(m_pSerialCom2)
     {
+        m_pSerialCom2->moveToThread(nullptr);
         m_pSerialCom2->close();
-        delete m_pSerialCom2;
+        m_pSerialCom2->deleteLater();
+
 //        m_pSerialCom2 = nullptr;
     }
 
@@ -98,35 +105,40 @@ MainWindow::~MainWindow()
     serialWorker3->stopWork();
     serialThread_3.quit();
     /* 阻塞线程 2000ms，判断线程是否结束 */
-    if (serialThread_3.wait(5000)) {
-        qDebug()<<"自动监控线程 HJ212 结束";
-    }
+//    if (serialThread_3.wait(5000)) {
+//        qDebug()<<"自动监控线程 HJ212 结束";
+//    }
 
     if(m_pSerialCom3)
     {
+        m_pSerialCom3->moveToThread(nullptr);
         m_pSerialCom3->close();
-        delete m_pSerialCom3;
-//        m_pSerialCom3 = nullptr;
+        m_pSerialCom3->deleteLater();
+
     }
 
     /* 打断线程再退出 */
     serialWorker4->stopWork();
     serialThread_4.quit();
     /* 阻塞线程 2000ms，判断线程是否结束 */
-    if (serialThread_4.wait(5000)) {
-        qDebug()<<"自动监控线程 HJ212-2 结束";
-    }
+//    if (serialThread_4.wait(5000)) {
+//        qDebug()<<"自动监控线程 HJ212-2 结束";
+//    }
 
     if(m_pSerialCom4)
     {
+        m_pSerialCom4->moveToThread(nullptr);
         m_pSerialCom4->close();
-        delete m_pSerialCom4;
+        m_pSerialCom4->deleteLater();
+
 //        m_pSerialCom4 = nullptr;
     }
 
 
      db.close();
-     this->deleteLater();
+     QString progress = "taskkill /im VocGas.exe /f";
+     QProcess::execute(progress);
+
 }
 
 void MainWindow::timerEvent(QTimerEvent * ev)
@@ -139,6 +151,7 @@ void MainWindow::timerEvent(QTimerEvent * ev)
 
 void MainWindow::onReceiveFluParamsMap(QMap<QString,QString> &map)
 {
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
     if(map.contains("烟气温度"))
     {
         ui->label_12->setText(map["烟气温度"]);
@@ -253,6 +266,72 @@ void MainWindow::handleMarkersClicked()
     }
 }
 
+void MainWindow::connectevent()
+{
+
+
+    connect(ui->pushButton_8,&QPushButton::clicked,this,[=]()
+    {
+
+        qDebug()<<__LINE__<<endl;
+
+        if(flag == 0)
+        {
+            emit sendJSMode(true);
+            flag = 1;
+        }
+        else
+        {
+            emit sendJSMode(false);
+            flag = 0;
+        }
+
+
+    });
+
+
+
+    connect(this,&MainWindow::sendJSMode,this,[=](bool isOn)
+    {
+        isJSModeOn = isOn;
+        if(isOn)
+        {
+            QMessageBox::about(this,"提示","校准模式开启");
+        }
+        else
+        {
+            QMessageBox::about(this,"提示","校准模式关闭");
+        }
+    });
+
+    connect(ui->pushButton_9,&QPushButton::clicked,this,[=]()
+    {
+        qDebug()<<__LINE__<<"清除模式开启"<<endl;
+        if(map_Factors.count()>0)
+        {
+            QMap<QString, FactorInfo*>::iterator it = map_Factors.begin();
+            while(it != map_Factors.end())
+            {
+                if(it.value()!=nullptr)
+                {
+                    FactorInfo *facinfo = it.value();
+                    facinfo->m_value = QString::number(0,'f',2);
+                }
+                it++;
+            }
+        }
+    });
+
+    connect(ui->btn_swichseq,&QPushButton::clicked,this,[=]()
+    {
+        if(!ui->valueseq->text().isEmpty())
+        {
+            g_valueseq = ui->valueseq->text();
+            QMessageBox::about(this,"输出","目标次序:"+g_valueseq);
+        }
+    });
+
+}
 
 void MainWindow::handleResults(const QString & results)
 {
@@ -272,7 +351,7 @@ void SerialWorker::doWork1() {
     isCanRun = true;
 
     /* 死循环 */
-    while (1) {
+    while (isCanRun) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -338,10 +417,27 @@ void SerialWorker::writeinLog(QString str)
     file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
     file.write(bytArr);
     file.close();
+    bytArr.clear();
 }
 
 void SerialWorker::skybluework()
 {
+
+    if(isJSModeOn)
+    {
+        setFacState("甲烷","C");
+        setFacState("甲烷干值","C");
+        setFacState("总烃","C");
+        setFacState("总烃干值","C");
+        setFacState("非甲烷总烃","C");
+        setFacState("非甲烷总烃干值","C");
+        setFacState("折算非甲烷总烃","C");
+        setFacState("折算非甲烷总烃干值","C");
+        setFacState("非甲烷总烃排放量","C");
+
+        return;
+    }
+
     if(serial->isOpen())
     {
         QString pAddr = "1"; //01
@@ -365,7 +461,7 @@ void SerialWorker::skybluework()
         qDebug() << "ReadInputRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
-        writeinLog("[天蓝:S]"+QString2Hex(pTx));
+        writeinLog("[天蓝:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
 
         char data[100];
         int pRetVal = serial->readData(data,13);
@@ -376,13 +472,15 @@ void SerialWorker::skybluework()
             {
                 strTmp +=  QString().sprintf("%02x", (unsigned char)data[i]);
             }
-            writeinLog("[天蓝:R]"+QString2Hex(strTmp));
+//            writeinLog("[天蓝:R]"+QString2Hex(strTmp));
 
             if(crc16.crc_Checking(strTmp))
             {
                 qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
                 // parse
-                QByteArray buf = QString2Hex(strTmp);
+                QByteArray buf;
+                buf.append(QString2Hex(strTmp));
+
 
                 QByteArray pFunc;
                 pFunc.append(buf.at(1));
@@ -399,20 +497,92 @@ void SerialWorker::skybluework()
                     setFacState("非甲烷总烃排放量","N");
 
                     QByteArray arrTH,arrCH4,arrNMTH; //默认 ABCD
-                    arrTH[0] = buf.at(6);
-                    arrTH[1] = buf.at(5);
-                    arrTH[2] = buf.at(4);
-                    arrTH[3] = buf.at(3);
+                    if(g_valueseq == "ABCD")
+                    {
+                        arrTH[0] = buf.at(6);
+                        arrTH[1] = buf.at(5);
+                        arrTH[2] = buf.at(4);
+                        arrTH[3] = buf.at(3);
 
-                    arrCH4[0] = buf.at(10);
-                    arrCH4[1] = buf.at(9);
-                    arrCH4[2] = buf.at(8);
-                    arrCH4[3] = buf.at(7);
+                        arrCH4[0] = buf.at(10);
+                        arrCH4[1] = buf.at(9);
+                        arrCH4[2] = buf.at(8);
+                        arrCH4[3] = buf.at(7);
 
-                    arrNMTH[0] = buf.at(14);
-                    arrNMTH[1] = buf.at(13);
-                    arrNMTH[2] = buf.at(12);
-                    arrNMTH[3] = buf.at(11);
+                        arrNMTH[0] = buf.at(14);
+                        arrNMTH[1] = buf.at(13);
+                        arrNMTH[2] = buf.at(12);
+                        arrNMTH[3] = buf.at(11);
+                    }
+                    else if(g_valueseq == "BADC")
+                    {
+                        arrTH[0] = buf.at(5);
+                        arrTH[1] = buf.at(6);
+                        arrTH[2] = buf.at(3);
+                        arrTH[3] = buf.at(4);
+
+                        arrCH4[0] = buf.at(9);
+                        arrCH4[1] = buf.at(10);
+                        arrCH4[2] = buf.at(7);
+                        arrCH4[3] = buf.at(8);
+
+                        arrNMTH[0] = buf.at(13);
+                        arrNMTH[1] = buf.at(14);
+                        arrNMTH[2] = buf.at(11);
+                        arrNMTH[3] = buf.at(12);
+                    }
+                    else if(g_valueseq == "DCBA")
+                    {
+                        arrTH[0] = buf.at(3);
+                        arrTH[1] = buf.at(4);
+                        arrTH[2] = buf.at(5);
+                        arrTH[3] = buf.at(6);
+
+                        arrCH4[0] = buf.at(7);
+                        arrCH4[1] = buf.at(8);
+                        arrCH4[2] = buf.at(9);
+                        arrCH4[3] = buf.at(10);
+
+                        arrNMTH[0] = buf.at(11);
+                        arrNMTH[1] = buf.at(12);
+                        arrNMTH[2] = buf.at(13);
+                        arrNMTH[3] = buf.at(14);
+                    }
+                    else if(g_valueseq == "CDAB")
+                    {
+                        arrTH[0] = buf.at(4);
+                        arrTH[1] = buf.at(3);
+                        arrTH[2] = buf.at(6);
+                        arrTH[3] = buf.at(5);
+
+                        arrCH4[0] = buf.at(8);
+                        arrCH4[1] = buf.at(7);
+                        arrCH4[2] = buf.at(10);
+                        arrCH4[3] = buf.at(9);
+
+                        arrNMTH[0] = buf.at(12);
+                        arrNMTH[1] = buf.at(11);
+                        arrNMTH[2] = buf.at(14);
+                        arrNMTH[3] = buf.at(13);
+                    }
+                    else
+                    {
+                        arrTH[0] = buf.at(6);
+                        arrTH[1] = buf.at(5);
+                        arrTH[2] = buf.at(4);
+                        arrTH[3] = buf.at(3);
+
+                        arrCH4[0] = buf.at(10);
+                        arrCH4[1] = buf.at(9);
+                        arrCH4[2] = buf.at(8);
+                        arrCH4[3] = buf.at(7);
+
+                        arrNMTH[0] = buf.at(14);
+                        arrNMTH[1] = buf.at(13);
+                        arrNMTH[2] = buf.at(12);
+                        arrNMTH[3] = buf.at(11);
+                    }
+
 
                     float accTH;
                     memcpy(&accTH, arrTH.data(), 4);
@@ -478,6 +648,8 @@ void SerialWorker::skybluework()
 
                     }
 
+                    writeinLog("[天蓝:R]"+buf.toHex(' '));
+
                 }
                 else
                 {
@@ -494,15 +666,15 @@ void SerialWorker::skybluework()
             }
             else
             {
-                setFacState("甲烷","T");
-                setFacState("甲烷干值","T");
-                setFacState("总烃","T");
-                setFacState("总烃干值","T");
+                setFacState("甲烷","D");
+                setFacState("甲烷干值","D");
+                setFacState("总烃","D");
+                setFacState("总烃干值","D");
                 setFacState("非甲烷总烃","D");
-                setFacState("非甲烷总烃干值","T");
-                setFacState("折算非甲烷总烃","T");
-                setFacState("折算非甲烷总烃干值","T");
-                setFacState("非甲烷总烃排放量","T");
+                setFacState("非甲烷总烃干值","D");
+                setFacState("折算非甲烷总烃","D");
+                setFacState("折算非甲烷总烃干值","D");
+                setFacState("非甲烷总烃排放量","D");
             }
         }
         else
@@ -517,6 +689,19 @@ void SerialWorker::skybluework()
             setFacState("折算非甲烷总烃干值","D");
             setFacState("非甲烷总烃排放量","D");
         }
+    }
+    else
+    {
+        setFacState("甲烷","T");
+        setFacState("甲烷干值","T");
+        setFacState("总烃","T");
+        setFacState("总烃干值","T");
+        setFacState("非甲烷总烃","T");
+        setFacState("非甲烷总烃干值","T");
+        setFacState("折算非甲烷总烃","T");
+        setFacState("折算非甲烷总烃干值","T");
+        setFacState("非甲烷总烃排放量","T");
+
     }
 }
 
@@ -533,12 +718,39 @@ void SerialWorker::setFacState(QString name,QString stateNote)
     }
 }
 
+bool SerialWorker::getJZModeState()
+{
+    return isJSModeOn;
+}
+
 void SerialWorker::VocsHandler() {
 
     bool pCommStatus = false;
 
     //Tx: -15 04 00 10 00 10 F3 17
     //Rx: -15 04 20 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 66 BB
+
+    if(isJSModeOn)
+    {
+        qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+        setFacState("烟气温度","C");
+        setFacState("烟气压力","C");
+        setFacState("烟气流速","C");
+        setFacState("烟尘湿值","C");
+        setFacState("烟气湿度","C");
+        setFacState("氧气含量","C");
+        setFacState("硫化氢","C");
+        setFacState("标况流量","C");
+        setFacState("烟尘干值","C");
+        setFacState("烟尘排放量","C");
+        setFacState("氧气含量干值","C");
+        setFacState("硫化氢干值","C");
+
+        return;
+    }
+
+
+
 
     if(serial->isOpen())
     {
@@ -572,7 +784,7 @@ void SerialWorker::VocsHandler() {
         qDebug() << "==>>> ReadHoldingRegisters TX: " << QByteArray::fromHex(pTx.toLatin1()).toHex(' ');
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
-        writeinLog("[VOCs:S]"+QString2Hex(pTx));
+        writeinLog("[VOCs:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
 
         char data[37];
         int pRetVal = serial->readData(data,37);
@@ -588,8 +800,10 @@ void SerialWorker::VocsHandler() {
             {
                 qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
                 // parse
-                QByteArray buf = QString2Hex(strTmp);
-                writeinLog("[VOCs:R]"+QString2Hex(strTmp));
+//                QByteArray buf = QString2Hex(strTmp);
+                QByteArray buf;
+                buf.append(QString2Hex(strTmp));
+
 
                 QByteArray pFunc;
                 pFunc.append(buf.at(1));
@@ -599,9 +813,10 @@ void SerialWorker::VocsHandler() {
                     setFacState("烟气压力","N");
                     setFacState("烟气流速","N");
                     setFacState("烟尘湿值","N");
+                    setFacState("烟气湿度","N");
                     setFacState("氧气含量","N");
                     setFacState("硫化氢","N");
-                    setFacState("工况流量","N");
+                    setFacState("标况流量","N");
                     setFacState("烟尘干值","N");
                     setFacState("烟尘排放量","N");
                     setFacState("氧气含量干值","N");
@@ -612,22 +827,28 @@ void SerialWorker::VocsHandler() {
                     qDebug() << "000001";
 
                     if(map_Factors.contains("烟气温度"))
-                        parMa[0] = buf[map_Factors["烟气温度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气温度"]->m_Chan * 2 + 2];//烟气温度初始值
+                        parMa[0] = buf[map_Factors["烟气温度"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["烟气温度"]->m_Chan * 2 + 2]&0xFF);//烟气温度初始值
                     if(map_Factors.contains("烟气压力"))
-                        parMa[1] = buf[map_Factors["烟气压力"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气压力"]->m_Chan * 2 + 2];//烟气压力初始值
+                        parMa[1] = buf[map_Factors["烟气压力"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["烟气压力"]->m_Chan * 2 + 2]&0xFF);//烟气压力初始值
                     if(map_Factors.contains("烟气流速"))
-                        parMa[2] = buf[map_Factors["烟气流速"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气流速"]->m_Chan * 2 + 2];//烟气流速初始值
+                        parMa[2] = buf[map_Factors["烟气流速"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["烟气流速"]->m_Chan * 2 + 2]&0xFF);//烟气流速初始值
                     if(map_Factors.contains("烟尘湿值"))
-                        parMa[3] = buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 2];//烟尘湿值初始值
+                        parMa[3] = buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["烟尘湿值"]->m_Chan * 2 + 2]&0xFF);//烟尘湿值初始值
                     if(map_Factors.contains("氧气含量"))
-                        parMa[4] = buf[map_Factors["氧气含量"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["氧气含量"]->m_Chan * 2 + 2];//氧气含量初始值
+                    {
+                        parMa[4] = buf[map_Factors["氧气含量"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["氧气含量"]->m_Chan * 2 + 2]&0xFF);//氧气含量初始值
+
+                        writeinLog("[VOCs:R]氧气含量:初始值="+QString::number(parMa[4]));
+                        writeinLog("[VOCs:R]氧气含量:19:"+QString::number(buf[19])+"|20:"+QString::number(buf[20]));
+                    }
                     if(map_Factors.contains("烟气湿度"))
-                        parMa[5] = buf[map_Factors["烟气湿度"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["烟气湿度"]->m_Chan * 2 + 2];//烟气湿度度初始值
+                        parMa[5] = buf[map_Factors["烟气湿度"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["烟气湿度"]->m_Chan * 2 + 2]&0xFF);//烟气湿度度初始值
                     if(map_Factors.contains("硫化氢"))
-                        parMa[6] = buf[map_Factors["硫化氢"]->m_Chan * 2 + 1] << 8 | buf[map_Factors["硫化氢"]->m_Chan * 2 + 2];//硫化氢初始值
+                        parMa[6] = buf[map_Factors["硫化氢"]->m_Chan * 2 + 1] << 8 | (buf[map_Factors["硫化氢"]->m_Chan * 2 + 2]&0xFF);//硫化氢初始值
 
                     for (int i = 0; i < 6; i++)
                     {
+
                         if (parMa[i] > 27648) parMa[i] = 27648;
                         if (parMa[i] < 5530) parMa[i] = 5530;
                     }
@@ -639,7 +860,7 @@ void SerialWorker::VocsHandler() {
                     }
                     if(map_Factors.contains("烟气压力"))
                     {
-                        map_Factors["烟气压力"]->m_value = QString::number(((float)(parMa[1] - 5530) / 22118 * map_Factors["烟气压力"]->m_LC) + map_Factors["烟气压力"]->m_RangeLower,'f',2);//烟气压力最终值
+                        map_Factors["烟气压力"]->m_value = QString::number(((float)(parMa[1] - 5530) / 22118 * map_Factors["烟气压力"]->m_LC) + map_Factors["烟气压力"]->m_RangeLower,'f',4);//烟气压力最终值
                         flusmap["烟气压力"]=map_Factors["烟气压力"]->m_value;
                     }
                     if(map_Factors.contains("烟气流速"))
@@ -655,6 +876,9 @@ void SerialWorker::VocsHandler() {
                     if(map_Factors.contains("氧气含量"))
                     {
                         map_Factors["氧气含量"]->m_value = QString::number(((float)(parMa[4] - 5530) / 22118 * map_Factors["氧气含量"]->m_LC) + map_Factors["氧气含量"]->m_RangeLower,'f',2);//氧气含量最终值
+                        writeinLog("[VOCs:R]氧气含量:最终值="+map_Factors["氧气含量"]->m_value);
+                        writeinLog("[VOCs:R]氧气含量:折算值="+QString::number(map_Factors["氧气含量"]->m_LC,'f',2));
+
                         flusmap["氧气含量"]=map_Factors["氧气含量"]->m_value;
                     }
 
@@ -717,6 +941,7 @@ void SerialWorker::VocsHandler() {
                     {
                         emit sendFluParams(flusmap);
                     }
+                    writeinLog("[VOCs:R]"+buf.toHex(' '));
 
                 }
                 else
@@ -724,10 +949,11 @@ void SerialWorker::VocsHandler() {
                     setFacState("烟气温度","D");
                     setFacState("烟气压力","D");
                     setFacState("烟气流速","D");
+                    setFacState("烟气湿度","D");
                     setFacState("烟尘湿值","D");
                     setFacState("氧气含量","D");
                     setFacState("硫化氢","D");
-                    setFacState("工况流量","D");
+                    setFacState("标况流量","D");
                     setFacState("烟尘干值","D");
                     setFacState("烟尘排放量","D");
                     setFacState("氧气含量干值","D");
@@ -739,10 +965,11 @@ void SerialWorker::VocsHandler() {
                 setFacState("烟气温度","D");
                 setFacState("烟气压力","D");
                 setFacState("烟气流速","D");
+                setFacState("烟气湿度","D");
                 setFacState("烟尘湿值","D");
                 setFacState("氧气含量","D");
                 setFacState("硫化氢","D");
-                setFacState("工况流量","D");
+                setFacState("标况流量","D");
                 setFacState("烟尘干值","D");
                 setFacState("烟尘排放量","D");
                 setFacState("氧气含量干值","D");
@@ -751,32 +978,36 @@ void SerialWorker::VocsHandler() {
         }
         else
         {
-            setFacState("烟气温度","T");
-            setFacState("烟气压力","T");
-            setFacState("烟气流速","T");
-            setFacState("烟尘湿值","T");
-            setFacState("氧气含量","T");
-            setFacState("硫化氢","T");
-            setFacState("工况流量","T");
-            setFacState("烟尘干值","T");
-            setFacState("烟尘排放量","T");
-            setFacState("氧气含量干值","T");
-            setFacState("硫化氢干值","T");
+            setFacState("烟气温度","D");
+            setFacState("烟气压力","D");
+            setFacState("烟气流速","D");
+            setFacState("烟气湿度","D");
+            setFacState("烟尘湿值","D");
+            setFacState("氧气含量","D");
+            setFacState("硫化氢","D");
+            setFacState("标况流量","D");
+            setFacState("烟尘干值","D");
+            setFacState("烟尘排放量","D");
+            setFacState("氧气含量干值","D");
+            setFacState("硫化氢干值","D");
         }
     }
     else
     {
-        setFacState("烟气温度","D");
-        setFacState("烟气压力","D");
-        setFacState("烟气流速","D");
-        setFacState("烟尘湿值","D");
-        setFacState("氧气含量","D");
-        setFacState("硫化氢","D");
-        setFacState("工况流量","D");
-        setFacState("烟尘干值","D");
-        setFacState("烟尘排放量","D");
-        setFacState("氧气含量干值","D");
-        setFacState("硫化氢干值","D");
+
+
+        setFacState("烟气温度","T");
+        setFacState("烟气压力","T");
+        setFacState("烟气流速","T");
+        setFacState("烟气湿度","T");
+        setFacState("烟尘湿值","T");
+        setFacState("氧气含量","T");
+        setFacState("硫化氢","T");
+        setFacState("标况流量","T");
+        setFacState("烟尘干值","T");
+        setFacState("烟尘排放量","T");
+        setFacState("氧气含量干值","T");
+        setFacState("硫化氢干值","T");
     }
 }
 
@@ -802,7 +1033,7 @@ void SerialWorker::doWork2() {
     isCanRun = true;
 
     /* 死循环 */
-    while (1) {
+    while (isCanRun) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -947,7 +1178,7 @@ void SerialWorker::doWork3() {
     isCanRun = true;
 
     /* 死循环 */
-    while (1) {
+    while (isCanRun) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -971,7 +1202,7 @@ void SerialWorker::doWork4() {
     isCanRun = true;
 
     /* 死循环 */
-    while (1) {
+    while (isCanRun) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -986,6 +1217,12 @@ void SerialWorker::doWork4() {
 
         QThread::sleep(2);
     }
+}
+
+void SerialWorker::onReceiveJZModeChanged(bool isOn)
+{
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
+    isJSModeOn = isOn;
 }
 
 // doWork5 -- modbus slave 转发表 点表
@@ -1184,7 +1421,7 @@ void MainWindow::InitComm()
 {
 
     // tranverse
-    QString dir_file = COMM_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+COMM_SETTING_FILE;
     QFile file(dir_file);
 
     if(file.exists())
@@ -1241,6 +1478,10 @@ void MainWindow::InitComm()
                             this, SLOT(handleResults(QString)));
 
                     connect(serialWorker1,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
+
+
+//                    connect(this,&MainWindow::sendJSMode,serialWorker1,&SerialWorker::onReceiveJZModeChanged);
+
                 }
 
                 /* 判断线程是否在运行 */
@@ -1291,6 +1532,9 @@ void MainWindow::InitComm()
                             this, SLOT(handleResults(QString)));
 
                     connect(serialWorker2,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
+
+
+//                    connect(this,&MainWindow::sendJSMode,serialWorker2,&SerialWorker::onReceiveJZModeChanged);
                 }
 
                 /* 判断线程是否在运行 */
@@ -1403,7 +1647,7 @@ void MainWindow::InitComm()
                 }
 
                 /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
-                emit this->startWork4();
+//                emit this->startWork4();
             }
         }
     }
@@ -1544,6 +1788,7 @@ void MainWindow::Widget_Init()
     ui->label_User->installEventFilter(this);
 
     connect(ui->pushButton_3,&QPushButton::clicked,this,&MainWindow::on_pushButton_3_clicked);
+    g_valueseq = "ABCD";
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -1682,6 +1927,7 @@ void MainWindow::setTableContents()
     int index = 0;
 //    printFactors(map_Factors);
 
+
     while (index<seqlist.count()) {
 
 //        qDebug()<<__LINE__<<index<<endl;
@@ -1740,6 +1986,38 @@ void MainWindow::setTableContents()
 
 
     }
+
+    if(map_Factors.contains("烟气温度"))
+    {
+        QString v = map_Factors["烟气温度"]->m_value;
+        ui->label_12->setText(v);
+    }
+
+    if(map_Factors.contains("烟气流速"))
+    {
+        QString v = map_Factors["烟气流速"]->m_value;
+        ui->label_14->setText(v);
+    }
+
+    if(map_Factors.contains("烟气压力"))
+    {
+        QString v = map_Factors["烟气压力"]->m_value;
+        ui->label_13->setText(v);
+    }
+
+    if(map_Factors.contains("烟气湿度"))
+    {
+        QString v = map_Factors["烟气湿度"]->m_value;
+        ui->label_17->setText(v);
+    }
+
+    if(map_Factors.contains("氧气含量"))
+    {
+        QString v = map_Factors["氧气含量"]->m_value;
+        ui->label_15->setText(v);
+    }
+
+
 }
 
 int MainWindow::countFactordisplay(QMap<QString,FactorInfo *> map)

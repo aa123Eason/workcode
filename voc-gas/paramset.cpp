@@ -105,7 +105,7 @@ void ParamSet::System_Display()
 void ParamSet::Fanchui_Display()
 {
 
-    QString dir_file = FAN_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+FAN_SETTING_FILE;
     QFile file(dir_file);
 
     if(file.exists())
@@ -230,11 +230,13 @@ void ParamSet::setUserTableContents()
     pUserList<< "超级管理员" << "管理员" << "普通用户";
 
     ui->tableWidget_2->clearContents();
-    QTableWidgetItem *pItem1,*pItemPW;
-    QCheckBox *pItemCheck1,*pItemCheck2,*pItemCheck3,*pItemCheck4,*pItemCheck5,*pItemCheck6,*pItemCheck7,*pItemCheck8,*pItemCheck9,*pItemCheck10;
+    QTableWidgetItem *pItem1 = nullptr,*pItemPW = nullptr;
+    QCheckBox *pItemCheck1 = nullptr,*pItemCheck2 = nullptr,*pItemCheck3 = nullptr,*pItemCheck4 = nullptr;
+    QCheckBox *pItemCheck5 = nullptr,*pItemCheck6 = nullptr,*pItemCheck7 = nullptr,*pItemCheck8 = nullptr;
+    QCheckBox *pItemCheck9 = nullptr,*pItemCheck10 = nullptr;
     ui->tableWidget_2->setRowCount(3);
 
-    QString dir_file = USERS_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+USERS_SETTING_FILE;
     QFile file(dir_file);
 
     if(file.exists())
@@ -623,10 +625,10 @@ void ParamSet::setTableContents()
     pComList << "COM1" << "COM2" << "COM3" << "COM4" << "COM5" << "COM6" << "COM7" << "COM8" << "COM9" << "COM10" << "COM11" << "COM12" << "COM13" << "COM14" << "COM15" << "COM16" << "COM17" << "COM18" << "COM19" << "COM20";
 
     ui->tableWidget_Down->clearContents();
-    QTableWidgetItem *pItem1;
-    QComboBox *pCom,*pBaud,*pParity,*pDatabit,*pStopbit,*pType;
+    QTableWidgetItem *pItem1 = nullptr;
+    QComboBox *pCom = nullptr,*pBaud = nullptr,*pParity = nullptr,*pDatabit = nullptr,*pStopbit = nullptr,*pType = nullptr;
 
-    QString dir_file = COMM_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+COMM_SETTING_FILE;
     QFile file(dir_file);
 
     if(file.exists())
@@ -832,10 +834,10 @@ void ParamSet::setTableUpContents()
     pComList << "COM1" << "COM2" << "COM3" << "COM4" << "COM5" << "COM6" << "COM7" << "COM8" << "COM9" << "COM10" << "COM11" << "COM12" << "COM13" << "COM14" << "COM15" << "COM16" << "COM17" << "COM18" << "COM19" << "COM20";
 
     ui->tableWidget_Up->clearContents();
-    QTableWidgetItem *pItem1;
-    QComboBox *pCom,*pBaud,*pParity,*pDatabit,*pStopbit,*pType;
+    QTableWidgetItem *pItem1 = nullptr;
+    QComboBox *pCom = nullptr,*pBaud = nullptr,*pParity = nullptr,*pDatabit = nullptr,*pStopbit = nullptr,*pType = nullptr;
 
-    QString dir_file = COMM_SETTING_FILE;
+    QString dir_file = QApplication::applicationDirPath()+"/"+COMM_SETTING_FILE;
     QFile file(dir_file);
 
     file.open(QIODevice::ReadOnly | QIODevice::Text);

@@ -19,6 +19,7 @@
 #include <QDateTime>
 #include <QToolTip>
 #include <QDir>
+#include <QProcess>
 
 #include "msgbox.h"
 #include "Crc16Class.h"
@@ -87,6 +88,7 @@ public:
     void getuploadstate();
     void writeinLog(QString);
     void setFacState(QString name,QString stateNote);
+    bool getJZModeState();
 
 
 
@@ -100,6 +102,7 @@ public slots:
     void doWork2();
     void doWork3();
     void doWork4();
+    void onReceiveJZModeChanged(bool isOn);
 private:
     Win_QextSerialPort *serial = nullptr;
     /* 互斥锁 */
@@ -110,6 +113,7 @@ private:
     bool isUpLoadWet = true;
     bool isUpLoadDry = true;
     QMap<QString,QString> flusmap;
+
 
 };
 
@@ -146,6 +150,7 @@ public:
     void disconnectMarkers();
 
     QString queryFacCode(QString facName);
+    void connectevent();
 
 
 
@@ -166,6 +171,7 @@ signals:
     void startWork3();
     void startWork4();
     void sendGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors);
+    void sendJSMode(bool isOn);
 
 private:
     Ui::MainWindow *ui;
@@ -197,6 +203,7 @@ private:
     QSqlDatabase db;
     QStringList seqlist,nameseqlist;
     QList<FactorInfo *> facseqlist;
+    int flag = 0;
 
 
 };
