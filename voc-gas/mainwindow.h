@@ -151,8 +151,12 @@ public:
 
     QString queryFacCode(QString facName);
     void connectevent();
+    bool checkAvailable(QSqlDatabase &);
 
 
+
+
+    bool isLogin = false;
 
 private slots:
     void on_pushButton_3_clicked();
@@ -163,6 +167,9 @@ private slots:
     void handleResults(const QString & results);
     void handleMarkersClicked();
     void onReceiveFluParamsMap(QMap<QString,QString>&);
+
+public slots:
+    void writeLog(QString content);
 
 signals:
     /* 工人开始工作（做些耗时的操作 ） */

@@ -33,12 +33,16 @@ MainWindow::MainWindow(QWidget *parent)
     initLogger();   //初始化日志
 
     QLOG_INFO() << "app start!!";
-//    datebaseinit();
+    datebaseinit();
+    isLogin = checkAvailable(db);
+
 
     m_pDateTimer = new QTimer(this);
     m_pDateTimer->setInterval(200);
     connect(m_pDateTimer, SIGNAL(timeout()), this, SLOT(HandleDateTimeout()));
     m_pDateTimer->start();
+
+
 
     Widget_Init();
     Setting_Init();
@@ -272,8 +276,15 @@ void MainWindow::connectevent()
 
     connect(ui->pushButton_8,&QPushButton::clicked,this,[=]()
     {
-
         qDebug()<<__LINE__<<endl;
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
 
         if(flag == 0)
         {
@@ -306,6 +317,14 @@ void MainWindow::connectevent()
 
     connect(ui->pushButton_9,&QPushButton::clicked,this,[=]()
     {
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
         qDebug()<<__LINE__<<"清除模式开启"<<endl;
         if(map_Factors.count()>0)
         {
@@ -341,6 +360,15 @@ void MainWindow::handleResults(const QString & results)
 
 SerialWorker::SerialWorker(Win_QextSerialPort *ser,QObject *parent) : QObject(parent),serial(ser)
 {
+
+}
+
+void MainWindow::writeLog(QString content)
+{
+
+
+    QLOG_INFO()<<QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm")<<content;
+
 
 }
 
@@ -1307,6 +1335,14 @@ void MainWindow::InitFactorMaps()
 
     connect(ui->pushButton_7,&QPushButton::clicked,this,[=]()
     {
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
         histoyChartView = new HistoryChartView(db);
         connect(this,&MainWindow::sendGlobalMapAndList,histoyChartView,&HistoryChartView::onReceiveGlobalMapAndList);
         emit sendGlobalMapAndList(g_FactorsNameList,map_Factors);
@@ -1315,9 +1351,15 @@ void MainWindow::InitFactorMaps()
 
     connect(ui->pushButton_6,&QPushButton::clicked,this,[=]()
     {
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
         historyDateQuery = new HistoryDataQuery();
-
-
         historyDateQuery->show();
     });
 
@@ -2011,10 +2053,16 @@ void MainWindow::setTableContents()
         ui->label_17->setText(v);
     }
 
+    if(map_Factors.contains("标况流量"))
+    {
+        QString v = map_Factors["标况流量"]->m_value;
+        ui->label_15->setText(v);
+    }
+
     if(map_Factors.contains("氧气含量"))
     {
         QString v = map_Factors["氧气含量"]->m_value;
-        ui->label_15->setText(v);
+        ui->label_20->setText(v);
     }
 
 
@@ -2054,17 +2102,107 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_4_clicked()
 {
     QMessageBox::StandardButton result= msgBox::question(QStringLiteral("提示"), "是否退出登录");
-    if(result != QMessageBox::Yes) return;
+    if(result != QMessageBox::Yes)
+    {
+        writeLog(ui->label_3->text() + "已退出登录");
 
-    //my_Process.startDetached("D:/QtWork/build-VocLogin-Desktop_Qt_5_12_12_MinGW_32_bit-Release/release/VocLogin.exe");
+        if(db.isOpen())
+        {
+            QSqlQuery q("delete from T_UserName_Logining;");
+            q.exec();
+        }
+
+        return;
+    }
+
+    my_Process.startDetached(QApplication::applicationDirPath()+"/VocLogin.exe");
     this->close();
 }
 
 void MainWindow::on_pushButton_Set_clicked()
 {
+    if(!isLogin)
+    {
+        if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+        {
+            on_pushButton_4_clicked();
+            return;
+        }
+    }
 
     ParamSet *paramSet = new ParamSet();
-    paramSet->setWindowModality(Qt::ApplicationModal);
+    paramSet->setWindowModality(Qt::WindowModal);
+    connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
+    {
+        QJsonObject pJsonFactors;
+        QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
+        QFile file(dir_file);
+
+        if(file.exists())
+        {
+            file.open(QIODevice::ReadOnly | QIODevice::Text);
+            QString value = file.readAll();
+            file.close();
+            QJsonParseError parseJsonErr;
+            QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
+            if(!(parseJsonErr.error == QJsonParseError::NoError))
+            {
+                QLOG_ERROR() << "配置文件格式错误！";
+            }
+            QJsonObject jsonObject= document.object();
+            if(jsonObject.contains(FACTORS))
+            {
+                pJsonFactors = jsonObject.value(FACTORS).toObject();
+            }
+        }
+
+        //map_Factors 20
+        // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
+
+        int pCnt = g_FactorsNameList.size();
+        for(int i=0;i<pCnt;i++)
+        {
+            QString pItemName = g_FactorsNameList.at(i);
+
+            // 是否上传 因子编码
+            // 量程上限 量程下限 差值 输入通道
+
+            QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
+
+            bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
+            bool pUpload = pJsonfactor.value(UPLOAD).toBool();
+            uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
+            float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
+            float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
+            QString pUnit = pJsonfactor.value(UNIT).toString();
+            float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
+            bool pUsed = pJsonfactor.value("Used").toBool();
+
+            FactorInfo *pItemInfo = new FactorInfo();
+            pItemInfo->m_name = pItemName;
+            pItemInfo->m_value = "0.00";
+    //        pItemInfo->m_state = "D";
+            pItemInfo->m_unit = pUnit;
+            pItemInfo->m_used = pUsed;
+            pItemInfo->m_display = pDisplay;
+            pItemInfo->m_upload = pUpload;
+            pItemInfo->m_Chan = pChan;
+            pItemInfo->m_RangeUpper = pRangeUpper;
+            pItemInfo->m_RangeLower = pRangeLower;
+            pItemInfo->m_LC = pRangeUpper - pRangeLower;
+            pItemInfo->m_AlarmUpper = pAlarmUpper;
+            pItemInfo->m_Alias = QString::number(i);
+
+            if(pItemInfo->m_display)
+            {
+                map_Factors.insert(pItemName,pItemInfo);
+                seqlist.append(pItemInfo->m_Alias);
+                nameseqlist.append(pItemName);
+                facseqlist.append(pItemInfo);
+            }
+        }
+    });
+    connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
     paramSet->show();
 }
 
@@ -2085,6 +2223,38 @@ bool MainWindow::datebaseinit()
     }
 }
 
+bool MainWindow::checkAvailable(QSqlDatabase &db)
+{
+    if(!db.isOpen())
+        return false;
+    QString sqlStr1 = "select UserName from T_User_Logining;";
+
+    QSqlQuery q1;
+    q1.exec(sqlStr1);
+    QString name;
+    while(q1.next())
+    {
+        name = q1.value("UserName").toString();
+        if(!name.isEmpty())
+        {
+            ui->label_3->setText(name);
+            writeLog(name + "已登录");
+            break;
+        }
+
+    }
+    if(name.isEmpty())
+    {
+        ui->label_3->setText("未登录");
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+
+}
+
 void MainWindow::initLogger()
 {
     // 1. 启动日志记录机制
@@ -2094,7 +2264,7 @@ void MainWindow::initLogger()
 
 void MainWindow::editLogger()
 {
-    QString dir_root = "D:/voc-log/";
+    QString dir_root = QApplication::applicationDirPath() +"/voc-log/";
 
     QDateTime date = QDateTime::currentDateTime();
 

@@ -38,17 +38,25 @@ ParamSet::ParamSet(QWidget *parent) :
     connect(ui->uploadwet,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<"只上传湿值"<<endl;
+        emit sendCMDStr("只上传湿值");
         emit sendUpLoadType(UPLOAD_WET);
     });
     connect(ui->uploaddry,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<"只上传干值"<<endl;
+        emit sendCMDStr("只上传干值");
         emit sendUpLoadType(UPLOAD_DRY);
     });
     connect(ui->uploadall,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<"上传所有值"<<endl;
+        emit sendCMDStr("上传所有值");
         emit sendUpLoadType(UPLOAD_ALL);
+    });
+    connect(ui->pushButton_9,&QPushButton::clicked,this,[=]()
+    {
+        emit sendCMDStr("修改显示因子");
+        emit sendChangeFactors(true);
     });
 
 }
@@ -1185,6 +1193,7 @@ bool ParamSet::Save_FactorSet()
             jsonDoc.setObject(pRootJsonObj);
             file.write(jsonDoc.toJson());
             file.close();
+            emit sendCMDStr("因子修改已保存");
             return true;
         }
     }

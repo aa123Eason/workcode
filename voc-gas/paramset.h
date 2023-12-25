@@ -16,8 +16,6 @@
 #include <QJsonDocument>
 #include <QMessageBox>
 
-
-
 namespace Ui {
 class ParamSet;
 }
@@ -54,6 +52,8 @@ public:
 
 signals:
     void sendUpLoadType(int);
+    void sendChangeFactors(bool);
+    void sendCMDStr(QString str);
 
 private slots:
     void on_pushButton_clicked();

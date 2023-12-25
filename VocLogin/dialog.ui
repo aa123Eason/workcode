@@ -44,7 +44,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>24</pointsize>
+     <pointsize>18</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -55,6 +55,9 @@ background-color: rgb(0, 85, 255);</string>
    </property>
    <property name="text">
     <string>VOC上位机软件系统</string>
+   </property>
+   <property name="scaledContents">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
@@ -100,20 +103,28 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>50</y>
-      <width>211</width>
+      <x>10</x>
+      <y>40</y>
+      <width>231</width>
       <height>121</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1,2">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="3,1,3">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetFixedSize</enum>
+       </property>
        <item>
         <widget class="QLabel" name="label_3">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="text">
@@ -133,6 +144,71 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
           <font>
            <pointsize>16</pointsize>
           </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">/*QCombobox主体*/
+QComboBox {
+    border: 2px solid #f3f3f3;/*设置线宽*/
+	background-color: rgb(237, 242, 255);/*背景颜色*/
+    border-radius: 15px;/*圆角*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	text-align:bottom;
+    /*min-height: 5em;*/
+
+	border-style:solid;/*边框为实线型*/
+	border-width:2px;/*边框宽度*/
+	border-color:rgb(77, 123, 255);/*边框颜色*/
+
+	
+}
+/*QCombobox右侧按钮*/
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;/*放于右方顶部*/
+    width: 20px;/*设置按钮范围宽度*/
+ 	/*border-radius: 15px;
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid;*/
+
+    border-top-right-radius: 3px;/*设置边框圆角*/
+    border-bottom-right-radius: 3px;
+/*padding-right: 50px;*/
+}
+
+
+
+/* 下拉后，整个下拉窗体样式 */
+QComboBox QAbstractItemView {
+    border: 2px solid #f3f3f3;/*边框宽度、线形、颜色*/
+	background-color: rgba(237, 242, 255, 1);/*背景颜色*/
+    border-radius: 15px;/*圆角*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+    min-width: 9em;   /*# 组合框的最小宽度*/
+}
+
+/* 下拉后，整个下拉窗体每项的样式 */
+QComboBox QAbstractItemView::item {
+	border-radius: 15px;/*圆角*/
+    height: 30px;   /* 项的高度（设置pComboBox-&gt;setView(new QListView());后，该项才起作用） */
+	background-color: rgb(237, 242, 255);
+
+}
+
+/*以下部分不知为何不生效，有待调试*/
+/* 下拉后，整个下拉窗体越过每项的样式 */
+QComboBox QAbstractItemView::item:hover {
+    color: #FFFFF0;
+       /* 整个下拉窗体越过每项的背景色 */
+	background-color: rgb(98, 0, 255);
+}
+
+/* 下拉后，整个下拉窗体被选择的每项的样式 */
+QComboBox QAbstractItemView::item:selected {
+    color: #FFFFF0;
+	background-color: rgb(0, 85, 200);
+}
+</string>
          </property>
          <item>
           <property name="text">
@@ -173,6 +249,8 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
          <property name="font">
           <font>
            <pointsize>16</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="text">
@@ -190,13 +268,34 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
          </property>
          <property name="font">
           <font>
-           <pointsize>16</pointsize>
+           <family>微软雅黑</family>
+           <pointsize>12</pointsize>
+           <weight>9</weight>
+           <italic>false</italic>
+           <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">border-top-color: rgb(255, 255, 255);
-border-left-color: rgb(255, 255, 255);
-border-right-color: rgb(255, 255, 255);</string>
+          <string notr="true">QLineEdit
+{
+	border: 2px solid #f3f3f3;/*设置线宽*/
+	background-color: rgb(237, 242, 255);/*背景颜色*/
+    border-radius: 15px;/*圆角*/
+    padding: 1px 2px 1px 2px;  /*针对于组合框中的文本内容*/
+	text-align:bottom;
+    
+    /*min-height: 5em;*/
+
+	border-style:solid;/*边框为实线型*/
+	border-width:2px;/*边框宽度*/
+	border-color:rgb(77, 123, 255);/*边框颜色*/
+
+	
+	
+	color: rgb(0, 0, 0);
+	
+	font: 75 12pt &quot;微软雅黑&quot;;
+}</string>
          </property>
         </widget>
        </item>
