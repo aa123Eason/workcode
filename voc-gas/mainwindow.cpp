@@ -42,18 +42,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_pDateTimer, SIGNAL(timeout()), this, SLOT(HandleDateTimeout()));
     m_pDateTimer->start();
 
-
-
     Widget_Init();
     Setting_Init();
-
 
     InitComm();
     InitFactorMaps();
 
     chartinit();
-
-
 
     setTableHeader();
     setTableContents();
@@ -199,12 +194,11 @@ void MainWindow::chartinit()
 
     connectMarkers();
 
-
-
     QChartView *chartView = new QChartView(chart,ui->widget);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setFixedSize(500,400);
     chartView->setRubberBand(QChartView::VerticalRubberBand);
+    chartView->setAlignment(Qt::AlignCenter);
 }
 
 void MainWindow::connectMarkers()

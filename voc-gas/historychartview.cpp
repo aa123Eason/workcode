@@ -60,7 +60,8 @@ void HistoryChartView::chartInit()
     QChartView *mainChartView = new QChartView(chart,ui->chartWidget);
     mainChartView->setRenderHint(QPainter::Antialiasing);
 //    qDebug()<<__LINE__<<ui->chartWidget->width()<<ui->chartWidget->height()<<endl;
-    mainChartView->setFixedSize(1440,960);
+    mainChartView->setFixedSize(800,570);
+    mainChartView->setAlignment(Qt::AlignCenter);
 //    mainChartView->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
 //    mainChartView->setRubberBand(QChartView::VerticalRubberBand);
 
