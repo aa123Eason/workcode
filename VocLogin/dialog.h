@@ -1,4 +1,4 @@
-#ifndef DIALOG_H
+﻿#ifndef DIALOG_H
 #define DIALOG_H
 
 #include <QDialog>
@@ -13,6 +13,8 @@
 #include <windows.h>
 #include <QDateEdit>
 #include <QMessageBox>
+
+#pragma comment(lib, "user32.lib")
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -31,7 +33,7 @@ public:
     bool writeindb(QSqlDatabase &db,QString name);
 
 protected:
-    bool eventFilter(QObject *, QEvent *);
+    bool eventFilter(QObject *obj = nullptr, QEvent * = nullptr);
 
 public slots:
     void on_pushButton_3_clicked();

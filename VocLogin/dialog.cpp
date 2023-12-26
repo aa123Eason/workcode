@@ -1,4 +1,4 @@
-#include "dialog.h"
+﻿#include "dialog.h"
 #include "ui_dialog.h"
 #include <QDebug>
 #include <QTextCodec>
@@ -22,6 +22,9 @@ Dialog::Dialog(QWidget *parent)
     connect(my_Process,&QProcess::errorOccurred,this,&Dialog::showError);
     connect(my_Process,SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(showFinished(int,QProcess::ExitStatus)));
 //    connect(ui->pushButton,&QPushButton::clicked,this,&Dialog::on_pushButton_clicked);
+    ui->lineEdit_2->installEventFilter(this);
+
+
 }
 
 Dialog::~Dialog()
@@ -34,29 +37,29 @@ Dialog::~Dialog()
 
 bool Dialog::eventFilter(QObject *obj, QEvent *e)
 {
-    if(obj != ui->lineEdit_2)
+    if(obj == ui->lineEdit_2)
     {
+        qDebug()<<__LINE__<<obj->objectName()<<endl;
         if(e->type() == QEvent::MouseButtonPress)
         {
             QMouseEvent *me = (QMouseEvent *)e;
             if(me->button()==Qt::LeftButton)
             {
-                void* keyBoard = nullptr;
-                bool m_b = Wow64DisableWow64FsRedirection(&keyBoard);
-                QString boardExe = "C:/Windows/System32/osk.exe";
-
-                QString params = "";
-                ShellExecute(nullptr, L"open", (LPCWSTR)boardExe.utf16(), (LPCWSTR)params.utf16(), nullptr, SW_SHOWNORMAL);
-                if (m_b)
+                PVOID OldValue;
+                BOOL bRet = Wow64DisableWow64FsRedirection (&OldValue);
+                QString csProcess="C:\\Windows\\System32\\osk.exe";
+                QString params="";
+                ShellExecute(NULL, L"open", (LPCWSTR)csProcess.utf16(), (LPCWSTR)params.utf16(), NULL, SW_SHOWNORMAL);
+                if ( bRet )
                 {
-                    Wow64RevertWow64FsRedirection(keyBoard);
+                    Wow64RevertWow64FsRedirection(OldValue);
                 }
 
             }
         }
     }
 
-    return QWidget::eventFilter(obj,e);
+    return QDialog::eventFilter(obj,e);
 }
 
 void Dialog::on_pushButton_3_clicked()

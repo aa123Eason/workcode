@@ -140,7 +140,7 @@ MainWindow::~MainWindow()
 
 
      db.close();
-     QString progress = "taskkill /im VocGas.exe /f";
+     QString progress = "taskkill /F /IM VocGas.exe /T";
      QProcess::execute(progress);
 
 }

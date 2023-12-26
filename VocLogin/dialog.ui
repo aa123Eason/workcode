@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>VOCLogin</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(218, 218, 218);

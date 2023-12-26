@@ -30,5 +30,6 @@
         <file>images/yl.png</file>
         <file>images/wd.png</file>
         <file>images/checkboxstyle.qss</file>
+        <file>images/icon.ico</file>
     </qresource>
 </RCC>

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>VOCGas</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -72,7 +72,7 @@ background-color: rgb(0, 170, 255);</string>
      <item>
       <spacer name="horizontalSpacer">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -462,7 +462,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/wd.png</pixmap>
+            <pixmap>:/images/wd.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -534,7 +534,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/yl.png</pixmap>
+            <pixmap>:/images/yl.png</pixmap>
            </property>
           </widget>
          </item>
@@ -603,7 +603,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/ls.png</pixmap>
+            <pixmap>:/images/ls.png</pixmap>
            </property>
           </widget>
          </item>
@@ -672,7 +672,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/bk.png</pixmap>
+            <pixmap>:/images/bk.png</pixmap>
            </property>
           </widget>
          </item>
@@ -759,7 +759,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/sd.png</pixmap>
+            <pixmap>:/images/sd.png</pixmap>
            </property>
           </widget>
          </item>
@@ -828,7 +828,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/o2.png</pixmap>
+            <pixmap>:/images/o2.png</pixmap>
            </property>
           </widget>
          </item>
@@ -1153,8 +1153,6 @@ outline:0px; /*禁止焦点*/
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
