@@ -151,6 +151,13 @@ void MainWIndow::startApp(QString name)
     {
         DeviceCMDCtrlDlg *deviceCMDCtrlDlg = new DeviceCMDCtrlDlg();
         loadAppDlg(deviceCMDCtrlDlg);
+
+        connect(deviceCMDCtrlDlg,&DeviceCMDCtrlDlg::sendReback,this,[=](bool flag)
+        {
+            appLayout.removeWidget(deviceCMDCtrlDlg);
+            deviceCMDCtrlDlg->deleteLater();
+            ui->mainpanel->setCurrentIndex(1);
+        });
     }
 }
 
