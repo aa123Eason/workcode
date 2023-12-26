@@ -24,6 +24,7 @@
 #include <QDialog>
 #include <QList>
 #include <QLayoutItem>
+#include <QMessageBox>
 
 
 
@@ -79,5 +80,6 @@ private:
     QGridLayout layout;
     QVBoxLayout appLayout;
     int id1;
+    bool isLogin = false;
 };
 #endif // MAINWINDOW_H

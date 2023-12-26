@@ -18,7 +18,8 @@ DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 
 void DeviceCMDCtrlDlg::init()
 {
-
+    ui->sendEdit->clear();
+    ui->receiveEdit->clear();
 }
 
 void DeviceCMDCtrlDlg::connectevent()
@@ -71,5 +72,50 @@ void DeviceCMDCtrlDlg::connectevent()
 void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 {
     qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
+
+    serial = new QSerialPort(this);
+
+    //set params
+    serial->setPortName(ui->curPort->currentText());
+    serial->setBaudRate(QSerialPort::Baud9600);
+    serial->setDataBits(QSerialPort::Data8);
+    serial->setStopBits(QSerialPort::OneStop);
+    serial->setParity(QSerialPort::NoParity);
+
+    //open port
+    if(serial->open(QIODevice::ReadWrite))
+    {
+        QString cmd = ui->sendEdit->text().trimmed();
+        QByteArray bytArr;
+        bytArr.append(cmd.toLatin1().toHex());
+
+        //send cmd
+        serial->write(bytArr);
+
+        while(serial->waitForBytesWritten(3000));
+        bytArr.clear();
+        connect(serial,SIGNAL(readyRead),this,SLOT(readData));
+
+    }
+}
+
+void DeviceCMDCtrlDlg::readData()
+{
+    QByteArray data;
+
+    if(serial!=nullptr)
+    {
+        if(serial->isOpen())
+        {
+            data.append(serial->readAll());
+            QString str = ui->curDevice->currentText();
+            str += data.toHex();
+            ui->receiveEdit->setPlainText(str);
+            serial->close();
+        }
+    }
+
+
+    data.clear();
 
 }

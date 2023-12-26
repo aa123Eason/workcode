@@ -61,11 +61,28 @@ void MainWIndow::connectevent()
     });
     connect(ui->main_btn,&QPushButton::clicked,this,[=]()
     {
-        ui->mainpanel->setCurrentIndex(1);
+        if(isLogin||ui->login->text() == "退出登录")
+        {
+            ui->mainpanel->setCurrentIndex(1);
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","未登录!");
+            ui->mainpanel->setCurrentIndex(2);
+        }
     });
     connect(ui->login,&QPushButton::clicked,this,[=]()
     {
-        ui->mainpanel->setCurrentIndex(2);
+        if(ui->login->text() == "登录")
+            ui->mainpanel->setCurrentIndex(2);
+        else if(ui->login->text() == "退出登录")
+        {
+            if(QMessageBox::Yes == QMessageBox::question(this,"提示","确定退出登录?"))
+            {
+                ui->mainpanel->setCurrentIndex(0);
+                ui->login->setText("登录");
+            }
+        }
     });
 
     connect(ui->mainpanel,&QStackedWidget::currentChanged,this,[=](int index)
@@ -103,6 +120,37 @@ void MainWIndow::connectevent()
     });
 
     connect(this,&MainWIndow::appClicked,this,&MainWIndow::startApp);
+
+    connect(ui->btn_Login,&QPushButton::clicked,this,[=]()
+    {
+
+        if(ui->userNameEdit->text() == "admin" && ui->pwdEdit->text() == "lcdcm")
+        {
+             isLogin = true;
+        }
+        else
+        {
+            isLogin = false;
+        }
+
+        if(isLogin)
+        {
+            QMessageBox::about(this,"提示","登录成功!");
+            ui->mainpanel->setCurrentIndex(1);
+            ui->login->setText("退出登录");
+
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","用户名或密码不正确，登录失败!");
+        }
+    });
+
+    connect(ui->btn_Cancel,&QPushButton::clicked,this,[=]()
+    {
+        ui->userNameEdit->clear();
+        ui->pwdEdit->clear();
+    });
 }
 
 void MainWIndow::addApp(int row,int col,QString name,QString iconpath)

@@ -7,6 +7,9 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QCloseEvent>
+#include <QSerialPort>
+#include <QString>
+#include <QByteArray>
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
@@ -29,9 +32,11 @@ signals:
 
 public slots:
     void onReceiveCMD(QString cmd);
+    void readData();
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
+    QSerialPort *serial = nullptr;
 };
 
 #endif // DEVICECMDCTRLDLG_H

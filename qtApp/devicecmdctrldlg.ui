@@ -115,7 +115,7 @@ QPushButton::hover
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="curPort_2">
+      <widget class="QComboBox" name="curDevice">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
