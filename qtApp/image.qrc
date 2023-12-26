@@ -10,5 +10,8 @@
         <file>image/restart.png</file>
         <file>image/update.png</file>
         <file>image/usb.png</file>
+        <file>image/xtsj.png</file>
+        <file>image/appdft.png</file>
+        <file>image/down_arrow.png</file>
     </qresource>
 </RCC>

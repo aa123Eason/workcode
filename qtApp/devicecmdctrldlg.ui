@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeviceCMDCtrlDlg</class>
+ <widget class="QDialog" name="DeviceCMDCtrlDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>836</width>
+    <height>471</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,1,7">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="12,0">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>设备指令控制</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_quit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="image.qrc">
+         <normaloff>:/new/images/image/close_hover.png</normaloff>:/new/images/image/close_hover.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,2,0,2">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="styleSheet">
+        <string notr="true">font: 75 18pt &quot;微软雅黑&quot;;
+</string>
+       </property>
+       <property name="text">
+        <string>选择设备</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="curPort_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QComboBox{
+  color:#666666;
+  font: 75 18pt &quot;微软雅黑&quot;;
+  padding: 1px 15px 1px 3px;
+  border:1px solid rgba(228,228,228,1);
+  border-radius:5px 5px 0px 0px;
+} 
+
+  QComboBox::drop-down {
+      subcontrol-origin: padding;
+      subcontrol-position: top right;
+      width: 15px;
+      border:none;
+  }
+
+  QComboBox::down-arrow {
+      
+	image: url(:/new/images/image/down_arrow.png);
+  }
+
+  QComboBox QAbstractItemView{
+	background:rgba(255,255,255,1);
+    border:1px solid rgba(228,228,228,1);
+    border-radius:0px 0px 5px 5px;
+	font: 75 18pt &quot;微软雅黑&quot;;
+    outline: 0px;  
+  }
+
+QComboBox QAbstractItemView::item{
+	height:36px;
+	color:#666666;
+	padding-left:9px;
+	background-color:#FFFFFF;
+	font: 75 14pt &quot;微软雅黑&quot;;
+}
+QComboBox QAbstractItemView::item:hover{ 
+  background-color:#409CE1;
+  color:#ffffff;
+}
+QComboBox QAbstractItemView::item:selected{
+  background-color:#409CE1;
+  color:#ffffff;
+}</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>COD</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>总磷蓝创</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>高指云璟</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>氨氮蓝创</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="styleSheet">
+        <string notr="true">font: 75 18pt &quot;微软雅黑&quot;;
+</string>
+       </property>
+       <property name="text">
+        <string>选择串口</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="curPort">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QComboBox{
+  color:#666666;
+  font: 75 18pt &quot;微软雅黑&quot;;
+  padding: 1px 15px 1px 3px;
+  border:1px solid rgba(228,228,228,1);
+  border-radius:5px 5px 0px 0px;
+} 
+
+  QComboBox::drop-down {
+      subcontrol-origin: padding;
+      subcontrol-position: top right;
+      width: 15px;
+      border:none;
+  }
+
+  QComboBox::down-arrow {
+      
+	image: url(:/new/images/image/down_arrow.png);
+  }
+
+  QComboBox QAbstractItemView{
+	background:rgba(255,255,255,1);
+    border:1px solid rgba(228,228,228,1);
+    border-radius:0px 0px 5px 5px;
+	font: 75 18pt &quot;微软雅黑&quot;;
+    outline: 0px;  
+  }
+
+QComboBox QAbstractItemView::item{
+	height:36px;
+	color:#666666;
+	padding-left:9px;
+	background-color:#FFFFFF;
+	font: 75 14pt &quot;微软雅黑&quot;;
+}
+QComboBox QAbstractItemView::item:hover{ 
+  background-color:#409CE1;
+  color:#ffffff;
+}
+QComboBox QAbstractItemView::item:selected{
+  background-color:#409CE1;
+  color:#ffffff;
+}</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>COM1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM6</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM7</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM8</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM9</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM10</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM11</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>COM12</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>USB-COM1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>USB-COM2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>USB-COM3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>USB-COM4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XR-COM1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XR-COM2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XR-COM3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>XR-COM4</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,2,2,1,1,1">
+     <item>
+      <widget class="QPushButton" name="btnJZ">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	
+	background-color: rgb(0, 85, 0);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 14pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	
+	background-color: rgb(0, 170, 0);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>零点校准/量程校准</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btntestnow">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	background-color: rgb(0, 85, 255);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 15pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	background-color: rgb(0, 129, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>即时采样/立即测量</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnfc">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	background-color: rgb(255, 85, 0);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 16pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	background-color: rgb(194, 129,0);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>启动清洗/反吹</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBDCY">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	
+	background-color: rgb(85, 85, 255);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 18pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	
+	background-color: rgb(57, 57, 170);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>比对采样</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteSend">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	background-color: rgb(0, 129, 194);
+	;
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 18pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	background-color: rgb(0, 85, 255);
+	
+}
+</string>
+       </property>
+       <property name="text">
+        <string>发送清除</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="deleteReceive">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	
+	background-color: rgb(85, 0, 0);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 18pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	
+	background-color: rgb(165, 0, 0);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>接收清除</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,6,1">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 18pt &quot;微软雅黑&quot;;
+</string>
+       </property>
+       <property name="text">
+        <string>发送内容</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="sendEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_sendcmd">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	
+	background-color: rgb(0, 85, 255);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 22pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	background-color: rgb(0, 129, 194);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>发送</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 18pt &quot;微软雅黑&quot;;
+</string>
+       </property>
+       <property name="text">
+        <string>接收内容</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="receiveEdit">
+       <property name="font">
+        <font>
+         <pointsize>18</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>1234</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="image.qrc"/>
+ </resources>
+ <connections/>
+</ui>
