@@ -56,13 +56,17 @@ MainWindow::MainWindow(QWidget *parent)
     connectevent();
 
     id1 = startTimer(1000);
+    id_min = startTimer(60*1000);
+    id_hou = startTimer(60*60*1000);
+    id_day = startTimer(24*3600*1000);
+    id_mon = startTimer(30*24*3600*1000);
 }
 
 MainWindow::~MainWindow()
 {
 
 
-    delete ui;
+
 
     qDeleteAll(map_Factors);
 
@@ -138,6 +142,8 @@ MainWindow::~MainWindow()
      QString progress = "taskkill /F /IM VocGas.exe /T";
      QProcess::execute(progress);
 
+     delete ui;
+
 }
 
 void MainWindow::timerEvent(QTimerEvent * ev)
@@ -145,6 +151,22 @@ void MainWindow::timerEvent(QTimerEvent * ev)
     if(ev->timerId() == id1)
     {
         setTableContents();
+    }
+    else if(ev->timerId() == id_min)
+    {
+        recordrtkdata(db,"min");
+    }
+    else if(ev->timerId() == id_hou)
+    {
+        recordrtkdata(db,"hou");
+    }
+    else if(ev->timerId() == id_day)
+    {
+        recordrtkdata(db,"day");
+    }
+    else if(ev->timerId() == id_mon)
+    {
+        recordrtkdata(db,"mon");
     }
 }
 
@@ -344,6 +366,11 @@ void MainWindow::connectevent()
         }
     });
 
+    connect(ui->record_btn,&QPushButton::clicked,this,[=]()
+    {
+        recordrtkdata(db,"min");
+    });
+
 }
 
 void MainWindow::handleResults(const QString & results)
@@ -440,6 +467,118 @@ void SerialWorker::writeinLog(QString str)
     file.write(bytArr);
     file.close();
     bytArr.clear();
+}
+
+void MainWindow::recordrtkdata(QSqlDatabase &db,QString dtType)
+{
+    QDateTime recordDT = QDateTime::currentDateTime();
+    QString timeStr;
+    QString tableName;
+    if(dtType == "min")
+    {
+        timeStr = recordDT.toString("yyyy-MM-dd HH:mm");
+        tableName = "T_History_Minute";
+    }
+    else if(dtType == "hou")
+    {
+        timeStr = recordDT.toString("yyyy-MM-dd HH");
+        tableName = "T_History_Hour";
+    }
+    else if(dtType == "day")
+    {
+        timeStr = recordDT.toString("yyyy-MM-dd");
+        tableName = "T_History_Day";
+    }
+    else if(dtType == "mon")
+    {
+        timeStr = recordDT.toString("yyyy-MM");
+        tableName = "T_History_Month";
+    }
+
+    if(!db.isOpen())
+        return;
+    QString record_cmd = "insert into " + tableName+"(";
+
+    QMap<QString,FactorInfo *>::iterator it = map_Factors.begin();
+    while(it != map_Factors.end())
+    {
+        QString facName = it.key();
+        QString oriName = HistoryChartView::facNameMap().key(facName);
+        record_cmd += oriName + ",";
+
+        it++;
+    }
+
+    record_cmd += "StatusBit,HistoryTime,Creator,CreateTime,Deleted) values(";
+    QMap<QString,FactorInfo *>::iterator it0 = map_Factors.begin();
+    int numN,numD,numT,numC;
+    while(it0 != map_Factors.end())
+    {
+        FactorInfo *facInfo = it0.value();
+        record_cmd += "\'"+facInfo->m_value + "\',";
+        QString facstate = facInfo->m_state;
+        if(facstate == "N")
+        {
+            numN++;
+        }
+        else if(facstate == "D")
+        {
+            numD++;
+        }
+        else if(facstate == "T")
+        {
+            numT++;
+        }
+        else if(facstate == "C")
+        {
+            numC++;
+        }
+
+        it0++;
+    }
+
+    QList<int> numStateList;
+    numStateList<<numN<<numD<<numT<<numC;
+    int max = numStateList[0];
+    for(int num:numStateList)
+    {
+        if(max<num)
+            max = num;
+    }
+
+    QString recordState;
+    if(max == numN)
+    {
+        recordState = "N";
+    }
+    else if(max == numD)
+    {
+        recordState = "D";
+    }
+    else if(max == numT)
+    {
+        recordState = "T";
+    }
+    else
+    {
+        recordState = "C";
+    }
+
+    record_cmd += "\'"+recordState +"\',\'";
+    record_cmd += timeStr +"\',";
+    if(ui->label_3->text()!="未登录")
+        record_cmd += "\'\',";
+    else
+        record_cmd += "\'"+ui->label_3->text()+"\',";
+    record_cmd += "\'"+recordDT.toString("yyyy-MM-dd HH:mm:ss.zzz") +"\',";
+    record_cmd += "\'0\');";
+
+    qDebug()<<__LINE__<<record_cmd<<endl;
+
+    QSqlQuery q(db);
+
+    q.exec(record_cmd);
+
 }
 
 void SerialWorker::skybluework()

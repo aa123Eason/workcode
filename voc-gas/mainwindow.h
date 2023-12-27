@@ -152,6 +152,7 @@ public:
     QString queryFacCode(QString facName);
     void connectevent();
     bool checkAvailable(QSqlDatabase &);
+    void recordrtkdata(QSqlDatabase &,QString dtType);
 
 
 
@@ -189,7 +190,7 @@ private:
     HistoryChartView *histoyChartView = nullptr;
     HistoryDataQuery *historyDateQuery = nullptr;
 
-    int id1; //定时器1的唯一标示
+    int id1,id_min,id_hou,id_day,id_mon; //定时器1的唯一标示
 
     Win_QextSerialPort *m_pSerialCom1 = nullptr; // 声明串口
     QThread serialThread_1;
