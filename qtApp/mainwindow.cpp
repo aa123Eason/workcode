@@ -32,6 +32,7 @@ void MainWIndow::timerEvent(QTimerEvent *event)
 void MainWIndow::widgetInit()//mainwindow init
 {
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnBottomHint);
+
     ui->mainpanel->setCurrentIndex(0);
     ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"));
     QString str;
@@ -163,11 +164,20 @@ void MainWIndow::connectevent()
 
 void MainWIndow::addApp(int row,int col,QString name,QString iconpath)
 {
+//    QDesktopWidget* pDesktopWidget = QApplication::desktop();
+//    //获取可用桌面大小
+//    QRect deskRect = QApplication::desktop()->availableGeometry();
+
     AppButton *btn = new AppButton(name,iconpath,this);
+    qreal w = layout.geometry().width()/5-6;
+    qreal h = w * 0.618;
+    w= qRound64(w);
+    h = qRound64(h);
+    btn->setSize(w,h);
     layout.addWidget(btn,row,col,Qt::AlignCenter);
-    btn->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    layout.setRowStretch(row,1);
-    layout.setColumnStretch(col,1);
+    btn->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    layout.setRowStretch(row,2);
+    layout.setColumnStretch(col,2);
 
     btn->installEventFilter(this);
 
@@ -248,6 +258,9 @@ void MainWIndow::deleteApp()
 
 void MainWIndow::addLocalApp()
 {
+    layout.setSizeConstraint(QLayout::SetMaximumSize);
+    ui->appFrame->setLayout(&layout);
+
     addApp(0,0,"系统信息");
     addApp(0,1,"网络设置");
     addApp(0,2,"采集设备设置");
@@ -258,10 +271,10 @@ void MainWIndow::addLocalApp()
     addApp(1,2,"补发数据");
     addApp(1,3,"特殊值配置");
     addApp(1,4,"串口输出配置");
-    addApp(2,0,"系统更新和备份",":/new/images/image/restart.png");
+    addApp(2,0,"系统更新",":/new/images/image/restart.png");
     addApp(2,1,"设备指令控制",":/new/images/image/xtsj.png");
 
-    ui->appFrame->setLayout(&layout);
+
 }
 
 void MainWIndow::loadAppDlg(QDialog *dlg)

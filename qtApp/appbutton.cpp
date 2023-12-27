@@ -70,3 +70,8 @@ void AppButton::setPixmap(QString picUrl)
         ui->btn_icon->setPixmap(pixmap);
     }
 }
+
+void AppButton::setSize(int w,int h)
+{
+    this->resize(w,h);
+}

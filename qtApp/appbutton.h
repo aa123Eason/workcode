@@ -24,6 +24,7 @@ public:
 
     void setName(QString name);
     void setPixmap(QString picUrl);
+    void setSize(int w,int h);
 private:
     Ui::AppButton *ui;
 };

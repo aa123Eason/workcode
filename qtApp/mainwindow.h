@@ -25,6 +25,10 @@
 #include <QList>
 #include <QLayoutItem>
 #include <QMessageBox>
+#include <QGuiApplication>
+#include <QCursor>
+#include <QDesktopWidget>
+#include <QApplication>
 
 
 
