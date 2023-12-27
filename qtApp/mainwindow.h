@@ -59,6 +59,7 @@ public:
     void addApp(int row,int col,QString name="",QString iconpath="");
     void addLocalApp();
     void loadAppDlg(QDialog *dlg=nullptr);
+    void deleteApp();
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);

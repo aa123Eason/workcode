@@ -10,6 +10,10 @@
 #include <QSerialPort>
 #include <QString>
 #include <QByteArray>
+#include <QEvent>
+#include <QProcess>
+
+#include "usbutility.h"
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
@@ -26,17 +30,21 @@ public:
     void init();
     void connectevent();
 
+protected:
+    bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
+
 signals:
     void sendReback(bool);
     void sendCMD(QString cmd);
 
 public slots:
     void onReceiveCMD(QString cmd);
-    void readData();
+
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
     QSerialPort *serial = nullptr;
+    QString str;
 };
 
 #endif // DEVICECMDCTRLDLG_H

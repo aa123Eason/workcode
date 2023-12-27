@@ -20,13 +20,15 @@ SOURCES += \
     devicecmdctrldlg.cpp \
     facpanel.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    usbutility.cpp
 
 HEADERS += \
     appbutton.h \
     devicecmdctrldlg.h \
     facpanel.h \
-    mainwindow.h
+    mainwindow.h \
+    usbutility.h
 
 FORMS += \
     appbutton.ui \

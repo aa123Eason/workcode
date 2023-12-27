@@ -49,6 +49,8 @@ void MainWIndow::widgetInit()//mainwindow init
 
     ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
 
+    ui->userNameEdit->installEventFilter(this);
+    ui->pwdEdit->installEventFilter(this);
 
 }
 
@@ -151,6 +153,12 @@ void MainWIndow::connectevent()
         ui->userNameEdit->clear();
         ui->pwdEdit->clear();
     });
+
+    connect(ui->openKeyboard,&QPushButton::clicked,this,[=]()
+    {
+        qDebug()<<"open keyboard"<<endl;
+        QProcess::execute("florence");
+    });
 }
 
 void MainWIndow::addApp(int row,int col,QString name,QString iconpath)
@@ -187,6 +195,18 @@ bool MainWIndow::eventFilter(QObject *obj,QEvent *e)
                 emit appClicked(curAppName);
             }
         }
+        else if(obj == ui->userNameEdit||obj == ui->pwdEdit)
+        {
+            if(e->type() == QEvent::MouseButtonPress)
+            {
+                QMouseEvent *me = (QMouseEvent *)e;
+                if(me->button() == Qt::LeftButton)
+                {
+                    qDebug()<<"open keyboard"<<endl;
+                    QProcess::execute("florence");
+                }
+            }
+        }
     }
 
     return QWidget::eventFilter(obj,e);
@@ -194,9 +214,10 @@ bool MainWIndow::eventFilter(QObject *obj,QEvent *e)
 
 void MainWIndow::startApp(QString name)
 {
-    ui->mainpanel->setCurrentIndex(3);
+
     if(name == "设备指令控制")
     {
+        ui->mainpanel->setCurrentIndex(3);
         DeviceCMDCtrlDlg *deviceCMDCtrlDlg = new DeviceCMDCtrlDlg();
         loadAppDlg(deviceCMDCtrlDlg);
 
@@ -206,6 +227,22 @@ void MainWIndow::startApp(QString name)
             deviceCMDCtrlDlg->deleteLater();
             ui->mainpanel->setCurrentIndex(1);
         });
+    }
+    else
+    {
+        //提示，应用尚未开发，敬请期待……
+        deleteApp();
+        QMessageBox::warning(this,"提示",name+"尚未开发，敬请期待……");
+    }
+}
+
+void MainWIndow::deleteApp()
+{
+    //删除其他窗口
+    for(int i=0;i<appLayout.count();++i)
+    {
+        QLayoutItem *it = appLayout.layout()->itemAt(i);
+        appLayout.removeItem(it);
     }
 }
 
@@ -232,11 +269,7 @@ void MainWIndow::loadAppDlg(QDialog *dlg)
     if(dlg!=nullptr)
     {
         //删除其他窗口
-        for(int i=0;i<appLayout.count();++i)
-        {
-            QLayoutItem *it = appLayout.layout()->itemAt(i);
-            appLayout.removeItem(it);
-        }
+        deleteApp();
         //添加目标窗口
         appLayout.addWidget(dlg,1,Qt::AlignCenter);
         ui->page_appshow->setLayout(&appLayout);
