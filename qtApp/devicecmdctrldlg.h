@@ -16,7 +16,6 @@
 
 #include "usbutility.h"
 #include "uartThread/uartthread.h"
-#include <termios.h>
 #include <unistd.h>
 
 namespace Ui {
@@ -42,12 +41,15 @@ signals:
     void sendCMD(QString cmd);
 
 public slots:
+    #ifdef Q_OS_LINUX
     void onReceiveCMD(QString cmd);
-
+    #endif
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
-    UartThread *muartThread;//串口线程对象
+#ifdef Q_OS_LINUX
+    UartThread *muartThread=nullptr;//串口线程对象
+#endif
     QString str;
     QString comstr;
 };

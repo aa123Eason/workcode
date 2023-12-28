@@ -2,6 +2,10 @@
 #define FACPANEL_H
 
 #include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QString>
+#include <QDebug>
 
 namespace Ui {
 class facPanel;
@@ -14,6 +18,13 @@ class facPanel : public QWidget
 public:
     explicit facPanel(QWidget *parent = nullptr);
     ~facPanel();
+
+    void setcode(QString code);
+    void setname(QString name);
+    void setvalue(QString value);
+    void setunit(QString unit);
+    void setstate(QString state);
+
 
 private:
     Ui::facPanel *ui;

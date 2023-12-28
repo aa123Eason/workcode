@@ -238,7 +238,7 @@ QPushButton::hover
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page_rtk">
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="10,1">
@@ -258,21 +258,7 @@ QPushButton::hover
         <number>3</number>
        </property>
        <item>
-        <widget class="QListWidget" name="list_rtk">
-         <property name="styleSheet">
-          <string notr="true">background-color: transparent;
-border-color: rgb(186, 189, 182);</string>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="viewMode">
-          <enum>QListView::IconMode</enum>
-         </property>
-        </widget>
+        <layout class="QGridLayout" name="rtklayout"/>
        </item>
        <item>
         <widget class="QLabel" name="state_rtkfacs">

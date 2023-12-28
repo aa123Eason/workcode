@@ -1,3 +1,4 @@
+#ifdef Q_OS_WIN
 #include "uartthread.h"
 
 UartThread::UartThread(QObject *parent) :
@@ -119,4 +120,4 @@ void UartThread::writeUart(const char *dataToWrite )
     this->mcom->flush();
     this->mcom->write(dataToWrite);
 }
-
+#endif

@@ -1,6 +1,8 @@
 #ifndef _QEXTSERIALBASE_H_
 #define _QEXTSERIALBASE_H_
 
+
+
 #include <QIODevice>
 #include <QFile>
 #include <QThread>

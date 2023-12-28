@@ -29,12 +29,17 @@
 #include <QCursor>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QMap>
 
 
 
 #include "facpanel.h"
 #include "appbutton.h"
 #include "devicecmdctrldlg.h"
+#include "dataquery.h"
+#include "deviceset.h"
+#include "updeviceset.h"
+#include "httpclient.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -62,8 +67,10 @@ public:
     void connectevent();
     void addApp(int row,int col,QString name="",QString iconpath="");
     void addLocalApp();
-    void loadAppDlg(QDialog *dlg=nullptr);
-    void deleteApp();
+//    void loadAppDlg(QDialog *dlg=nullptr);
+    void loadAppDlg(QWidget *w=nullptr);
+    void deleteApp();    
+    QJsonObject get_rtk_data();
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
@@ -86,5 +93,10 @@ private:
     QVBoxLayout appLayout;
     int id1;
     bool isLogin = false;
+    DeviceCMDCtrlDlg *deviceCMDCtrlDlg = nullptr;
+//    DeviceSet *deviceSet = nullptr;
+//    UpDeviceSet *upDeviceSet = nullptr;
+//    DataQuery *dataQuery = nullptr;
+    QMap<QString,facPanel*> map;
 };
 #endif // MAINWINDOW_H

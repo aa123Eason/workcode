@@ -17,10 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     appbutton.cpp \
+    dataquery.cpp \
     devicecmdctrldlg.cpp \
+    deviceset.cpp \
     facpanel.cpp \
+    httpclient.cpp \
     main.cpp \
     mainwindow.cpp \
+    updeviceset.cpp \
     usbutility.cpp \
     uartThread/posix_qextserialport.cpp \
     uartThread/qextserialbase.cpp \
@@ -29,9 +33,13 @@ SOURCES += \
 
 HEADERS += \
     appbutton.h \
+    dataquery.h \
     devicecmdctrldlg.h \
+    deviceset.h \
     facpanel.h \
+    httpclient.h \
     mainwindow.h \
+    updeviceset.h \
     usbutility.h \
     uartThread/posix_qextserialport.h \
     uartThread/qextserialbase.h \
@@ -40,9 +48,12 @@ HEADERS += \
 
 FORMS += \
     appbutton.ui \
+    dataquery.ui \
     devicecmdctrldlg.ui \
+    deviceset.ui \
     facpanel.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    updeviceset.ui
 
 TRANSLATIONS += \
     qtApp_zh_CN.ts

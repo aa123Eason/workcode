@@ -16,5 +16,8 @@
         <file>image/checkboxstyle.qss</file>
         <file>image/Off.png</file>
         <file>image/On.png</file>
+        <file>image/device.png</file>
+        <file>image/query.png</file>
+        <file>image/swj.png</file>
     </qresource>
 </RCC>

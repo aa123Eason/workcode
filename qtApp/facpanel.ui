@@ -39,7 +39,7 @@
         </font>
        </property>
        <property name="text">
-        <string>00000</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -94,7 +94,7 @@ QPushButton:hover
         </font>
        </property>
        <property name="text">
-        <string>XXXXX</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -124,7 +124,7 @@ QPushButton:hover
         </font>
        </property>
        <property name="text">
-        <string>1234</string>
+        <string/>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -147,7 +147,7 @@ QPushButton:hover
         </font>
        </property>
        <property name="text">
-        <string>N</string>
+        <string/>
        </property>
        <property name="margin">
         <number>3</number>
@@ -177,7 +177,7 @@ QPushButton:hover
         </font>
        </property>
        <property name="text">
-        <string>单位:</string>
+        <string/>
        </property>
       </widget>
      </item>

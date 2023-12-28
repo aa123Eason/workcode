@@ -1,6 +1,7 @@
 #ifndef UARTTHREAD_H
 #define UARTTHREAD_H
 
+#ifdef Q_OS_WIN
 #include <QThread>
 #include <QDebug>
 
@@ -20,8 +21,9 @@ public:
     void writeUart(const char *dataToWrite );//向串口发送数据
 
     //初始化串口
+#ifdef Q_OS_LINUX
     bool initUart(const QString & name="/dev/ttySAC3", BaudRateType baudRate=BAUD9600, long delayTime=10, unsigned int timeOut=40);
-
+#endif
     QByteArray outByt;
 
 signals:
@@ -29,9 +31,13 @@ signals:
     void sendResData(QByteArray data);
 
 private:
+    #ifdef Q_OS_LINUX
     Posix_QextSerialPort *mcom;//串口对象
+    #endif
     unsigned long mtimeOut;//线程读取串口的时间间隔
     bool mrunFlag;//线程启停标志位
 };
 
+
 #endif // UARTTHREAD_H
+#endif

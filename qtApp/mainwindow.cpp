@@ -35,10 +35,11 @@ void MainWIndow::widgetInit()//mainwindow init
     this->setWindowState(Qt::WindowMaximized);
     ui->mainpanel->setCurrentIndex(0);
     ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"));
+    QJsonObject jObj = get_rtk_data();
     QString str;
-    if(ui->list_rtk->count()>0)
+    if(map.count()>0)
     {
-        str = "已检测到"+QString::number(ui->list_rtk->count())+"个因子";
+        str = "已检测到"+QString::number(map.count())+"个因子";
         ui->state_rtkfacs->setText(str);
 
     }
@@ -53,6 +54,46 @@ void MainWIndow::widgetInit()//mainwindow init
     ui->userNameEdit->installEventFilter(this);
     ui->pwdEdit->installEventFilter(this);
 
+}
+
+QJsonObject MainWIndow::get_rtk_data()
+{
+    QJsonObject jObj;
+    HttpClient httpClient;
+    httpClient.getdata("/dcm/realtime_data",jObj);
+    qDebug()<<__LINE__<<jObj<<endl;
+    QJsonObject::iterator it = jObj.begin();
+    while(it!=jObj.end())
+    {
+        QJsonObject subObj = it.value().toObject();
+        QString code = subObj.value("FactorCode").toString();
+        QString value = subObj.value("value").toString();
+        QString stateNote = subObj.value("Flag").toString();
+        facPanel *facs = new facPanel();
+        facs->setcode(code);
+        facs->setname("");
+        facs->setvalue(value);
+        facs->setstate(stateNote);
+        facs->setcode("");
+        map.insert(code,facs);
+        it++;
+    }
+
+    QMap<QString,facPanel*>::iterator it0 = map.begin();
+    int row = 0,col = 0;
+    while(it0!=map.end())
+    {
+        ui->rtklayout->addWidget(it0.value(),row,col++);
+        if(col >5)
+        {
+            col = 0;
+        }
+        row++;
+        it0++;
+    }
+
+
+    return jObj;
 }
 
 void MainWIndow::connectevent()
@@ -184,6 +225,8 @@ void MainWIndow::addApp(int row,int col,QString name,QString iconpath)
     btn->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
     layout.setRowStretch(row,2);
     layout.setColumnStretch(col,2);
+    layout.setRowMinimumHeight(row, 200);
+    layout.setColumnMinimumWidth(col, 130);
 
     btn->installEventFilter(this);
 
@@ -234,7 +277,7 @@ void MainWIndow::startApp(QString name)
     if(name == "设备指令控制")
     {
         ui->mainpanel->setCurrentIndex(3);
-        DeviceCMDCtrlDlg *deviceCMDCtrlDlg = new DeviceCMDCtrlDlg();
+        deviceCMDCtrlDlg = new DeviceCMDCtrlDlg();
         loadAppDlg(deviceCMDCtrlDlg);
 
         connect(deviceCMDCtrlDlg,&DeviceCMDCtrlDlg::sendReback,this,[=](bool flag)
@@ -243,6 +286,24 @@ void MainWIndow::startApp(QString name)
             deviceCMDCtrlDlg->deleteLater();
             ui->mainpanel->setCurrentIndex(1);
         });
+    }
+    else if(name == "采集设备设置")
+    {
+        ui->mainpanel->setCurrentIndex(3);
+        DeviceSet *deviceSet = new DeviceSet();
+        loadAppDlg(deviceSet);
+    }
+    else if(name == "上位机设置")
+    {
+        ui->mainpanel->setCurrentIndex(3);
+        UpDeviceSet *upDeviceSet = new UpDeviceSet();
+        loadAppDlg(upDeviceSet);
+    }
+    else if(name == "数据查询")
+    {
+        ui->mainpanel->setCurrentIndex(3);
+        DataQuery *dataQuery = new DataQuery();
+        loadAppDlg(dataQuery);
     }
     else
     {
@@ -255,11 +316,12 @@ void MainWIndow::startApp(QString name)
 void MainWIndow::deleteApp()
 {
     //删除其他窗口
-    for(int i=0;i<appLayout.count();++i)
+    if(QLayoutItem *it = appLayout.takeAt(0))
     {
-        QLayoutItem *it = appLayout.layout()->itemAt(i);
-        appLayout.removeItem(it);
+        delete it->widget();
+        delete it;
     }
+
 }
 
 void MainWIndow::addLocalApp()
@@ -269,9 +331,9 @@ void MainWIndow::addLocalApp()
 
     addApp(0,0,"系统信息");
     addApp(0,1,"网络设置");
-    addApp(0,2,"采集设备设置");
-    addApp(0,3,"上位机设置");
-    addApp(0,4,"数据查询");
+    addApp(0,2,"采集设备设置",":/new/images/image/device.png");
+    addApp(0,3,"上位机设置",":/new/images/image/swj.png");
+    addApp(0,4,"数据查询",":/new/images/image/query.png");
     addApp(1,0,"本地串口调试");
     addApp(1,1,"系统时间设置");
     addApp(1,2,"补发数据");
@@ -283,15 +345,31 @@ void MainWIndow::addLocalApp()
 
 }
 
-void MainWIndow::loadAppDlg(QDialog *dlg)
+//void MainWIndow::loadAppDlg(QDialog *dlg)
+//{
+//    if(dlg!=nullptr)
+//    {
+//        //删除其他窗口
+//        deleteApp();
+//        //添加目标窗口
+//        appLayout.addWidget(dlg,1,Qt::AlignCenter);
+//        appLayout.setSizeConstraint(QLayout::SetMaximumSize);
+//        ui->page_appshow->setLayout(&appLayout);
+//    }
+
+//}
+
+void MainWIndow::loadAppDlg(QWidget *w)
 {
-    if(dlg!=nullptr)
+    if(w!=nullptr)
     {
         //删除其他窗口
         deleteApp();
         //添加目标窗口
-        appLayout.addWidget(dlg,1,Qt::AlignCenter);
-        appLayout.setSizeConstraint(QLayout::SetMaximumSize);
+        appLayout.addWidget(w,1,Qt::AlignCenter);
+//        appLayout.setColumnMinimumWidth(0,1000);
+//        appLayout.SetSpacing(1);
+        appLayout.setSizeConstraint(QLayout::SetDefaultConstraint);
         ui->page_appshow->setLayout(&appLayout);
     }
 

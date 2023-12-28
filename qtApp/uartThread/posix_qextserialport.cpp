@@ -1,4 +1,4 @@
-
+#ifdef Q_OS_WIN
 /*!
 \class Posix_QextSerialPort
 \version 1.0.0
@@ -1127,3 +1127,5 @@ qint64 Posix_QextSerialPort::writeData(const char * data, qint64 maxSize)
     
     return retVal;
 }
+
+#endif

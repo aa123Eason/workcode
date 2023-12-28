@@ -17,11 +17,13 @@ DeviceCMDCtrlDlg::DeviceCMDCtrlDlg(QWidget *parent) :
 DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 {
     ui->loopread->setChecked(false);
+    #ifdef Q_OS_LINUX
     if(muartThread->isRunning())
     {
         muartThread->quit();
     }
     muartThread->deleteLater();
+    #endif
     delete ui;
 }
 
@@ -116,7 +118,9 @@ void DeviceCMDCtrlDlg::connectevent()
         emit sendCMD(ui->sendEdit->text());
     });
 
+    #ifdef Q_OS_LINUX
     connect(this,&DeviceCMDCtrlDlg::sendCMD,this,&DeviceCMDCtrlDlg::onReceiveCMD);
+    #endif
     connect(ui->sendEdit,&QLineEdit::textChanged,[=](const QString &text)
     {
         QStringList list;
@@ -138,6 +142,7 @@ void DeviceCMDCtrlDlg::connectevent()
 
 
 
+#ifdef Q_OS_LINUX
     connect(ui->loopread,&QCheckBox::stateChanged,this,[=](int state)
     {
         if(state == Qt::Checked)
@@ -166,10 +171,11 @@ void DeviceCMDCtrlDlg::connectevent()
             }
         }
     });
-
+#endif
 
 }
 
+#ifdef Q_OS_LINUX
 void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 {
     qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
@@ -224,6 +230,8 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 
 
 }
+
+#endif
 
 //将单个字符串转换为hex
 //0-F -> 0-15
