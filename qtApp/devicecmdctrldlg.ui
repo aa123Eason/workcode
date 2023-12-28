@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,1,7">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,3,1,1,7">
    <property name="spacing">
     <number>2</number>
    </property>
@@ -361,6 +361,21 @@ QComboBox QAbstractItemView::item:selected{
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="cominfo">
+     <property name="font">
+      <font>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,2,2,1,1,1">
      <item>
       <widget class="QPushButton" name="btnJZ">
@@ -628,7 +643,7 @@ QPushButton::hover
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,5,1">
      <item>
       <widget class="QLabel" name="label_5">
        <property name="sizePolicy">
@@ -662,6 +677,17 @@ QPushButton::hover
         <string>000</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QCheckBox" name="loopread">
+         <property name="text">
+          <string>循环读取</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

@@ -7,13 +7,17 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QCloseEvent>
-#include <QSerialPort>
 #include <QString>
 #include <QByteArray>
 #include <QEvent>
 #include <QProcess>
+#include <QFile>
+#include <QDateTime>
 
 #include "usbutility.h"
+#include "uartThread/uartthread.h"
+#include <termios.h>
+#include <unistd.h>
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
@@ -43,8 +47,9 @@ public slots:
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
-    QSerialPort *serial = nullptr;
+    UartThread *muartThread;//串口线程对象
     QString str;
+    QString comstr;
 };
 
 #endif // DEVICECMDCTRLDLG_H

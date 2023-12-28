@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>MainWIndow</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,12,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,12,1">
    <property name="spacing">
     <number>2</number>
    </property>
@@ -84,7 +84,7 @@
      <item>
       <widget class="QPushButton" name="rtk_btn">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -134,7 +134,7 @@ QPushButton::hover
      <item>
       <widget class="QPushButton" name="main_btn">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -183,7 +183,7 @@ QPushButton::hover
      <item>
       <widget class="QPushButton" name="login">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -442,7 +442,7 @@ border-color: rgb(186, 189, 182);</string>
            <item>
             <widget class="QLineEdit" name="userNameEdit">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -518,7 +518,7 @@ QLineEdit:read-only { /* QLineEdit在只读时的状态 */
               </font>
              </property>
              <property name="text">
-              <string>密  码</string>
+              <string>密    码</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -528,10 +528,22 @@ QLineEdit:read-only { /* QLineEdit在只读时的状态 */
            <item>
             <widget class="QLineEdit" name="pwdEdit">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>224</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>224</width>
+               <height>16777215</height>
+              </size>
              </property>
              <property name="font">
               <font>
@@ -593,7 +605,10 @@ QLineEdit:read-only { /* QLineEdit在只读时的状态 */
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="2,0,2">
+           <property name="spacing">
+            <number>3</number>
+           </property>
            <item>
             <widget class="QPushButton" name="btn_Login">
              <property name="sizePolicy">
@@ -632,6 +647,22 @@ QPushButton:hover
              </property>
              <property name="text">
               <string>登录</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="defaultinfo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

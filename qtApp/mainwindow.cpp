@@ -32,7 +32,7 @@ void MainWIndow::timerEvent(QTimerEvent *event)
 void MainWIndow::widgetInit()//mainwindow init
 {
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnBottomHint);
-
+    this->setWindowState(Qt::WindowMaximized);
     ui->mainpanel->setCurrentIndex(0);
     ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"));
     QString str;
@@ -124,6 +124,12 @@ void MainWIndow::connectevent()
 
     connect(this,&MainWIndow::appClicked,this,&MainWIndow::startApp);
 
+    connect(ui->defaultinfo,&QPushButton::clicked,this,[=]()
+    {
+        ui->userNameEdit->setText("admin");
+        ui->pwdEdit->setText("lcdcm");
+    });
+
     connect(ui->btn_Login,&QPushButton::clicked,this,[=]()
     {
 
@@ -169,7 +175,7 @@ void MainWIndow::addApp(int row,int col,QString name,QString iconpath)
 //    QRect deskRect = QApplication::desktop()->availableGeometry();
 
     AppButton *btn = new AppButton(name,iconpath,this);
-    qreal w = layout.geometry().width()/5-6;
+    qreal w = ui->page_main->layout()->geometry().width()/5.0-6;
     qreal h = w * 0.618;
     w= qRound64(w);
     h = qRound64(h);
@@ -285,6 +291,7 @@ void MainWIndow::loadAppDlg(QDialog *dlg)
         deleteApp();
         //添加目标窗口
         appLayout.addWidget(dlg,1,Qt::AlignCenter);
+        appLayout.setSizeConstraint(QLayout::SetMaximumSize);
         ui->page_appshow->setLayout(&appLayout);
     }
 

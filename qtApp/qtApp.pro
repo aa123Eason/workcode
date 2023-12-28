@@ -1,4 +1,4 @@
-QT       += core gui network serialport
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,14 +21,22 @@ SOURCES += \
     facpanel.cpp \
     main.cpp \
     mainwindow.cpp \
-    usbutility.cpp
+    usbutility.cpp \
+    uartThread/posix_qextserialport.cpp \
+    uartThread/qextserialbase.cpp \
+    uartThread/uartthread.cpp
+
 
 HEADERS += \
     appbutton.h \
     devicecmdctrldlg.h \
     facpanel.h \
     mainwindow.h \
-    usbutility.h
+    usbutility.h \
+    uartThread/posix_qextserialport.h \
+    uartThread/qextserialbase.h \
+    uartThread/uartthread.h
+
 
 FORMS += \
     appbutton.ui \

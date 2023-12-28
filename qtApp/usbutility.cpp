@@ -14,18 +14,18 @@ UsbUtility::~UsbUtility()
 QString UsbUtility::matchDevName(QString devname)
 {
     QMap<QString,QString> map;
-    map["COM1"] = "/dev/tty0";
-    map["COM2"] = "/dev/tty1";
-    map["COM3"] = "/dev/tty2";
-    map["COM4"] = "/dev/tty3";
-    map["COM5"] = "/dev/tty4";
-    map["COM6"] = "/dev/tty5";
-    map["COM7"] = "/dev/tty6";
-    map["COM8"] = "/dev/tty7";
-    map["COM9"] = "/dev/tty8";
-    map["COM10"] = "/dev/tty9";
-    map["COM11"] = "/dev/tty10";
-    map["COM12"] = "/dev/tty11";
+    map["COM1"] = "/dev/ttyS0";
+    map["COM2"] = "/dev/ttyS1";
+    map["COM3"] = "/dev/ttyS2";
+    map["COM4"] = "/dev/ttyS3";
+    map["COM5"] = "/dev/ttyS4";
+    map["COM6"] = "/dev/ttyS5";
+    map["COM7"] = "/dev/ttyS6";
+    map["COM8"] = "/dev/ttyS7";
+    map["COM9"] = "/dev/ttyS8";
+    map["COM10"] = "/dev/ttyS9";
+    map["COM11"] = "/dev/ttyS10";
+    map["COM12"] = "/dev/ttyS11";
     map["USB-COM1"] = "/dev/ttyUSB0";
     map["USB-COM2"] = "/dev/ttyUSB1";
     map["USB-COM3"] = "/dev/ttyUSB2";

@@ -16,6 +16,12 @@ DeviceCMDCtrlDlg::DeviceCMDCtrlDlg(QWidget *parent) :
 
 DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 {
+    ui->loopread->setChecked(false);
+    if(muartThread->isRunning())
+    {
+        muartThread->quit();
+    }
+    muartThread->deleteLater();
     delete ui;
 }
 
@@ -25,6 +31,18 @@ void DeviceCMDCtrlDlg::init()
     ui->sendEdit->clear();
     ui->receiveEdit->clear();
     ui->sendEdit->installEventFilter(this);
+
+    QFile file(":/new/images/image/checkboxstyle.qss");
+    if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        QByteArray byt = file.readAll();
+
+        ui->loopread->setStyleSheet(byt);
+        file.close();
+    }
+    ui->loopread->setChecked(false);
+    ui->loopread->setCheckable(false);
+
 }
 
 bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
@@ -51,7 +69,14 @@ void DeviceCMDCtrlDlg::connectevent()
 {
     connect(ui->btn_quit,&QPushButton::clicked,[=]()
     {
+        ui->loopread->setChecked(false);
         emit sendReback(this);
+    });
+
+    connect(ui->curPort,&QComboBox::currentTextChanged,this,[=](const QString &)
+    {
+        ui->loopread->setChecked(false);
+
     });
 
     connect(ui->deleteSend,&QPushButton::clicked,[=]()
@@ -92,61 +117,112 @@ void DeviceCMDCtrlDlg::connectevent()
     });
 
     connect(this,&DeviceCMDCtrlDlg::sendCMD,this,&DeviceCMDCtrlDlg::onReceiveCMD);
+    connect(ui->sendEdit,&QLineEdit::textChanged,[=](const QString &text)
+    {
+        QStringList list;
+        list<<"01 06 00 00 00 0B C8 0D";
+        list<<"01 06 00 00 00 01 48 0A";
+        list<<"01 06 00 00 00 1E 09 C2";
+        list<<"01 06 00 00 00 02 08 0B";
+        //执行，发送
+        if(list.contains(text))
+        {
+            ui->btn_sendcmd->setText("执行");
+        }
+        else
+        {
+            ui->btn_sendcmd->setText("发送");
+        }
+    });
+
+
+
+
+    connect(ui->loopread,&QCheckBox::stateChanged,this,[=](int state)
+    {
+        if(state == Qt::Checked)
+        {
+            if(muartThread!=nullptr)
+            {
+                muartThread->runControl(true);
+                connect(muartThread,&UartThread::sendResData,this,[=](QByteArray arrData)
+                {
+                    qDebug()<<__LINE__<<"RECEIVE2:"<<arrData.toHex(' ')<<endl;
+
+
+                    str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ui->curPort->currentText()+"[R]:"+arrData.toHex(' ')+"\r\n";
+
+
+                    ui->receiveEdit->setPlainText(str);
+                });
+            }
+        }
+        else
+        {
+            if(muartThread!=nullptr)
+            {
+                muartThread->runControl(false);
+
+            }
+        }
+    });
+
+
 }
 
 void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 {
     qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
+    QString curPortName = ui->curPort->currentText();
+    QString originName = UsbUtility::matchDevName(curPortName);
+    muartThread = new UartThread;
+    if(!muartThread->initUart(originName,BAUD9600,3,5))
+    {
+        comstr = curPortName +"未接通!";
+//        ui->loopread->setChecked(false);
+        ui->loopread->setCheckable(false);
 
-    serial = new QSerialPort(this);
+        return;
+    }
 
-    //set params
-    QString realName = UsbUtility::matchDevName(ui->curPort->currentText());
+    ui->loopread->setCheckable(true);
 
-    serial->setPortName(realName);
-    serial->setBaudRate(QSerialPort::Baud9600);
-    serial->setDataBits(QSerialPort::Data8);
-    serial->setStopBits(QSerialPort::OneStop);
-    serial->setParity(QSerialPort::NoParity);
 
+
+//    ui->btn_sendcmd->setText("执行");
     //串口已接通，波特率，数据位，停止位，校验位，数据进制，通信超时
-    //open port
-    if(serial->open(QIODevice::ReadWrite))
+    comstr = curPortName +"已接通!";
+    comstr += "波特率:9600\r\n";
+    comstr += "数据位:8\r\n";
+    comstr += "停止位:1\r\n";
+    comstr += "校验位:none\r\n";
+    comstr += "数据进制:16\r\n";
+    comstr += "通信超时:1min\r\n";
+
+    ui->cominfo->setText(comstr);
+
+    if(!cmd.isEmpty())
     {
-        str = "串口"+ui->curPort->currentText()+"已接通!\r\n";
-        str += "波特率"+QString::number(serial->baudRate())+"\r\n";
-        str += "数据位"+QString::number(serial->baudRate())+"\r\n";
-        str += "停止位"+QString::number(serial->baudRate())+"\r\n";
-        str += "校验位"+QString::number(serial->baudRate())+"\r\n";
-        str += "数据进制:16\r\n";
-        str += "通信超时:1min\r\n";
+        QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper()).toHex(' ');
 
-        QString cmd = ui->sendEdit->text().trimmed();
-        QByteArray bytArr = QByteArray::fromHex(cmd.toUpper().toLatin1()).toHex(' ');
-
-        str += "S:"+bytArr+"\r\n";
-        bytArr.clear();
-
-        //send cmd
-        serial->flush();
-        serial->write(QString2Hex(cmd).data());
-
-        QByteArray data;
-
-        data.append(serial->readAll());
-        str += ui->curDevice->currentText()+"R:"+data.toHex(' ')+"\r\n";
-        ui->receiveEdit->setPlainText(str);
-        serial->close();
-
-
+        muartThread->writeUart(QString2Hex(cmd));
+        str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr+"\r\n";
 
     }
-    else
-    {
-        str = "串口"+ui->curPort->currentText()+"未接通!\r\n";
-    }
+
+    QByteArray resByt = muartThread->readUart();
+    qDebug()<<__LINE__<<"RECEIVE1:"<<resByt<<endl;
+
+
+    str += QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[R]:"+resByt+"\r\n";
+
 
     ui->receiveEdit->setPlainText(str);
+
+
+
+
+
 }
 
 //将单个字符串转换为hex

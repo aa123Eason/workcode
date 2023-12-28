@@ -13,5 +13,8 @@
         <file>image/appdft.png</file>
         <file>image/down_arrow.png</file>
         <file>image/restart.png</file>
+        <file>image/checkboxstyle.qss</file>
+        <file>image/Off.png</file>
+        <file>image/On.png</file>
     </qresource>
 </RCC>
