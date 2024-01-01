@@ -13,6 +13,7 @@ MainWIndow::MainWIndow(QWidget *parent)
     addLocalApp();
 
     id1 = startTimer(1000);
+    id2 = startTimer(3000);
 }
 
 MainWIndow::~MainWIndow()
@@ -26,6 +27,11 @@ void MainWIndow::timerEvent(QTimerEvent *event)
     {
 
         ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+    }
+    else if(event->timerId() == id2)
+    {
+        emit resultReady("realtime_data");
+        emit resultReady("connect_state");
     }
 }
 
@@ -50,12 +56,12 @@ void MainWIndow::autoGetData()
     httpClient.moveToThread(&pThread);
 
     // 连接信号和槽
-    connect(&pThread, &QThread::finished,
-            &httpClient, &QObject::deleteLater);           // 线程结束，自动删除对象
-    connect(&pThread, SIGNAL(finished()),
-            &pThread, SLOT(deleteLater()));
-    connect(this, &MainWIndow::startWork,
-            this, &MainWIndow::doWork);   // 主线程获取数据信号的信号
+//    connect(&pThread, &QThread::finished,
+//            &httpClient, &QObject::deleteLater);           // 线程结束，自动删除对象
+//    connect(&pThread, SIGNAL(finished()),
+//            &pThread, SLOT(deleteLater()));
+//    connect(this, &MainWIndow::startWork,
+//            this, &MainWIndow::doWork);   // 主线程获取数据信号的信号
     /* 接收到 worker 发送过来的信号 */
     connect(this, SIGNAL(resultReady(QString)),
             this, SLOT(handleResults(QString)));
@@ -67,7 +73,7 @@ void MainWIndow::autoGetData()
     }
 
     /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
-    emit this->startWork();
+//    emit this->startWork();
 
 }
 
@@ -525,8 +531,8 @@ void MainWIndow::doWork()
 
 //            break;
 //        }
-        emit resultReady("realtime_data");
-        emit resultReady("connect_state");
+//        emit resultReady("realtime_data");
+//        emit resultReady("connect_state");
 
 //        QThread::sleep(2);
 //    }

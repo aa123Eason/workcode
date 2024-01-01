@@ -51,6 +51,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pagertk);
             ui->deviceaddr->hide();
             ui->factorname->show();
+            ui->tablertk->clearContents();
         }
     });
     connect(ui->ck_min,&QCheckBox::stateChanged,this,[=](int state)
@@ -60,6 +61,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pagemin);
             ui->deviceaddr->hide();
             ui->factorname->show();
+            ui->tablemin->clearContents();
         }
     });
     connect(ui->ck_hour,&QCheckBox::stateChanged,this,[=](int state)
@@ -69,6 +71,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pagehour);
             ui->deviceaddr->hide();
             ui->factorname->show();
+            ui->tablehour->clearContents();
         }
     });
     connect(ui->ck_day,&QCheckBox::stateChanged,this,[=](int state)
@@ -78,6 +81,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pageday);
             ui->deviceaddr->hide();
             ui->factorname->show();
+            ui->tableday->clearContents();
         }
     });
     connect(ui->ck_month,&QCheckBox::stateChanged,this,[=](int state)
@@ -87,6 +91,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pagemonth);
             ui->deviceaddr->hide();
             ui->factorname->show();
+            ui->tablemonth->clearContents();
         }
     });
     connect(ui->ck_trans,&QCheckBox::stateChanged,this,[=](int state)
@@ -96,6 +101,7 @@ void DataQuery::connectevent()
             ui->tableStack->setCurrentWidget(ui->pagetrans);
             ui->deviceaddr->show();
             ui->factorname->hide();
+            ui->tabletrans->clearContents();
         }
     });
 
@@ -160,8 +166,10 @@ void DataQuery::onExport()
 
 }
 
-QJsonObject DataQuery::query_rtk()
+void DataQuery::query_rtk()
 {
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
     QString curFac = ui->factorname->currentText();
     QString fac_code;
     QString dtstr1 = ui->startdt->dateTime().toString("yyyy-MM-dd HH:mm");
@@ -189,13 +197,18 @@ QJsonObject DataQuery::query_rtk()
         {
             QMessageBox::about(this,"提示","查询成功！");
             qDebug()<<__LINE__<<resObj<<endl;
+
+            //填表
+            fillinTable(resObj,ui->tablertk);
+
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","查询无效，无法从远端post数据！");
         }
 
     }
-    else
-    {
 
-    }
 
 
 
@@ -203,29 +216,116 @@ QJsonObject DataQuery::query_rtk()
     qDebug()<<__LINE__<<querystr<<endl;
 }
 
-QJsonObject DataQuery::query_min()
+void DataQuery::fillinTable(QJsonObject &resObj,,QTableWidget * table = nullptr)
 {
+//    ui->pages->setText(QString::number(resObj.value("pages").toInt()));
+//    ui->curPage->setText(QString::number(1));
+    if(table==nullptr)
+        return;
+    //表头
+    table->horizontalHeader()->hide();
+    table->verticalHeader()->hide();
+    table->setColumnCount(4);
+    table->insertRow(0);
+    table->insertRow(1);
+    table->setSpan(0,0,2,1);
+    table->setSpan(0,1,1,3);
+    table->setItem(0,0,new QTableWidgetItem("时间"));
+    table->setItem(0,1,new QTableWidgetItem(ui->factorname->currentText()));
+    table->setItem(1,1,new QTableWidgetItem("实时值"));
+    table->setItem(1,2,new QTableWidgetItem("状态值"));
+    table->setItem(1,3,new QTableWidgetItem("标签值"));
+    //数据
+
+    QJsonArray dataArray = resObj.value("data").toArray();
+
+    QJsonArray::iterator it = dataArray.begin();
+    int index = 0;
+    while(it != dataArray.end())
+    {
+        QJsonObject subObj = it->toObject();
+
+        QString dtstr = subObj.value("CollectAt").toString();
+        QString value = subObj.value("Data").toString();
+        QString note = subObj.value("Flag").toString();
+        QString tagId = subObj.value("TagID").toString();
+
+
+        table->insertRow(2+index);
+        table->setItem(2+index,0,new QTableWidgetItem(dtstr));
+        table->setItem(2+index,1,new QTableWidgetItem(value));
+        table->setItem(2+index,2,new QTableWidgetItem(note));
+        table->setItem(2+index,3,new QTableWidgetItem(tagId));
+
+        index++;
+        it++;
+    }
+
+
+
+
+    QFont font;
+    font.setFamily("微软雅黑");
+    font.setBold(true);
+    font.setPointSize(14);
+
+    for(int i=0;i<ui->tablertk->rowCount();++i)
+    {
+        for(int j=0;j<ui->tablertk->columnCount();++j)
+        {
+            QTableWidgetItem *item = ui->tablertk->item(i,j);
+            if(item!=nullptr)
+            {
+
+                item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(font);
+                if(i<=1)
+                {
+                    item->setBackgroundColor(QColor(Qt::gray));
+                }
+            }
+        }
+    }
+
+    ui->tablertk->resizeColumnsToContents();
+
+
+
+
 
 }
 
-QJsonObject DataQuery::query_hour()
+void DataQuery::query_min()
 {
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
 
 }
 
-QJsonObject DataQuery::query_day()
+void DataQuery::query_hour()
 {
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
+}
+
+void DataQuery::query_day()
+{
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
 
 }
 
-QJsonObject DataQuery::query_month()
+void DataQuery::query_month()
 {
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
 
 }
 
-QJsonObject DataQuery::query_trans()
+void DataQuery::query_trans()
 {
-
+    //查询
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
 }
 
 

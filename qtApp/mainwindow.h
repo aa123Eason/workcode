@@ -111,7 +111,7 @@ private:
     bool isCanRun;
     QGridLayout layout;
     QVBoxLayout appLayout;
-    int id1;
+    int id1,id2;
     bool isLogin = false;
     DeviceCMDCtrlDlg *deviceCMDCtrlDlg = nullptr;
 //    DeviceSet *deviceSet = nullptr;

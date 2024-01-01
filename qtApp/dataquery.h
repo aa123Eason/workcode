@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "httpclient.h"
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -13,6 +14,8 @@
 #include <QString>
 #include <QList>
 #include <QMessageBox>
+#include <QFont>
+
 
 #include "common.h"
 
@@ -34,12 +37,14 @@ public:
     void getCommonFactors();
     void getUpsetAddr();
 
-    QJsonObject query_rtk();
-    QJsonObject query_min();
-    QJsonObject query_hour();
-    QJsonObject query_day();
-    QJsonObject query_month();
-    QJsonObject query_trans();
+    void query_rtk();
+    void query_min();
+    void query_hour();
+    void query_day();
+    void query_month();
+    void query_trans();
+
+    void fillinTable(QJsonObject &resObj,QTableWidget * table = nullptr);
 
 signals:
 
