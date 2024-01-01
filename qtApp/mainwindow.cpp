@@ -1,7 +1,7 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-QString curAppName;
+
 
 MainWIndow::MainWIndow(QWidget *parent)
     : QWidget(parent)
@@ -35,65 +35,135 @@ void MainWIndow::widgetInit()//mainwindow init
     this->setWindowState(Qt::WindowMaximized);
     ui->mainpanel->setCurrentIndex(0);
     ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm"));
-    QJsonObject jObj = get_rtk_data();
-    QString str;
-    if(map.count()>0)
-    {
-        str = "已检测到"+QString::number(map.count())+"个因子";
-        ui->state_rtkfacs->setText(str);
-
-    }
-    else
-    {
-        str = "未检测到因子";
-        ui->state_rtkfacs->setText(str);
-    }
-
-    ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+//    QJsonObject jObj = get_rtk_data();
+    autoGetData();
+//    ui->realtime->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
 
     ui->userNameEdit->installEventFilter(this);
     ui->pwdEdit->installEventFilter(this);
 
 }
 
+void MainWIndow::autoGetData()
+{
+
+    httpClient.moveToThread(&pThread);
+
+    // 连接信号和槽
+    connect(&pThread, &QThread::finished,
+            &httpClient, &QObject::deleteLater);           // 线程结束，自动删除对象
+    connect(&pThread, SIGNAL(finished()),
+            &pThread, SLOT(deleteLater()));
+    connect(this, &MainWIndow::startWork,
+            this, &MainWIndow::doWork);   // 主线程获取数据信号的信号
+    /* 接收到 worker 发送过来的信号 */
+    connect(this, SIGNAL(resultReady(QString)),
+            this, SLOT(handleResults(QString)));
+
+    /* 判断线程是否在运行 */
+    if(!pThread.isRunning()) {
+        /* 开启线程 */
+        pThread.start();
+    }
+
+    /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
+    emit this->startWork();
+
+}
+
 QJsonObject MainWIndow::get_rtk_data()
 {
     QJsonObject jObj;
-    HttpClient httpClient;
-    httpClient.getdata("/dcm/realtime_data",jObj);
-    qDebug()<<__LINE__<<jObj<<endl;
-    QJsonObject::iterator it = jObj.begin();
-    while(it!=jObj.end())
+
+    if(httpClient.asyngetdata("/dcm/realtime_data",jObj))
     {
-        QJsonObject subObj = it.value().toObject();
-        QString code = subObj.value("FactorCode").toString();
-        QString value = subObj.value("value").toString();
-        QString stateNote = subObj.value("Flag").toString();
-        facPanel *facs = new facPanel();
-        facs->setcode(code);
-        facs->setname("");
-        facs->setvalue(value);
-        facs->setstate(stateNote);
-        facs->setcode("");
-        map.insert(code,facs);
-        it++;
+        qDebug()<<__LINE__<<"res==>"<<jObj<<endl;
+        QJsonObject::iterator it = jObj.begin();
+        while(it!=jObj.end())
+        {
+            QJsonObject subObj = it.value().toObject();
+            QString code = subObj.value("FactorCode").toString();
+            QString value = QString::number(subObj.value("value").toDouble(),'f',2);
+            QString stateNote = subObj.value("Flag").toString();
+            facPanel *facs = new facPanel();
+            facs->setObjectName(code);
+            facs->setcode(code);
+            facs->setname("");
+            facs->setvalue(value);
+            facs->setstate(stateNote);
+            facs->setunit("单位:");
+
+            facs->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+
+            facs->setFixedSize(250,180);
+
+            map.insert(code,facs);
+            it++;
+        }
+
+
+        QString str;
+        if(jObj.count()>0)
+        {
+
+            str = "已检测到"+QString::number(map.count())+"个因子";
+            ui->state_rtkfacs->setText(str);
+            setRtkPanelContent();
+
+        }
+        else
+        {
+            str = "未检测到因子";
+            ui->state_rtkfacs->setText(str);
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this,"提示","实时数据获取失败");
     }
 
-    QMap<QString,facPanel*>::iterator it0 = map.begin();
-    int row = 0,col = 0;
-    while(it0!=map.end())
-    {
-        ui->rtklayout->addWidget(it0.value(),row,col++);
-        if(col >5)
-        {
-            col = 0;
-        }
-        row++;
-        it0++;
-    }
+
+
 
 
     return jObj;
+}
+
+void MainWIndow::setRtkPanelContent()
+{
+    rtktableInit();
+    QMap<QString,facPanel*>::iterator it = map.begin();
+    int num = 0;
+    while(it!=map.end())
+    {
+        int row = num/map.count();
+        int col = num%map.count();
+
+
+        ui->rtkPanel->setCellWidget(row,col,it.value());
+
+        num++;
+        it++;
+    }
+
+
+
+    ui->rtkPanel->resizeRowsToContents();
+    ui->rtkPanel->resizeColumnsToContents();
+}
+
+void MainWIndow::rtktableInit()
+{
+    int cols = 10;
+    int rows = map.count()/cols+1;
+    qDebug()<<"==>"<<rows<<cols<<endl;
+    ui->rtkPanel->setColumnCount(cols);
+    ui->rtkPanel->setRowCount(rows);
+
+
+
+
+
 }
 
 void MainWIndow::connectevent()
@@ -205,7 +275,9 @@ void MainWIndow::connectevent()
     connect(ui->openKeyboard,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<"open keyboard"<<endl;
-        QProcess::execute("florence");
+        QProcess process;
+        process.startDetached("florence");
+        process.close();
     });
 }
 
@@ -262,11 +334,14 @@ bool MainWIndow::eventFilter(QObject *obj,QEvent *e)
                 if(me->button() == Qt::LeftButton)
                 {
                     qDebug()<<"open keyboard"<<endl;
-                    QProcess::execute("florence");
+                    QProcess process;
+                    process.startDetached("florence");
+                    process.close();
                 }
             }
         }
     }
+
 
     return QWidget::eventFilter(obj,e);
 }
@@ -303,6 +378,7 @@ void MainWIndow::startApp(QString name)
     {
         ui->mainpanel->setCurrentIndex(3);
         DataQuery *dataQuery = new DataQuery();
+        connect(this,&MainWIndow::sendFacPanel,dataQuery,&DataQuery::onReceiveFac);
         loadAppDlg(dataQuery);
     }
     else
@@ -374,3 +450,85 @@ void MainWIndow::loadAppDlg(QWidget *w)
     }
 
 }
+
+QJsonObject MainWIndow::get_connect_stat()
+{
+    QJsonObject jObj;
+    if(httpClient.asyngetdata("/dcm/connect_stat",jObj))
+    {
+        if(jObj.count()>0)
+        {
+            QJsonObject::iterator it = jObj.begin();
+            while(it!=jObj.end())
+            {
+                QString ipaddr_port = it.key();
+                bool state = it.value().toBool();
+                QString updt = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
+                if(ipaddr_port.isEmpty())
+                {
+                    ui->cnt_addr->setText("无连接");
+                }
+                else
+                {
+                    ui->cnt_addr->setText(ipaddr_port);
+                }
+
+                ui->updatedt->setText(updt);
+
+                if(state)
+                {
+                   ui->cnt_state->setIcon(QIcon(":/new/images/image/state_on.png"));
+                }
+                else
+                {
+                    ui->cnt_state->setIcon(QIcon(":/new/images/image/state_off.png"));
+                }
+
+                it++;
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this,"提示","连接状态获取失败");
+    }
+    return jObj;
+}
+
+void MainWIndow::handleResults(const QString & results)
+{
+    if(results == "realtime_data")
+    {
+        qDebug()<<__LINE__<<"realtime_data"<<endl;
+        get_rtk_data();
+    }
+    else if(results == "connect_state")
+    {
+        qDebug()<<__LINE__<<"connect_state"<<endl;
+        get_connect_stat();
+    }
+}
+
+void MainWIndow::doWork()
+{
+    /* 标志位为真 */
+    isCanRun = true;
+
+    /* 死循环 */
+//    while (isCanRun)
+//    {
+
+//        QMutexLocker locker(&lock);
+//        /* 如果标志位不为真 */
+//        if (!isCanRun) {
+//            /* 跳出循环 */
+
+//            break;
+//        }
+        emit resultReady("realtime_data");
+        emit resultReady("connect_state");
+
+//        QThread::sleep(2);
+//    }
+}
+

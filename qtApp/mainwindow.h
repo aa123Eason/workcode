@@ -1,6 +1,8 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
+
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -30,9 +32,13 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QMap>
+#include <QThread>
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QMetaType>
+#include <QMetaObject>
 
-
-
+#include "common.h"
 #include "facpanel.h"
 #include "appbutton.h"
 #include "devicecmdctrldlg.h"
@@ -40,6 +46,8 @@
 #include "deviceset.h"
 #include "updeviceset.h"
 #include "httpclient.h"
+
+
 
 
 QT_BEGIN_NAMESPACE
@@ -70,7 +78,13 @@ public:
 //    void loadAppDlg(QDialog *dlg=nullptr);
     void loadAppDlg(QWidget *w=nullptr);
     void deleteApp();    
+
     QJsonObject get_rtk_data();
+    void autoGetData();
+    void rtktableInit();
+    void setRtkPanelContent();
+
+    QJsonObject get_connect_stat();
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
@@ -78,10 +92,16 @@ protected:
 
 signals:
     void appClicked(QString);
+    void resultReady(const QString &result);
+    void startWork();
+    void sendFacPanel(QString str);
+
 
 
 public slots:
     void startApp(QString name);
+    void handleResults(const QString & results);
+    void doWork();
 
 private:
     Ui::MainWIndow *ui;
@@ -97,6 +117,12 @@ private:
 //    DeviceSet *deviceSet = nullptr;
 //    UpDeviceSet *upDeviceSet = nullptr;
 //    DataQuery *dataQuery = nullptr;
+
+    QThread pThread;
+    HttpClient httpClient;
+
+    QString curAppName;
     QMap<QString,facPanel*> map;
+
 };
 #endif // MAINWINDOW_H

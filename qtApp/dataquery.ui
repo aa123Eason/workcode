@@ -155,7 +155,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="export_2">
+      <widget class="QPushButton" name="btn_export">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>

@@ -59,7 +59,9 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
             if(me->button() == Qt::LeftButton)
             {
                 qDebug()<<"open keyboard"<<endl;
-                QProcess::execute("florence");
+                QProcess process;
+                process.startDetached("florence");
+                process.close();
             }
         }
     }

@@ -7,15 +7,28 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>170</height>
+    <height>180</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget
+{
+	border: 1px solid black;
+	background-color: rgb(240, 240, 240);
+	
+
+
+}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="9,1">
    <property name="spacing">
     <number>0</number>
+   </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -31,12 +44,36 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,7,1">
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item row="0" column="0">
       <widget class="QLabel" name="fac_code">
        <property name="font">
         <font>
          <pointsize>13</pointsize>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgba(255, 255, 255, 0);</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="lineWidth">
+        <number>0</number>
        </property>
        <property name="text">
         <string/>
@@ -57,7 +94,7 @@
        <property name="styleSheet">
         <string notr="true">QPushButton
 {
-	background-color: rgb(255, 255, 255);
+	background-color: rgb(200, 200, 200);
 	color: rgb(0, 0, 0);
 	
 	font: 75 12pt &quot;微软雅黑&quot;;
@@ -69,7 +106,7 @@ QPushButton:hover
 {
 	
 	background-color: rgb(0, 0, 127);
-	color: rgb(0, 0, 0);
+	color: rgb(255, 255, 255);
 }</string>
        </property>
        <property name="text">
@@ -92,6 +129,9 @@ QPushButton:hover
         <font>
          <pointsize>13</pointsize>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgba(255, 255, 255, 0);</string>
        </property>
        <property name="text">
         <string/>
@@ -123,6 +163,9 @@ QPushButton:hover
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgba(255, 255, 255, 0);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -146,11 +189,14 @@ QPushButton:hover
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgba(255, 255, 255, 0);</string>
+       </property>
        <property name="text">
         <string/>
        </property>
        <property name="margin">
-        <number>3</number>
+        <number>0</number>
        </property>
       </widget>
      </item>
@@ -175,6 +221,9 @@ QPushButton:hover
          <weight>50</weight>
          <bold>false</bold>
         </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-color: rgba(255, 255, 255, 0);</string>
        </property>
        <property name="text">
         <string/>

@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QSharedMemory>
 #include <QMessageBox>
+#include "facpanel.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
 //    }
 //    sharMemory->create(1);  //如果没有相同名称的共享内存被占用，则新建名称为"Single_myexe_App"的共享内存，大小最小为1，不涉及共享内存存储或内容传递，建立最小共享内存即可。
 
-
+//    qRegisterMetaType<Ui::facPanel>("facPanel");
     MainWIndow *w = new MainWIndow;
     w->show();
     return a.exec();

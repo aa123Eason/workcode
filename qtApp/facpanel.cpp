@@ -6,11 +6,18 @@ facPanel::facPanel(QWidget *parent) :
     ui(new Ui::facPanel)
 {
     ui->setupUi(this);
+    Init();
 }
 
 facPanel::~facPanel()
 {
     delete ui;
+}
+
+void facPanel::Init()
+{
+
+    ui->fac_state->setStyleSheet("border-color:transparent;");
 }
 
 void facPanel::setcode(QString code)
@@ -37,10 +44,12 @@ void facPanel::setstate(QString state)
     ui->fac_state->setAlignment(Qt::AlignCenter);
     if(state == "N")
     {
+        ui->fac_state->setStyleSheet("color:#11aa00");
         ui->fac_statelight->setStyleSheet("background-color:#11aa00");
     }
     else
     {
+        ui->fac_state->setStyleSheet("color:#aa1100");
         ui->fac_statelight->setStyleSheet("background-color:#aa1100");
     }
 

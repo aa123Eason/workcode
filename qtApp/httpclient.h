@@ -14,6 +14,8 @@
 #include <QJsonValue>
 #include <QJsonParseError>
 #include <QEventLoop>
+#include <QTimer>
+#include <QNetworkProxy>
 
 class HttpClient : public QObject
 {
@@ -22,8 +24,10 @@ public:
     explicit HttpClient(QObject *parent = nullptr);
     ~HttpClient();
     bool getdata(QString url, QJsonObject &json);
-    bool putdata(const QString &url, const QJsonObject &json);
-    bool postdata(const QString &url, const QJsonObject &json);
+    bool asyngetdata(QString url, QJsonObject &json);
+    bool putdata(const QString &url, const QJsonObject &datajson,QJsonObject &resjson);
+    bool postdata(const QString &url, const QJsonObject &datajson,QJsonObject &resjson);
+    bool asynpostdata(const QString &url,const QJsonObject &datajson,QJsonObject &resjson);
 
 signals:
 

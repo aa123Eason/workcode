@@ -33,6 +33,7 @@ SOURCES += \
 
 HEADERS += \
     appbutton.h \
+    common.h \
     dataquery.h \
     devicecmdctrldlg.h \
     deviceset.h \
