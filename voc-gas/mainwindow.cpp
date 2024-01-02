@@ -6,7 +6,7 @@ QString g_Sepuyi;
 QString g_PLC;
 QString g_Forward1;
 QString g_Forward2;
-QString g_valueseq = "ABCD";
+QString g_valueseq = "CDAB";
 bool isJSModeOn = false;
 
 bool g_IsChecked = false;
@@ -351,9 +351,23 @@ void MainWindow::connectevent()
                 {
                     FactorInfo *facinfo = it.value();
                     facinfo->m_value = QString::number(0,'f',2);
+                    emit sendlogmsg("清除模式开启");
                 }
                 it++;
             }
+        }
+    });
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        PVOID OldValue;
+        BOOL bRet = Wow64DisableWow64FsRedirection (&OldValue);
+        QString csProcess="C:\\Windows\\System32\\osk.exe";
+        QString params="";
+        ShellExecute(NULL, L"open", (LPCWSTR)csProcess.utf16(), (LPCWSTR)params.utf16(), NULL, SW_SHOWNORMAL);
+        if ( bRet )
+        {
+            Wow64RevertWow64FsRedirection(OldValue);
         }
     });
 
@@ -406,6 +420,7 @@ void SerialWorker::doWork1() {
         /* 如果标志位不为真 */
         if (!isCanRun) {
             /* 跳出循环 */
+            stopWork();
             break;
         }
 
@@ -478,21 +493,25 @@ void MainWindow::recordrtkdata(QSqlDatabase &db,QString dtType)
     {
         timeStr = recordDT.toString("yyyy-MM-dd HH:mm");
         tableName = "T_History_Minute";
+        emit sendlogmsg("记录分钟数据");
     }
     else if(dtType == "hou")
     {
         timeStr = recordDT.toString("yyyy-MM-dd HH");
         tableName = "T_History_Hour";
+        emit sendlogmsg("记录小时数据");
     }
     else if(dtType == "day")
     {
         timeStr = recordDT.toString("yyyy-MM-dd");
         tableName = "T_History_Day";
+        emit sendlogmsg("记录日数据");
     }
     else if(dtType == "mon")
     {
         timeStr = recordDT.toString("yyyy-MM");
         tableName = "T_History_Month";
+        emit sendlogmsg("记录月数据");
     }
 
     if(!db.isOpen())
@@ -596,9 +615,11 @@ void SerialWorker::skybluework()
         setFacState("折算非甲烷总烃干值","C");
         setFacState("非甲烷总烃排放量","C");
 
+        emit sendlogmsg("天蓝校准模式开启");
+
         return;
     }
-
+        emit sendlogmsg("天蓝校准模式关闭");
     if(serial->isOpen())
     {
         QString pAddr = "1"; //01
@@ -623,6 +644,7 @@ void SerialWorker::skybluework()
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
         writeinLog("[天蓝:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
+        emit sendlogmsg("[天蓝:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
 
         char data[100];
         int pRetVal = serial->readData(data,13);
@@ -810,6 +832,7 @@ void SerialWorker::skybluework()
                     }
 
                     writeinLog("[天蓝:R]"+buf.toHex(' '));
+                    emit sendlogmsg("[天蓝:R]"+buf.toHex());
 
                 }
                 else
@@ -907,9 +930,12 @@ void SerialWorker::VocsHandler() {
         setFacState("氧气含量干值","C");
         setFacState("硫化氢干值","C");
 
+        emit sendlogmsg("VOCs校准模式开启");
+
         return;
     }
 
+    emit sendlogmsg("VOCs校准模式关闭");
 
 
 
@@ -946,6 +972,7 @@ void SerialWorker::VocsHandler() {
         serial->flush();
         serial->writeData(QString2Hex(pTx).data(),8);
         writeinLog("[VOCs:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
+        emit sendlogmsg("[VOCs:S]"+QByteArray::fromHex(pTx.toLatin1()).toHex(' '));
 
         char data[37];
         int pRetVal = serial->readData(data,37);
@@ -960,6 +987,7 @@ void SerialWorker::VocsHandler() {
             if(crc16.crc_Checking(strTmp))
             {
                 qDebug() << "ReadHoldingRegisters RX: "<<strTmp;
+                emit sendlogmsg("[VOCs:R]"+strTmp);
                 // parse
 //                QByteArray buf = QString2Hex(strTmp);
                 QByteArray buf;
@@ -1200,6 +1228,7 @@ void SerialWorker::doWork2() {
         /* 如果标志位不为真 */
         if (!isCanRun) {
             /* 跳出循环 */
+            stopWork();
             break;
         }
 
@@ -1319,6 +1348,12 @@ void SerialWorker::UploadHandler1()
     QString msg = QString::fromStdString(rep);
     msg.remove("\r\n");
     qDebug()<<__LINE__<<"msg==>"<<msg<<endl;
+    if(flag == 0)
+    {
+        writeinLog(msg);
+        emit sendlogmsg("上传报文:"+msg);
+    }
+
     if(serial!=nullptr)
     {
         while(!serial->waitForBytesWritten(3000))
@@ -1330,7 +1365,7 @@ void SerialWorker::UploadHandler1()
         serial->write(QString2Hex(msg));
     }
 
-
+    flag = 1;
 }
 
 void SerialWorker::doWork3() {
@@ -1547,6 +1582,12 @@ void MainWindow::InitFactorMaps()
 
 
      qDebug() << "map_Factors==>" << map_Factors;
+     QString str = "当前现实因子:\r\n";
+     for(int i=0;i<map_Factors.count();++i)
+     {
+         str += map_Factors.keys()[i]+" ";
+     }
+     emit sendlogmsg(str);
      qDebug() << "seqlist==>" << seqlist;
      qDebug() << "nameseqlist==>" << nameseqlist;
      qDebug() << "facseqlist==>" << facseqlist;
@@ -1654,7 +1695,7 @@ void MainWindow::InitComm()
 
                     connect(serialWorker1,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
 
-
+                    connect(serialWorker1,SIGNAL(sendlogmsg),this,SIGNAL(sendlogmsg));
 //                    connect(this,&MainWindow::sendJSMode,serialWorker1,&SerialWorker::onReceiveJZModeChanged);
 
                 }
@@ -1708,7 +1749,7 @@ void MainWindow::InitComm()
 
                     connect(serialWorker2,SIGNAL(sendFluParams),this,SLOT(onReceiveFluParamsMap));
 
-
+                    connect(serialWorker2,SIGNAL(sendlogmsg),this,SIGNAL(sendlogmsg));
 //                    connect(this,&MainWindow::sendJSMode,serialWorker2,&SerialWorker::onReceiveJZModeChanged);
                 }
 
@@ -1765,6 +1806,8 @@ void MainWindow::InitComm()
                     /* 接收到 worker 发送过来的信号 */
                     connect(serialWorker3, SIGNAL(resultReady(QString)),
                             this, SLOT(handleResults(QString)));
+
+                    connect(serialWorker3,SIGNAL(sendlogmsg),this,SIGNAL(sendlogmsg));
                 }
 
                 /* 判断线程是否在运行 */
@@ -1963,7 +2006,7 @@ void MainWindow::Widget_Init()
     ui->label_User->installEventFilter(this);
 
     connect(ui->pushButton_3,&QPushButton::clicked,this,&MainWindow::on_pushButton_3_clicked);
-    g_valueseq = "ABCD";
+    g_valueseq = "CDAB";
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -2224,6 +2267,22 @@ void MainWindow::HandleDateTimeout()
 
 void MainWindow::on_pushButton_3_clicked()
 {
+    if(serialThread_1.isRunning())
+    {
+        serialThread_1.quit();
+    }
+    if(serialThread_2.isRunning())
+    {
+        serialThread_2.quit();
+    }
+    if(serialThread_3.isRunning())
+    {
+        serialThread_3.quit();
+    }
+    if(serialThread_4.isRunning())
+    {
+        serialThread_4.quit();
+    }
     this->close();
 }
 
@@ -2238,6 +2297,7 @@ void MainWindow::on_pushButton_4_clicked()
     if(result != QMessageBox::Yes)
     {
         writeLog(ui->label_3->text() + "已退出登录");
+        emit sendlogmsg(ui->label_3->text() + "已退出登录");
 
         if(db.isOpen())
         {
@@ -2336,6 +2396,8 @@ void MainWindow::on_pushButton_Set_clicked()
         }
     });
     connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
+    connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
+    emit sendlogmsg("打开参数设置");
     paramSet->show();
 }
 
@@ -2372,6 +2434,7 @@ bool MainWindow::checkAvailable(QSqlDatabase &db)
         {
             ui->label_3->setText(name);
             writeLog(name + "已登录");
+            emit sendlogmsg(name + "已登录");
             break;
         }
 

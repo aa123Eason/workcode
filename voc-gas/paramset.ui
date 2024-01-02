@@ -833,39 +833,21 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
        <attribute name="title">
         <string>操作日志</string>
        </attribute>
-       <widget class="QPushButton" name="pushButton">
-        <property name="geometry">
-         <rect>
-          <x>660</x>
-          <y>20</y>
-          <width>71</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton{background-color:#00aaff;width:48px;height:24px;border:1px solid #999999;opacity:1;}
-QPushButton:hover{width: 48px;height: 24px;background: #E4EEF8;border: 1px solid #87AFFA;opacity: 1;}
-QPushButton:pressed{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
-QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
-</string>
-        </property>
-        <property name="text">
-         <string>查询</string>
-        </property>
-       </widget>
        <widget class="QTextBrowser" name="textBrowser">
         <property name="geometry">
          <rect>
           <x>30</x>
           <y>70</y>
           <width>731</width>
-          <height>341</height>
+          <height>431</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
        </widget>
        <widget class="QDateEdit" name="dateEdit">
@@ -877,6 +859,99 @@ QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px so
           <height>31</height>
          </rect>
         </property>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>480</x>
+          <y>20</y>
+          <width>271</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton{background-color:#00aaff;width:48px;height:24px;border:1px solid #999999;opacity:1;}
+QPushButton:hover{width: 48px;height: 24px;background: #E4EEF8;border: 1px solid #87AFFA;opacity: 1;}
+QPushButton:pressed{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+</string>
+           </property>
+           <property name="text">
+            <string>清空</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton{background-color:#00aaff;width:48px;height:24px;border:1px solid #999999;opacity:1;}
+QPushButton:hover{width: 48px;height: 24px;background: #E4EEF8;border: 1px solid #87AFFA;opacity: 1;}
+QPushButton:pressed{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+</string>
+           </property>
+           <property name="text">
+            <string>保存</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton{background-color:#00aaff;width:48px;height:24px;border:1px solid #999999;opacity:1;}
+QPushButton:hover{width: 48px;height: 24px;background: #E4EEF8;border: 1px solid #87AFFA;opacity: 1;}
+QPushButton:pressed{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+QPushButton:disabled{width: 56px;height: 24px;background: #CCE5F8;border: 1px solid #0A64E1;opacity: 1;}
+</string>
+           </property>
+           <property name="text">
+            <string>查询</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>

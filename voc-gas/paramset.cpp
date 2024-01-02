@@ -39,24 +39,35 @@ ParamSet::ParamSet(QWidget *parent) :
     {
         qDebug()<<__LINE__<<"只上传湿值"<<endl;
         emit sendCMDStr("只上传湿值");
+        emit sendlogmsg("只上传湿值");
         emit sendUpLoadType(UPLOAD_WET);
     });
     connect(ui->uploaddry,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<"只上传干值"<<endl;
         emit sendCMDStr("只上传干值");
+        emit sendlogmsg("只上传干值");
         emit sendUpLoadType(UPLOAD_DRY);
     });
     connect(ui->uploadall,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<"上传所有值"<<endl;
         emit sendCMDStr("上传所有值");
+        emit sendlogmsg("上传所有值");
         emit sendUpLoadType(UPLOAD_ALL);
     });
     connect(ui->pushButton_9,&QPushButton::clicked,this,[=]()
     {
         emit sendCMDStr("修改显示因子");
+        emit sendlogmsg("修改显示因子");
         emit sendChangeFactors(true);
+    });
+    connect(this,&ParamSet::sendlogmsg,this,&ParamSet::onPrintlog);
+
+    connect(ui->tabWidget,&QTabWidget::currentChanged,this,[=](int index)
+    {
+        QString str = ui->tabWidget->tabText(index);
+        emit sendlogmsg("当前页："+str);
     });
 
 }
@@ -1246,26 +1257,32 @@ bool ParamSet::Save_CommSet()
                 QComboBox *pBoxPortName = (QComboBox *)ui->tableWidget_Down->cellWidget(row,1);
                 QJsonValueRef ElementOneValueRefName = jsonObjectNodeC.find(PORTNAME).value();
                 ElementOneValueRefName = QJsonValue(pBoxPortName->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的串口名："+pBoxPortName->currentText());
 
                 QComboBox *pBoxPortBaud = (QComboBox *)ui->tableWidget_Down->cellWidget(row,2);
                 QJsonValueRef ElementOneValueRefBaud = jsonObjectNodeC.find(BAUD).value();
                 ElementOneValueRefBaud = QJsonValue(pBoxPortBaud->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的波特率："+pBoxPortBaud->currentText());
 
                 QComboBox *pBoxPortParity = (QComboBox *)ui->tableWidget_Down->cellWidget(row,3);
                 QJsonValueRef ElementOneValueRefParity = jsonObjectNodeC.find(PARITY).value();
                 ElementOneValueRefParity = QJsonValue(pBoxPortParity->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的校验位："+pBoxPortParity->currentText());
 
                 QComboBox *pBoxPortDataBit = (QComboBox *)ui->tableWidget_Down->cellWidget(row,4);
                 QJsonValueRef ElementOneValueRefDatabit = jsonObjectNodeC.find(DATABIT).value();
                 ElementOneValueRefDatabit = QJsonValue(pBoxPortDataBit->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的数据位："+pBoxPortDataBit->currentText());
 
                 QComboBox *pBoxPortStopBit = (QComboBox *)ui->tableWidget_Down->cellWidget(row,5);
                 QJsonValueRef ElementOneValueRefStopBit = jsonObjectNodeC.find(STOPBIT).value();
                 ElementOneValueRefStopBit = QJsonValue(pBoxPortStopBit->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的停止位："+pBoxPortStopBit->currentText());
 
                 QComboBox *pBoxPortDevType = (QComboBox *)ui->tableWidget_Down->cellWidget(row,6);
                 QJsonValueRef ElementOneValueRefDevType = jsonObjectNodeC.find(DEVICETYPE).value();
                 ElementOneValueRefDevType = QJsonValue(pBoxPortDevType->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的设备类型："+pBoxPortDevType->currentText());
 
                 RefVersionComm = jsonObjectNodeC;
             }
@@ -1277,29 +1294,36 @@ bool ParamSet::Save_CommSet()
                 QJsonValueRef RefVersionComm = jsonObjectNodeUp.find(pDevice).value();
                 QJsonObject jsonObjectNodeC = RefVersionComm.toObject();
 
+
                 QComboBox *pBoxPortName = (QComboBox *)ui->tableWidget_Up->cellWidget(row,1);
                 QJsonValueRef ElementOneValueRefName = jsonObjectNodeC.find(PORTNAME).value();
                 ElementOneValueRefName = QJsonValue(pBoxPortName->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的串口名："+pBoxPortName->currentText());
 
                 QComboBox *pBoxPortBaud = (QComboBox *)ui->tableWidget_Up->cellWidget(row,2);
                 QJsonValueRef ElementOneValueRefBaud = jsonObjectNodeC.find(BAUD).value();
                 ElementOneValueRefBaud = QJsonValue(pBoxPortBaud->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的波特率："+pBoxPortBaud->currentText());
 
                 QComboBox *pBoxPortParity = (QComboBox *)ui->tableWidget_Up->cellWidget(row,3);
                 QJsonValueRef ElementOneValueRefParity = jsonObjectNodeC.find(PARITY).value();
                 ElementOneValueRefParity = QJsonValue(pBoxPortParity->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的校验位："+pBoxPortParity->currentText());
 
                 QComboBox *pBoxPortDataBit = (QComboBox *)ui->tableWidget_Up->cellWidget(row,4);
                 QJsonValueRef ElementOneValueRefDatabit = jsonObjectNodeC.find(DATABIT).value();
                 ElementOneValueRefDatabit = QJsonValue(pBoxPortDataBit->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的数据位："+pBoxPortDataBit->currentText());
 
                 QComboBox *pBoxPortStopBit = (QComboBox *)ui->tableWidget_Up->cellWidget(row,5);
                 QJsonValueRef ElementOneValueRefStopBit = jsonObjectNodeC.find(STOPBIT).value();
                 ElementOneValueRefStopBit = QJsonValue(pBoxPortStopBit->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的停止位："+pBoxPortStopBit->currentText());
 
                 QComboBox *pBoxPortDevType = (QComboBox *)ui->tableWidget_Up->cellWidget(row,6);
                 QJsonValueRef ElementOneValueRefDevType = jsonObjectNodeC.find(DEVICETYPE).value();
                 ElementOneValueRefDevType = QJsonValue(pBoxPortDevType->currentText());
+                emit sendlogmsg("修改上传端口"+QString::number(row+1)+"的设备类型："+pBoxPortDevType->currentText());
 
                 RefVersionComm = jsonObjectNodeC;
             }
@@ -1326,22 +1350,27 @@ bool ParamSet::Save_CommSet()
 
                 QComboBox *pBoxPortName = (QComboBox *)ui->tableWidget_Down->cellWidget(row,1);
                 pComJsonObj.insert(PORTNAME,pBoxPortName->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的串口名："+pBoxPortName->currentText());
 
                 QComboBox *pBoxPortBaud = (QComboBox *)ui->tableWidget_Down->cellWidget(row,2);
                 pComJsonObj.insert(BAUD,pBoxPortBaud->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的波特率："+pBoxPortBaud->currentText());
 
                 QComboBox *pBoxPortParity = (QComboBox *)ui->tableWidget_Down->cellWidget(row,3);
                 pComJsonObj.insert(PARITY,pBoxPortParity->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的校验位："+pBoxPortParity->currentText());
 
                 QComboBox *pBoxPortDataBit = (QComboBox *)ui->tableWidget_Down->cellWidget(row,4);
                 pComJsonObj.insert(DATABIT,pBoxPortDataBit->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的数据位："+pBoxPortDataBit->currentText());
 
                 QComboBox *pBoxPortStopBit = (QComboBox *)ui->tableWidget_Down->cellWidget(row,5);
                 pComJsonObj.insert(STOPBIT,pBoxPortStopBit->currentText());
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的停止位："+pBoxPortStopBit->currentText());
 
                 QComboBox *pBoxPortDeviceType = (QComboBox *)ui->tableWidget_Down->cellWidget(row,6);
                 pComJsonObj.insert(DEVICETYPE,pBoxPortDeviceType->currentText());
-
+                emit sendlogmsg("修改采集端口"+QString::number(row+1)+"的设备类型："+pBoxPortDeviceType->currentText());
                 pCommsJsonObjDown.insert(ui->tableWidget_Down->item(row,0)->text(),pComJsonObj);
             }
 
@@ -1809,4 +1838,11 @@ void ParamSet::onReceiveUpLoadType(int uploadtype)
         QMessageBox::about(this,"提示","上传所有值设置成功");
         break;
     }
+}
+
+void ParamSet::onPrintlog(QString msg)
+{
+    QString txt = ui->textBrowser->toPlainText();
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ msg;
+    txt += "\r\n<font color:#104f00>"+str+"</font>";
 }

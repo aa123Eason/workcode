@@ -33,6 +33,7 @@
 #include "historydataquery.h"
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <windows.h>
 
 
 
@@ -96,7 +97,7 @@ signals:
     /* 工人工作函数状态的信号 */
     void resultReady(const QString &result);
     void sendFluParams(QMap<QString,QString> &paramsMap);
-
+    void sendlogmsg(QString msg);
 public slots:
     void doWork1();
     void doWork2();
@@ -113,7 +114,7 @@ private:
     bool isUpLoadWet = true;
     bool isUpLoadDry = true;
     QMap<QString,QString> flusmap;
-
+    int flag = 0;
 
 };
 
@@ -172,6 +173,7 @@ private slots:
 public slots:
     void writeLog(QString content);
 
+
 signals:
     /* 工人开始工作（做些耗时的操作 ） */
     void startWork1();
@@ -180,6 +182,7 @@ signals:
     void startWork4();
     void sendGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors);
     void sendJSMode(bool isOn);
+    void sendlogmsg(QString msg);
 
 private:
     Ui::MainWindow *ui;

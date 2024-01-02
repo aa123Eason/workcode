@@ -25,8 +25,8 @@ void HistoryDataQuery::widgetinit()
 {
     this->setWindowState(Qt::WindowMaximized);
 
-//    QDateTime defaultSDT = QDateTime::currentDateTime();
-    QDateTime defaultSDT = QDateTime::fromString("2023-07-11 03:00","yyyy-MM-dd HH:mm");
+    QDateTime defaultSDT = QDateTime::currentDateTime();
+//    QDateTime defaultSDT = QDateTime::fromString("2023-07-11 03:00","yyyy-MM-dd HH:mm");
     QDateTime defaultSDT1 = defaultSDT.addSecs(3600);
     ui->startDT->setDateTime(defaultSDT);
     ui->endDT->setDateTime(defaultSDT1);

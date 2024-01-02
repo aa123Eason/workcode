@@ -79,6 +79,7 @@ void Dialog::on_pushButton_clicked()
            if(writeindb(db,ui->comboBox->currentText()))
            {
                this->close();
+               qDebug()<<__LINE__<<QApplication::applicationDirPath() + "/VocGas.exe"<<endl;
                my_Process->startDetached(QApplication::applicationDirPath() + "/VocGas.exe");
            }
        }
