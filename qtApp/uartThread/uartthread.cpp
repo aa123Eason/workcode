@@ -1,6 +1,7 @@
-#ifdef Q_OS_WIN
+
 #include "uartthread.h"
 
+#ifdef Q_OS_LINUX
 UartThread::UartThread(QObject *parent) :
     QThread(parent)
 {
@@ -27,6 +28,7 @@ UartThread::~UartThread()
 
     delete this->mcom;
 }
+
 
 //初始化串口
 /*
@@ -101,18 +103,22 @@ void UartThread::run()
     }
 }
 
+
 //设置线程启停标志位
 void UartThread::runControl(bool flag)
 {
     this->mrunFlag = flag;
     emit sendloopon(this->mrunFlag);
 }
+
 //向串口写数据
 void UartThread::writeUart(const QByteArray & dataToWrite )
 {
     this->mcom->flush();
     this->mcom->write(dataToWrite);
 }
+
+
 
 //向串口写数据
 void UartThread::writeUart(const char *dataToWrite )

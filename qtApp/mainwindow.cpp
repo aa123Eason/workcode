@@ -9,8 +9,11 @@ MainWIndow::MainWIndow(QWidget *parent)
 {
     ui->setupUi(this);
     widgetInit();
+    tcpClientInit();
     connectevent();
     addLocalApp();
+
+
 
     id1 = startTimer(1000);
     id2 = startTimer(3000);
@@ -19,6 +22,11 @@ MainWIndow::MainWIndow(QWidget *parent)
 MainWIndow::~MainWIndow()
 {
     delete ui;
+    if(tcpSocket!=NULL)
+    {
+        if(tcpSocket->isOpen())
+            tcpSocket->close();
+    }
 }
 
 void MainWIndow::timerEvent(QTimerEvent *event)
@@ -48,6 +56,96 @@ void MainWIndow::widgetInit()//mainwindow init
     ui->userNameEdit->installEventFilter(this);
     ui->pwdEdit->installEventFilter(this);
 
+    emit resultReady("realtime_data");
+    emit resultReady("connect_state");
+
+}
+
+bool MainWIndow::tcpClientInit()
+{
+    QString swagger_ip = "101.34.210.4";
+    QString swagger_port = "8899";
+    QString host_ip;
+    QString host_port = "8080";
+
+    tcpSocket = new QTcpSocket(this);
+
+    //change local ip
+    editlocalip("172.20.0.218");
+
+    //!获取本机IP
+    QString localHostName = QHostInfo::localHostName();
+    QHostInfo info = QHostInfo::fromName(localHostName);
+    if (!info.addresses().empty())
+    {
+        foreach(QHostAddress address,info.addresses())
+        {
+            if(address.protocol() == QAbstractSocket::IPv4Protocol)
+            {
+                host_ip = address.toString();
+
+                break;
+            }
+        }
+    }
+    qDebug()<<__LINE__<<"Host==>"<<host_ip<<":"<<host_port<<endl;
+
+    tcpSocket->connectToHost(swagger_ip,swagger_port.toInt(),QIODevice::ReadWrite,QAbstractSocket::IPv4Protocol);
+    tcpSocket->waitForReadyRead(1000);
+
+    connect(tcpSocket,&QTcpSocket::readyRead,this,[=]()
+    {
+        QString str = QString(tcpSocket->readAll());
+        qDebug()<<__LINE__<<"Recieve==>"<<str<<endl;
+    });
+
+    if (QAbstractSocket::ConnectingState == tcpSocket->state() ||
+                QAbstractSocket::ConnectedState == tcpSocket->state())
+    {
+        qDebug()<<__LINE__<<"connected!"<<endl;
+        QJsonObject resObj;
+//        if(httpClient.asynpostseqcode(resObj))
+//        {
+//            QString lastCode = resObj.begin().key();
+//            QDateTime lastdt = QDateTime::fromString(resObj.begin().value().toString().split("Last communication time: ")[0],"yyyy-MM-dd HH:mm:ss");
+//            QJsonObject::iterator it = resObj.begin();
+//            while(it!=resObj.end())
+//            {
+//                QString code = it.key();
+
+//                QDateTime dt = QDateTime::fromString(it.value().toString().split("Last communication time: ")[1],"yyyy-MM-dd HH:mm:ss");
+//                qDebug()<<"curCode==>"<<code<<"curdt==>"<<it.value().toString().split("Last communication time: ")[1]<<endl;
+//                if(dt>lastdt)
+//                {
+//                    lastdt = dt;
+//                    lastCode = code;
+
+//                }
+//                it++;
+//            }
+
+//            qDebug()<<"LastDevice==>"<<lastCode<<endl;
+//        }
+    }
+    else
+    {
+        qDebug()<<__LINE__<<"disconnected!"<<endl;
+    }
+
+
+}
+
+void MainWIndow::editlocalip(QString ip_addr)
+{
+    QHostAddress ipAddress = QHostAddress(ip_addr);
+    if (ipAddress.isNull()) {
+        // IP地址无效
+    } else {
+        // 设置IP地址
+        QProcess *process = new QProcess();
+        process->startDetached("ifconfig", QStringList() << "eth0" << ipAddress.toString());
+        process->close();
+    }
 }
 
 void MainWIndow::autoGetData()
@@ -81,6 +179,7 @@ QJsonObject MainWIndow::get_rtk_data()
 {
     QJsonObject jObj;
 
+    int i=0;
     if(httpClient.asyngetdata("/dcm/realtime_data",jObj))
     {
         qDebug()<<__LINE__<<"res==>"<<jObj<<endl;
@@ -104,6 +203,7 @@ QJsonObject MainWIndow::get_rtk_data()
             facs->setFixedSize(250,180);
 
             map.insert(code,facs);
+            i++;
             it++;
         }
 
@@ -125,7 +225,8 @@ QJsonObject MainWIndow::get_rtk_data()
     }
     else
     {
-        QMessageBox::warning(this,"提示","实时数据获取失败");
+        if(i==0)
+            QMessageBox::warning(this,"提示","实时数据获取失败");
     }
 
 
@@ -144,7 +245,7 @@ void MainWIndow::setRtkPanelContent()
     {
         int row = num/map.count();
         int col = num%map.count();
-
+        nameMap.append(it.key());
 
         ui->rtkPanel->setCellWidget(row,col,it.value());
 
@@ -383,7 +484,8 @@ void MainWIndow::startApp(QString name)
     else if(name == "数据查询")
     {
         ui->mainpanel->setCurrentIndex(3);
-        DataQuery *dataQuery = new DataQuery();
+        DataQuery *dataQuery = new DataQuery(nameMap);
+        dataQuery->resize(1280,880);
         connect(this,&MainWIndow::sendFacPanel,dataQuery,&DataQuery::onReceiveFac);
         loadAppDlg(dataQuery);
     }
@@ -449,7 +551,7 @@ void MainWIndow::loadAppDlg(QWidget *w)
         deleteApp();
         //添加目标窗口
         appLayout.addWidget(w,1,Qt::AlignCenter);
-//        appLayout.setColumnMinimumWidth(0,1000);
+        appLayout.setStretch(0,1);
 //        appLayout.SetSpacing(1);
         appLayout.setSizeConstraint(QLayout::SetDefaultConstraint);
         ui->page_appshow->setLayout(&appLayout);
@@ -460,6 +562,7 @@ void MainWIndow::loadAppDlg(QWidget *w)
 QJsonObject MainWIndow::get_connect_stat()
 {
     QJsonObject jObj;
+    int i=0;
     if(httpClient.asyngetdata("/dcm/connect_stat",jObj))
     {
         if(jObj.count()>0)
@@ -469,7 +572,7 @@ QJsonObject MainWIndow::get_connect_stat()
             {
                 QString ipaddr_port = it.key();
                 bool state = it.value().toBool();
-                QString updt = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
+                QString updt = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
                 if(ipaddr_port.isEmpty())
                 {
                     ui->cnt_addr->setText("无连接");
@@ -491,12 +594,17 @@ QJsonObject MainWIndow::get_connect_stat()
                 }
 
                 it++;
+                i++;
             }
         }
     }
     else
     {
-        QMessageBox::warning(this,"提示","连接状态获取失败");
+        if(i==0)
+        {
+            QMessageBox::warning(this,"提示","连接状态获取失败");
+            i=1;
+        }
     }
     return jObj;
 }

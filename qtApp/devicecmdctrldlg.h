@@ -14,8 +14,10 @@
 #include <QFile>
 #include <QDateTime>
 
+#ifdef Q_OS_LINUX
 #include "usbutility.h"
 #include "uartThread/uartthread.h"
+#endif
 #include <unistd.h>
 
 namespace Ui {

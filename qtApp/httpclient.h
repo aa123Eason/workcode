@@ -16,6 +16,7 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QNetworkProxy>
+#include "common.h"
 
 class HttpClient : public QObject
 {
@@ -28,6 +29,7 @@ public:
     bool putdata(const QString &url, const QJsonObject &datajson,QJsonObject &resjson);
     bool postdata(const QString &url, const QJsonObject &datajson,QJsonObject &resjson);
     bool asynpostdata(const QString &url,const QJsonObject &datajson,QJsonObject &resjson);
+    bool asynpostseqcode(QJsonObject &resjson);
 
 signals:
 

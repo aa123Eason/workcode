@@ -248,7 +248,7 @@ QPushButton::hover
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="page_rtk">
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="5,0">

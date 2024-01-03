@@ -15,6 +15,7 @@
 #include <QList>
 #include <QMessageBox>
 #include <QFont>
+#include <QStringList>
 
 
 #include "common.h"
@@ -29,7 +30,7 @@ class DataQuery : public QWidget
     Q_OBJECT
 
 public:
-    explicit DataQuery(QWidget *parent = nullptr);
+    explicit DataQuery(QStringList names,QWidget *parent = nullptr);
     ~DataQuery();
     void init();
     void connectevent();
@@ -44,7 +45,8 @@ public:
     void query_month();
     void query_trans();
 
-    void fillinTable(QJsonObject &resObj,QTableWidget * table = nullptr);
+    void fillinTable_rtk(QJsonObject &resObj,QTableWidget * table = nullptr);
+    void fillinTable_unrtk(QJsonObject &resObj,QTableWidget * table = nullptr);
 
 signals:
 
@@ -57,7 +59,7 @@ private:
     Ui::DataQuery *ui;
     QJsonObject fullFactorsInfo;
     QJsonObject fullDevicesInfo;
-
+    QStringList names;
 };
 
 #endif // DATAQUERY_H

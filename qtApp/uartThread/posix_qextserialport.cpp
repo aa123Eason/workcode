@@ -1,4 +1,4 @@
-#ifdef Q_OS_WIN
+
 /*!
 \class Posix_QextSerialPort
 \version 1.0.0
@@ -35,14 +35,18 @@ _TTY_LINUX_      Linux           /dev/ttyS0, /dev/ttyS1
 <none>           Linux           /dev/ttyS0, /dev/ttyS1
 \endverbatim
 
+
 This constructor assigns the device name to the name of the first port on the specified system.
 See the other constructors if you need to open a different port.
 */
+
+
 Posix_QextSerialPort::Posix_QextSerialPort()
 : QextSerialBase()
 {
     Posix_File=new QFile();
 }
+
 
 /*!
 \fn Posix_QextSerialPort::Posix_QextSerialPort(const Posix_QextSerialPort&)
@@ -1128,4 +1132,4 @@ qint64 Posix_QextSerialPort::writeData(const char * data, qint64 maxSize)
     return retVal;
 }
 
-#endif
+

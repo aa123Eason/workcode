@@ -17,7 +17,7 @@ bool HttpClient::getdata(QString url, QJsonObject &json)
     QNetworkAccessManager manager;
     // 设置网络请求
     //http://101.34.210.4:8899/LC2023RK100041/dcm/realtime_data
-    QString deviceid = "LC2023RK100032";
+    QString deviceid = DEVICEID;
     QString fullUrl = "http://101.34.210.4:8899/"+deviceid+url;
 
     QUrl requestUrl(fullUrl);
@@ -64,7 +64,7 @@ bool HttpClient::asyngetdata(QString url,QJsonObject &json)
     // 但为了简化示例，这里使用了事件循环。
     //http://101.34.210.4:8899/LC2023RK100032/dcm/mninfo
     QNetworkAccessManager manager;
-    QString deviceid = "LC2023RK100032";
+    QString deviceid = DEVICEID;
     QString fullUrl = "http://101.34.210.4:8899/"+deviceid+url;
     qDebug()<<__LINE__<<fullUrl<<endl;
     QUrl requestUrl(fullUrl);
@@ -85,19 +85,25 @@ bool HttpClient::asyngetdata(QString url,QJsonObject &json)
     QJsonDocument doc = QJsonDocument::fromJson(responseString.toUtf8());
     if (doc.isObject()) {
         if (doc.object().isEmpty()) {
+            reply->abort();
+            reply->close();
             return false; // 响应内容为空对象，返回false
         } else {
             json = doc.object(); // 将响应内容赋值给传入的json对象
+            reply->abort();
+            reply->close();
             return true; // 获取成功，返回true
         }
     } else {
+        reply->abort();
+        reply->close();
         return false; // 响应内容不是JSON对象，返回false
     }
 }
 
 bool HttpClient::putdata(const QString &url,const QJsonObject &datajson,QJsonObject &resjson) {
     QNetworkAccessManager manager;
-    QString deviceid = "LC2023RK100032";
+    QString deviceid = DEVICEID;
     QString fullUrl = "http://101.34.210.4:8899/"+deviceid+url;
     qDebug()<<__LINE__<<fullUrl<<endl;
     QUrl requestUrl(fullUrl);
@@ -141,7 +147,7 @@ bool HttpClient::putdata(const QString &url,const QJsonObject &datajson,QJsonObj
 bool HttpClient::postdata(const QString &url, const QJsonObject &json,QJsonObject &resjson)
 {
     QNetworkAccessManager manager;
-    QString deviceid = "LC2023RK100032";
+    QString deviceid = DEVICEID;
     QString fullUrl = "http://101.34.210.4:8899/"+deviceid+url;
     qDebug()<<__LINE__<<fullUrl<<endl;
     QUrl requestUrl(fullUrl);
@@ -187,23 +193,71 @@ bool HttpClient::asynpostdata(const QString &url,const QJsonObject &datajson,QJs
 {
     QEventLoop eventloop;
     QTimer timer;
-    timer.singleShot(1000, &eventloop, &QEventLoop::quit);
+    timer.singleShot(3000, &eventloop, &QEventLoop::quit);
 
     QNetworkAccessManager manager;
     manager.setNetworkAccessible(QNetworkAccessManager::Accessible);
     manager.setProxy(QNetworkProxy::NoProxy);
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=utf-8");
-    QString deviceid = "LC2023RK100032";
+    QString deviceid = DEVICEID;
     QString fullUrl = "http://101.34.210.4:8899/"+deviceid+url;
     qDebug()<<__LINE__<<fullUrl<<endl;
     QUrl requestUrl(fullUrl);
     /*QNetworkRequest request(requestUrl)*/;
     request.setUrl(requestUrl);
-    timer.start(1000);
+    timer.start(3000);
 
 //     将QJsonObject转换为JSON字符串
     QJsonDocument doc(datajson);
+    QByteArray dataToSend = doc.toJson();
+    QNetworkReply* reply = manager.post(request, dataToSend);
+    connect(reply, &QNetworkReply::finished, &eventloop, &QEventLoop::quit);
+    eventloop.exec(QEventLoop::ExcludeUserInputEvents); //开启事件循环
+    QNetworkReply::NetworkError error;
+    if (!timer.isActive())
+    {
+        //超时，未知状态
+        disconnect(reply, &QNetworkReply::finished, &eventloop, &QEventLoop::quit);
+        reply->abort();
+        reply->deleteLater();
+        error = QNetworkReply::NetworkError::TimeoutError;
+        return false;
+    }
+
+    error = reply->error();
+    QString errorString = reply->errorString();
+    qDebug()<<__LINE__<<errorString<<endl;
+    QByteArray bytArr = reply->readAll();
+    qDebug()<<__LINE__<<endl;
+    QJsonDocument jDoc = QJsonDocument::fromJson(bytArr);
+    resjson = jDoc.object();
+    qDebug()<<__LINE__<<endl;
+    reply->abort();
+    reply->deleteLater();
+    qDebug()<<__LINE__<<endl;
+    return true;
+}
+
+bool HttpClient::asynpostseqcode(QJsonObject &resjson)
+{
+    QEventLoop eventloop;
+    QTimer timer;
+    timer.singleShot(3000, &eventloop, &QEventLoop::quit);
+
+    QNetworkAccessManager manager;
+    manager.setNetworkAccessible(QNetworkAccessManager::Accessible);
+    manager.setProxy(QNetworkProxy::NoProxy);
+    QNetworkRequest request;
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=utf-8");
+    QString fullUrl = "http://101.34.210.4:8899/dcms/list";
+    QUrl requestUrl(fullUrl);
+    /*QNetworkRequest request(requestUrl)*/;
+    request.setUrl(requestUrl);
+    timer.start(3000);
+
+    QJsonObject dataJson;
+    QJsonDocument doc(dataJson);
     QByteArray dataToSend = doc.toJson();
     QNetworkReply* reply = manager.post(request, dataToSend);
     connect(reply, &QNetworkReply::finished, &eventloop, &QEventLoop::quit);

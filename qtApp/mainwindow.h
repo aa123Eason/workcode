@@ -37,6 +37,12 @@
 #include <QTableWidgetItem>
 #include <QMetaType>
 #include <QMetaObject>
+#include <QTcpSocket>
+#include <QAbstractSocket>
+#include <QHostAddress>
+#include <QHostInfo>
+#include <QNetworkInterface>
+#include <QNetworkConfigurationManager>
 
 #include "common.h"
 #include "facpanel.h"
@@ -86,6 +92,11 @@ public:
 
     QJsonObject get_connect_stat();
 
+    bool tcpClientInit();
+    void editlocalip(QString ip_addr);
+
+
+
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
     void timerEvent(QTimerEvent *event) override;
@@ -123,6 +134,8 @@ private:
 
     QString curAppName;
     QMap<QString,facPanel*> map;
+    QStringList nameMap;
+    QTcpSocket *tcpSocket = nullptr;
 
 };
 #endif // MAINWINDOW_H

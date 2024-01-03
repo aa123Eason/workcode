@@ -13,20 +13,20 @@ DeviceCMDCtrlDlg::DeviceCMDCtrlDlg(QWidget *parent) :
     init();
     connectevent();
 }
-
+#ifdef Q_OS_LINUX
 DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 {
     ui->loopread->setChecked(false);
-    #ifdef Q_OS_LINUX
+
     if(muartThread->isRunning())
     {
         muartThread->quit();
     }
     muartThread->deleteLater();
-    #endif
+
     delete ui;
 }
-
+#endif
 
 void DeviceCMDCtrlDlg::init()
 {

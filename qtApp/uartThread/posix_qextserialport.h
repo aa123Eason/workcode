@@ -1,7 +1,7 @@
 #ifndef _POSIX_QEXTSERIALPORT_H_
 #define _POSIX_QEXTSERIALPORT_H_
 
-#ifdef Q_OS_LINUX
+
 #include <stdio.h>
 #include <termios.h>
 #include <errno.h>
@@ -11,6 +11,7 @@
 #include <sys/select.h>
 #include "qextserialbase.h"
 
+#ifdef Q_OS_LINUX
 class Posix_QextSerialPort:public QextSerialBase 
 {
 private:

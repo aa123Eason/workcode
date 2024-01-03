@@ -4,11 +4,11 @@
 #include "facpanel.h"
 #include <QJsonObject>
 #include <QString>
-#include "httpclient.h"
+
 
 
 #define IP_ADDR "localhost"
-
+#define DEVICEID "LC2023RK100041"
 
 
 

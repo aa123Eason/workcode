@@ -10,6 +10,12 @@
     <height>800</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>1000</width>
@@ -78,6 +84,9 @@
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::PlusMinus</enum>
        </property>
+       <property name="displayFormat">
+        <string>yyyy-MM-dd HH:mm</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -111,6 +120,9 @@
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::PlusMinus</enum>
+       </property>
+       <property name="displayFormat">
+        <string>yyyy-MM-dd HH:mm</string>
        </property>
       </widget>
      </item>
@@ -502,7 +514,7 @@ QCheckBox::indicator:checked {
      <item>
       <widget class="QStackedWidget" name="tableStack">
        <widget class="QWidget" name="pagertk">
-        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="8,1">
+        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="8">
          <property name="spacing">
           <number>3</number>
          </property>
@@ -520,255 +532,6 @@ QCheckBox::indicator:checked {
          </property>
          <item>
           <widget class="QTableWidget" name="tablertk"/>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,1,0,1,1,1,0,0,1,0">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>共</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="pages">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Box</enum>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_4">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>页，第</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="curPage">
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Box</enum>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>页</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="autoFillBackground">
-              <bool>true</bool>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton
-{
-	
-	background-color: rgb(0, 85, 255);
-	
-	color: rgb(0, 0, 0);
-	
-	font: 75 16pt &quot;微软雅黑&quot;;
-
-}</string>
-             </property>
-             <property name="text">
-              <string>上一页</string>
-             </property>
-             <property name="autoDefault">
-              <bool>true</bool>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="autoFillBackground">
-              <bool>true</bool>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton
-{
-	
-	background-color: rgb(0, 85, 255);
-	
-	color: rgb(0, 0, 0);
-	
-	font: 75 16pt &quot;微软雅黑&quot;;
-
-}</string>
-             </property>
-             <property name="text">
-              <string>下一页</string>
-             </property>
-             <property name="autoDefault">
-              <bool>true</bool>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="autoFillBackground">
-              <bool>true</bool>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton
-{
-	
-	background-color: rgb(0, 85, 255);
-	
-	color: rgb(0, 0, 0);
-	
-	font: 75 16pt &quot;微软雅黑&quot;;
-
-}</string>
-             </property>
-             <property name="text">
-              <string>跳转到</string>
-             </property>
-             <property name="autoDefault">
-              <bool>true</bool>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>第</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="jumppage">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>15</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_10">
-             <property name="font">
-              <font>
-               <pointsize>13</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>页</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>
