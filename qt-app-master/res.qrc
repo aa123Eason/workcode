@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/blackC.png</file>
+        <file>images/bufa.png</file>
+        <file>images/device.png</file>
+        <file>images/dingshifankong.png</file>
+        <file>images/dropdown.png</file>
+        <file>images/greenC.png</file>
+        <file>images/log.png</file>
+        <file>images/logo.png</file>
+        <file>images/logo1.jpg</file>
+        <file>images/menjing.png</file>
+        <file>images/parameter.png</file>
+        <file>images/realtime.png</file>
+        <file>images/setdate.png</file>
+        <file>images/shangchuan.png</file>
+        <file>images/shangjiwei.png</file>
+        <file>images/shiping.png</file>
+        <file>images/teshuzhi.png</file>
+        <file>images/wangkou.png</file>
+        <file>images/xtsj.png</file>
+        <file>images/yanqicanshu.png</file>
+        <file>images/radioButtonC.png</file>
+        <file>images/radioButtonU.png</file>
+        <file>images/Off.png</file>
+        <file>images/On.png</file>
+    </qresource>
+</RCC>
