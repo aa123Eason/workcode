@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +28,11 @@ SOURCES += \
     teshuzhiadd.cpp \
     teshuzhidele.cpp \
     upsetadd.cpp \
-    util.cpp
+    util.cpp\
+    uartThread/posix_qextserialport.cpp \
+    uartThread/qextserialbase.cpp \
+    uartThread/uartthread.cpp \
+    devicecmdctrldlg.cpp \
 
 HEADERS += \
     common.h \
@@ -43,7 +47,11 @@ HEADERS += \
     teshuzhiadd.h \
     teshuzhidele.h \
     upsetadd.h \
-    util.h
+    util.h \
+    uartThread/posix_qextserialport.h \
+    uartThread/qextserialbase.h \
+    uartThread/uartthread.h \
+    devicecmdctrldlg.h \
 
 FORMS += \
     devadd.ui \
@@ -55,7 +63,8 @@ FORMS += \
     mainwindow.ui \
     teshuzhiadd.ui \
     teshuzhidele.ui \
-    upsetadd.ui
+    upsetadd.ui \
+    devicecmdctrldlg.ui \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -64,3 +73,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     res.qrc
+
+include(src/xlsx/qtxlsx.pri)
+include(QsLog/QsLog.pri)
+
+TRANSLATIONS += \
+    qtApp_zh_CN.ts

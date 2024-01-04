@@ -1,0 +1,34 @@
+QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+	width: 30px;
+	height: 32px;
+}
+QCheckBox:enabled:checked{
+        color: rgb(10, 60, 0);
+        font 14px "黑体";
+}
+QCheckBox:enabled:!checked{
+        color: rgb(10, 60, 0);
+        font 14px "黑体";
+
+}
+QCheckBox:enabled:hover{
+        font 16px "黑体";
+
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+    image:url(":/new/images/image/Off.png")
+}
+
+QCheckBox::indicator:checked {
+    image:url(":/new/images/image/On.png")
+}

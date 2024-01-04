@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnBottomHint);
     setWindowTitle(QTAPP_VER);
 
     setMaximumSize(1280,800);
@@ -81,6 +82,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Data_Query,SIGNAL(clicked()),this,SLOT(OpenData_Query()));
     connect(ui->dev_Setting,SIGNAL(clicked()),this,SLOT(OpenDev_Setting()));
     connect(ui->pushButton_Teshuzhi,SIGNAL(clicked()),this,SLOT(OpenTeshuzhi()));
+    connect(ui->quickInput,&QPushButton::clicked,this,[=]()
+    {
+        ui->Username->setText("admin");
+        ui->Password->setText("lcdcm");
+    });
 }
 
 MainWindow::~MainWindow()
@@ -227,6 +233,20 @@ void MainWindow::Widget_Init()
     ui->response->setAlignment( Qt::AlignLeft);
     ui->stackedWidget->setCurrentIndex(0);
 
+    connect(ui->closewindow,&QPushButton::clicked,this,[=]()
+    {
+        this->close();
+    });
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(3);
+        process.startDetached("florence");
+        process.close();
+    });
+
 }
 
 void MainWindow::ClearTable()
@@ -248,9 +268,9 @@ void MainWindow::ClearTable()
     else
     {
         ui->label_46->hide();
-        ui->factorBox->hide();
-        ui->label_48->hide();
         ui->comboBox_3->hide();
+        ui->label_48->show();
+        ui->factorBox->show();
     }
 
     ui->textEditAllPage->clear();
@@ -301,9 +321,15 @@ void MainWindow::installEvents() {
     labelList.append(ui->label_9);
     funcList.append(std::bind(&MainWindow::OpenTeshuzhi, this));
 
+    labelList.append(ui->label_30);
+    labelList.append(ui->label_71);
+    funcList.append(std::bind(&MainWindow::onReceiveDeviceCMDCtrl, this));
+
     for(int i = 0; i < labelList.size(); ++ i) {
         labelList.at(i)->installEventFilter(this);
     }
+
+    ui->pushButton_devicecmdctrl->installEventFilter(this);
 }
 
 //事件过滤器
@@ -322,6 +348,119 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             return false;
         }
     }
+
+    if(obj == ui->pushButton_devicecmdctrl)
+    {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+            if(mouseEvent->button() == Qt::LeftButton) {
+                onReceiveDeviceCMDCtrl();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    for(int i = 0; i < CODE_list.size(); ++ i) {
+        if(obj == CODE_list.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                    if(!m_LoginStatus)
+                    {
+                        QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+                        ui->stackedWidget->setCurrentIndex(2);
+                        return false;
+                    }
+                    qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
+                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
+                    ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
+                    ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
+                    ui->checkBox->setChecked(true);
+                    on_pushButtonFind_clicked();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    for(int i = 0; i < NAME_list.size(); ++ i) {
+        if(obj == NAME_list.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                    if(!m_LoginStatus)
+                    {
+                        QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+                        ui->stackedWidget->setCurrentIndex(2);
+                        return false;
+                    }
+                    qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
+                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
+                    ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
+                    ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
+                    ui->checkBox->setChecked(true);
+                    on_pushButtonFind_clicked();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    for(int i = 0; i < UINT_list.size(); ++ i) {
+        if(obj == UINT_list.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                    if(!m_LoginStatus)
+                    {
+                        QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+                        ui->stackedWidget->setCurrentIndex(2);
+                        return false;
+                    }
+                    qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
+                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
+                    ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
+                    ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
+                    ui->checkBox->setChecked(true);
+                    on_pushButtonFind_clicked();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    for(int i = 0; i < DATA_list.size(); ++ i) {
+        if(obj == DATA_list.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                    if(!m_LoginStatus)
+                    {
+                        QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+                        ui->stackedWidget->setCurrentIndex(2);
+                        return false;
+                    }
+                    qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
+                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
+                    ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
+                    ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
+                    ui->checkBox->setChecked(true);
+                    on_pushButtonFind_clicked();
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     return QWidget::eventFilter(obj, event);
 }
 
@@ -473,6 +612,14 @@ void MainWindow::setTableContents(const QJsonObject &pJsonObj,const QJsonObject 
 
         DATA_list.at(i)->setText(A + pTeshuzhi + QLatin1String(" ") + html);
         DATA_list.at(i)->show();
+
+        CODE_list.at(i)->installEventFilter(this);
+
+        NAME_list.at(i)->installEventFilter(this);
+
+        UINT_list.at(i)->installEventFilter(this);
+
+        DATA_list.at(i)->installEventFilter(this);
 
         i++;
         it++;
@@ -715,14 +862,15 @@ void MainWindow::handleResults(QString item,const QJsonObject & results)
     {
         QJsonObject pConObj;
         httpclinet pClient;
-        if(pClient.get(DCM_CONF,pConObj))
+        if(pClient.get(DCM_DEVICE_FACTOR,pConObj))
         {
             QJsonObject pTempObjFactor;
             g_ConfObjDevParam.empty();
-            if(pConObj.contains(FACTORS))
-            {
-                QJsonObject pConfJsonFactorList = pConObj.value(FACTORS).toObject();
-                QJsonObject pConfJsonTeList = pConObj.value(TESHUZHI).toObject();
+//            if(pConObj.contains(FACTORS))
+//            {
+//                QJsonObject pConfJsonFactorList = pConObj.value(FACTORS).toObject();
+                QJsonObject pConfJsonFactorList = pConObj;
+                QJsonObject pConfJsonTeList;
                 QJsonObject::const_iterator it = results.constBegin();
                 QJsonObject::const_iterator end = results.constEnd();
                 while(it != end)
@@ -730,6 +878,7 @@ void MainWindow::handleResults(QString item,const QJsonObject & results)
                     bool isDevParam = false;
                     if(pConfJsonFactorList.contains(it.key()))
                     {
+                        pConfJsonTeList = it.value().toObject().value(TESHUZHI).toObject();
                         QJsonObject pConfJsonFactor = pConfJsonFactorList.value(it.key()).toObject();
                         if(pConfJsonFactor.contains(CONF_IS_DEVICE_PROPERTY))
                         {
@@ -755,7 +904,7 @@ void MainWindow::handleResults(QString item,const QJsonObject & results)
                     if(differ < 0) this->addfactor( abs(differ) , pTempObjFactor,pConfJsonTeList);
                     else this->delfactor( differ, pTempObjFactor,pConfJsonTeList);
                 }
-            }
+//            }
         }
     }
     else if(item == "connect_stat")
@@ -991,36 +1140,38 @@ void MainWindow::OpenTeshuzhi()
 
 void MainWindow::setTableDevHeader()
 {
-    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#1B89A1}"
+    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#002570;color:#ffffff}"
                                   "QHeaderView::section,QTableCornerButton:section{ \
-                                  padding:3px; margin:0px; color:#DCDCDC;  border:1px solid #242424; \
+                                  padding:3px; margin:0px; color:#DCDCDC; height:30px;  border:1px solid #001014; \
     border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
-background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
+background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #323232); }"
 "QTableWidget{background-color:white;border:none;}");
 //设置表头
 QStringList headerText;
-headerText << QStringLiteral("ID") << QStringLiteral("设备名称") << QStringLiteral("设备型号") << QStringLiteral("设备地址")<< QStringLiteral("操作");
+headerText << QStringLiteral("端口号")  << QStringLiteral("设备型号") << QStringLiteral("设备地址")<< QStringLiteral("操作");
 int cnt = headerText.count();
 ui->tableWidget_Dev->setColumnCount(cnt);
 ui->tableWidget_Dev->setHorizontalHeaderLabels(headerText);
 // ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->tableWidget_Dev->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
-ui->tableWidget_Dev->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
+ui->tableWidget_Dev->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
 ui->tableWidget_Dev->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget_Dev->horizontalHeader()->font();
 font.setBold(true);
 ui->tableWidget_Dev->horizontalHeader()->setFont(font);
 
-ui->tableWidget_Dev->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
+ui->tableWidget_Dev->setFont(QFont(QLatin1String("Ubuntu Bold"), 16)); // 表格内容的字体为10号宋体
 
-int widths[] = {200, 200, 200, 200, 230};
+int widths[] = {200, 200, 200, 230};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Dev->setColumnWidth(i, widths[i]);
 }
 
+
 ui->tableWidget_Dev->setStyleSheet(qssTV);
 ui->tableWidget_Dev->horizontalHeader()->setVisible(true);
+ui->tableWidget_Dev->verticalHeader()->setVisible(false);
 ui->tableWidget_Dev->verticalHeader()->setDefaultSectionSize(45);
 ui->tableWidget_Dev->setFrameShape(QFrame::NoFrame);
 
@@ -1028,36 +1179,37 @@ ui->tableWidget_Dev->setFrameShape(QFrame::NoFrame);
 
 void MainWindow::setTableFaHeader()
 {
-    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#1B89A1}"
+    QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#002570;color:#ffffff}"
                                   "QHeaderView::section,QTableCornerButton:section{ \
-                                  padding:3px; margin:0px; color:#DCDCDC;  border:1px solid #242424; \
+                                  padding:3px; margin:0px; color:#DCDCDC; height:30px;  border:1px solid #001014; \
     border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
-background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
+background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #323232); }"
 "QTableWidget{background-color:white;border:none;}");
 //设置表头
 QStringList headerText;
-headerText << QStringLiteral("ID") << QStringLiteral("因子编码") << QStringLiteral("因子别名") << QStringLiteral("因子序号")<< QStringLiteral("操作");
+headerText  << QStringLiteral("因子编码") << QStringLiteral("因子序号")<< QStringLiteral("操作");
 int cnt = headerText.count();
 ui->tableWidget_Factor->setColumnCount(cnt);
 ui->tableWidget_Factor->setHorizontalHeaderLabels(headerText);
 // ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->tableWidget_Factor->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
-ui->tableWidget_Factor->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
+ui->tableWidget_Factor->horizontalHeader()->setFont(QFont(QLatin1String("Ubuntu"), 20,75));
 ui->tableWidget_Factor->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget_Factor->horizontalHeader()->font();
 font.setBold(true);
 ui->tableWidget_Factor->horizontalHeader()->setFont(font);
 
-ui->tableWidget_Factor->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
+ui->tableWidget_Factor->setFont(QFont(QLatin1String("Ubuntu"), 20,75)); // 表格内容的字体为10号宋体
 
-int widths[] = {200, 200, 200, 200, 300};
+int widths[] = {200, 200, 300};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Factor->setColumnWidth(i, widths[i]);
 }
 
 ui->tableWidget_Factor->setStyleSheet(qssTV);
 ui->tableWidget_Factor->horizontalHeader()->setVisible(true);
+ui->tableWidget_Factor->verticalHeader()->setVisible(false);
 ui->tableWidget_Factor->verticalHeader()->setDefaultSectionSize(45);
 ui->tableWidget_Factor->setFrameShape(QFrame::NoFrame);
 
@@ -1148,8 +1300,8 @@ bool MainWindow::DevGui_Init()
 
     ui->tableWidget_Dev->clear();
     setTableDevHeader();
-    QTableWidgetItem *pItemID,*pItemName,*pItemType,*pItemAddr;
-    QPushButton *pOperFactor,*pOperDetail,*pOperDele;
+    QTableWidgetItem *pItemID=nullptr,*pItemName=nullptr,*pItemType=nullptr,*pItemAddr=nullptr;
+    QPushButton *pOperFactor=nullptr,*pOperDetail=nullptr,*pOperDele=nullptr;
 
     QJsonObject pJsonDev;
     httpclinet pClient;
@@ -1167,29 +1319,35 @@ bool MainWindow::DevGui_Init()
 
             QJsonObject pJsonDev = it.value().toObject();
 
-            pItemID = new QTableWidgetItem(pJsonDev.value("id").toString());
+            pItemID = new QTableWidgetItem(util.Uart_Revert(pJsonDev.value("com").toString()));
             pItemID->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget_Dev->setItem(row, 0, pItemID);
 
-            pItemName = new QTableWidgetItem(pJsonDev.value("dev_name").toString());
-            pItemName->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Dev->setItem(row, 1, pItemName);
+//            pItemName = new QTableWidgetItem(pJsonDev.value("dev_name").toString());
+//            pItemName->setTextAlignment(Qt::AlignCenter);
+//            ui->tableWidget_Dev->setItem(row, 1, pItemName);
 
             pItemType = new QTableWidgetItem(pJsonDev.value("dev_type").toString());
             pItemType->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Dev->setItem(row, 2, pItemType);
+            ui->tableWidget_Dev->setItem(row, 1, pItemType);
 
             pItemAddr = new QTableWidgetItem(QString::number(pJsonDev.value("address").toInt()));
             pItemAddr->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Dev->setItem(row, 3, pItemAddr);
+            ui->tableWidget_Dev->setItem(row, 2, pItemAddr);
 
             pOperDetail = new QPushButton();
+            pOperDetail->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+            pOperDetail->setFont(QFont("Ubuntu",16,75));
             pOperDetail->setText("详情");
 
             pOperFactor = new QPushButton();
+            pOperFactor->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+            pOperFactor->setFont(QFont("Ubuntu",16,75));
             pOperFactor->setText("因子配置");
 
             pOperDele = new QPushButton();
+            pOperDele->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+            pOperDele->setFont(QFont("Ubuntu",16,75));
             pOperDele->setText("删除");
 
             connect(pOperDetail,SIGNAL(clicked()),m_SignalMapper_DevM,SLOT(map()));
@@ -1201,12 +1359,14 @@ bool MainWindow::DevGui_Init()
 
             QWidget *btnWidget = new QWidget(this);
             QHBoxLayout *btnLayout = new QHBoxLayout(btnWidget);    // FTIXME：内存是否会随着清空tablewidget而释放
-            btnLayout->addWidget(pOperDetail);
-            btnLayout->addWidget(pOperFactor);
-            btnLayout->addWidget(pOperDele);
-            btnLayout->setMargin(5);
+            btnLayout->addWidget(pOperDetail,1);
+            btnLayout->addWidget(pOperFactor,1);
+            btnLayout->addWidget(pOperDele,1);
+            btnLayout->setMargin(2);
             btnLayout->setAlignment(Qt::AlignCenter);
-            ui->tableWidget_Dev->setCellWidget(row, 4, btnWidget);
+            ui->tableWidget_Dev->setCellWidget(row, 3, btnWidget);
+
+            ui->tableWidget_Dev->setRowHeight(row,64);
 
             it++;
             row++;
@@ -1245,14 +1405,21 @@ void MainWindow::OpenData_Query()
     ui->dateTimeEdit->setDateTime(QDateTime::fromString(beforeDayTime, "yyyy-MM-dd hh:mm:ss"));
     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
 
-    QJsonObject pDev_Factor;
+    QJsonObject pDev_Factor,pDev_CommomFacs;
     httpclinet pClient;
     if(pClient.get(DCM_DEVICE_FACTOR,pDev_Factor))
     {
         QJsonObject::iterator iter = pDev_Factor.begin();
         for(;iter != pDev_Factor.end(); iter++)
         {
-            ui->factorBox->addItem(iter.key().split("-")[1]);
+            QString fac_fullName;
+            if(pClient.get(DCM_FACTOR,pDev_CommomFacs))
+            {
+                QJsonObject valueObj = pDev_CommomFacs[iter.key().split("-")[1]].toObject();
+                fac_fullName = iter.key().split("-")[1] +"-"+ valueObj.value("name").toString();
+            }
+            if(!fac_fullName.isEmpty())
+                ui->factorBox->addItem(fac_fullName);
         }
     }
     else
@@ -1544,6 +1711,10 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::on_pushButtonFind_clicked()
 {
+
+
+
+
     if(ui->checkBox->isChecked())
     {
         this->qingqiu(0);
@@ -1768,7 +1939,7 @@ void MainWindow::qingqiu(int page)
 
     QJsonObject pJsonReply;
     httpclinet pClient;
-    if(pClient.post(DCM_HISTORY_RTD+ui->factorBox->currentText(),obj,pJsonReply))
+    if(pClient.post(DCM_HISTORY_RTD+ui->factorBox->currentText().split("-")[0],obj,pJsonReply))
     {
         // qDebug() << "post reply: " << pJsonReply;
 
@@ -1912,7 +2083,7 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
         ui->tableWidget->setItem(i,1,item);
 
         //因子名称
-        item = new QTableWidgetItem( json[QLatin1String("FactorCode")].toString() );
+        item = new QTableWidgetItem( ui->factorBox->currentText() );
         item->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(i,2,item);
 
@@ -1957,15 +2128,34 @@ void MainWindow::qingqiuHisData(int page, QString type)
     httpclinet pClient;
     if(pClient.post(DCM_HISTORY+type,obj,pJsonReply))
     {
-        //qDebug() << "post reply: " << pJsonReply;
+        qDebug() << "post reply: " << pJsonReply;
 
         if(pJsonReply.contains(QLatin1String("data"))) {
+            qDebug()<<__LINE__<<endl;
             m_TotalPage = pJsonReply[QLatin1String("pages")].toInt();
             QJsonValue arrayValue = pJsonReply.value(QLatin1String("data"));
+            qDebug()<<__LINE__<<endl;
             if(arrayValue.isArray()) {
-                m_history_data = arrayValue.toArray(); // 保存下来
+                qDebug()<<__LINE__<<endl;
+                QJsonArray resArray = arrayValue.toArray();
+                qDebug()<<__LINE__<<resArray<<endl;
+                int num = 0;
+                for(auto res:resArray)
+                {
+                    QJsonObject jObj = res.toObject();
+                    qDebug()<<__LINE__<<num<<jObj<<endl;
+                    if(jObj.value("FactorCode").toString() == ui->factorBox->currentText().split("-")[0])
+                    {
+                        qDebug()<<__LINE__<<num<<arrayValue.toArray()[num]<<endl;
+                        m_history_data.append(res); // 保存下来
+                    }
+                }
+
+
             }
         }
+
+        qDebug()<<__LINE__<<endl;
 
         if(m_history_data.size() <= 0)
         {
@@ -1976,11 +2166,13 @@ void MainWindow::qingqiuHisData(int page, QString type)
             return;
         }
 
+        qDebug()<<__LINE__<<endl;
         // 通过导出按钮的状态来分辨 是 导出还好是展示
         if(ui->pushButtonExport->isEnabled())
         {
             ui->progressBar->setValue(70+qrand()%9);
             usleep(200000);
+            qDebug()<<__LINE__<<endl;
 
             this->setHisTableContents(m_history_data);
         }
@@ -2068,7 +2260,11 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     {
         QJsonObject pFactorObj = history_real_time_data.at(i).toObject();
         QString pFactID = pFactorObj.value("FactorCode").toString();
-        if(!pFactorList.contains(pFactID)) pFactorList << pFactID;
+        if(!pFactorList.contains(pFactID))
+        {
+            pFactorList.clear();
+            pFactorList << pFactID;
+        }
 
         QString pTimestamp = pFactorObj.value("InsertAt").toString();
         // fill pMapTimeFacDataList
@@ -2076,7 +2272,8 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         QString pMin = pFactorObj.value("Min").toString();
         QString pAvg = pFactorObj.value("Avg").toString();
         QString pSum = pFactorObj.value("Sum").toString();
-        QString pData = pMax + "-" + pMin + "-" + pAvg + "-" +pSum;
+        QString pFlag = pFactorObj.value("Flag").toString();
+        QString pData = pMax + "-" + pMin + "-" + pAvg + "-" +pSum + "-" + pFlag;
         if(pMapTimeFacDataList.contains(pTimestamp))
         {
             pMapTimeFacDataList[pTimestamp].insert(pFactID,pData);
@@ -2105,7 +2302,7 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     int pColNum = pFactorList.size();
 
     ui->tableWidget->setRowCount(2+pRowNum);
-    ui->tableWidget->setColumnCount(2+pColNum*4);
+    ui->tableWidget->setColumnCount(2+pColNum*5);
     ui->tableWidget->clearContents();
 
     ui->tableWidget->setColumnWidth(0, 50); // xuhao
@@ -2130,36 +2327,51 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
 
     for(int i=0;i<pColNum;i++)
     {
-        ui->tableWidget->setSpan(0,2+i*4,1,4);
+        ui->tableWidget->setSpan(0,2+i*5,1,5);
 
-        QTableWidgetItem * itemFactorName = new QTableWidgetItem( pFactorList.at(i) );
+
+        QString fac_fullName;
+        QJsonObject pDev_CommomFacs;
+        httpclinet pClinet;
+        if(pClinet.get(DCM_FACTOR,pDev_CommomFacs))
+        {
+            QJsonObject valueObj = pDev_CommomFacs[pFactorList.at(i)].toObject();
+            fac_fullName = pFactorList.at(i) +"-"+ valueObj.value("name").toString();
+        }
+
+        QTableWidgetItem * itemFactorName = new QTableWidgetItem( fac_fullName );
         itemFactorName->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(0,2+i*4,itemFactorName);
+        ui->tableWidget->setItem(0,2+i*5,itemFactorName);
         itemFactorName->setBackground(Qt::darkYellow);
 
         QTableWidgetItem * itemMax = new QTableWidgetItem( "最大值" );
         itemMax->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(1,2+i*4,itemMax);
+        ui->tableWidget->setItem(1,2+i*5,itemMax);
         itemMax->setBackground(Qt::red);
 
         QTableWidgetItem * itemMin = new QTableWidgetItem( "最小值" );
         itemMin->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(1,3+i*4,itemMin);
+        ui->tableWidget->setItem(1,3+i*5,itemMin);
         itemMin->setBackground(Qt::yellow);
 
         QTableWidgetItem * itemAvg = new QTableWidgetItem( "平均值" );
         itemAvg->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(1,4+i*4,itemAvg);
+        ui->tableWidget->setItem(1,4+i*5,itemAvg);
         itemAvg->setBackground(Qt::cyan);
 
-        QTableWidgetItem * itemCou = new QTableWidgetItem( "累计值" );
-        itemCou->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(1,5+i*4,itemCou);
-        itemCou->setBackground(Qt::darkCyan);
+        QTableWidgetItem * itemSum = new QTableWidgetItem( "累计值" );
+        itemSum->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(1,5+i*5,itemSum);
+        itemSum->setBackground(Qt::darkCyan);
+
+        QTableWidgetItem * itemFlag = new QTableWidgetItem( "数据标记" );
+        itemFlag->setTextAlignment(Qt::AlignCenter);
+        ui->tableWidget->setItem(1,6+i*5,itemFlag);
+        itemFlag->setBackground(Qt::magenta);
     }
 
     int pRow = 2;
-    QTableWidgetItem *item;
+    QTableWidgetItem *item = NULL;
     QMap<QString, mapStrString>::const_iterator i = pMapTimeFacDataList.constBegin();
     while (i != pMapTimeFacDataList.constEnd()) { // tranverse row
 
@@ -2177,48 +2389,57 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         {
             if(pStrString.contains(pFactorList.at(j)))
             {
-                QString pData = pStrString[pFactorList.at(j)]; // max min avg cou
+                QString pData = pStrString[pFactorList.at(j)]; // max min avg sum flag
                 QStringList pDataList = pData.split("-");
-                if(pDataList.size() == 4)
+                if(pDataList.size() == 5)
                 {
                     if(pDataList[0] == "") pDataList[0] = "-";
                     item = new QTableWidgetItem( pDataList[0] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    ui->tableWidget->setItem(pRow,2+j*4,item);
+                    ui->tableWidget->setItem(pRow,2+j*5,item);
 
                     if(pDataList[1] == "") pDataList[1] = "-";
                     item = new QTableWidgetItem( pDataList[1] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    ui->tableWidget->setItem(pRow,3+j*4,item);
+                    ui->tableWidget->setItem(pRow,3+j*5,item);
 
                     if(pDataList[2] == "") pDataList[2] = "-";
                     item = new QTableWidgetItem( pDataList[2] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    ui->tableWidget->setItem(pRow,4+j*4,item);
+                    ui->tableWidget->setItem(pRow,4+j*5,item);
 
                     if(pDataList[3] == "") pDataList[3] = "-";
                     item = new QTableWidgetItem( pDataList[3] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    ui->tableWidget->setItem(pRow,5+j*4,item);
+                    ui->tableWidget->setItem(pRow,5+j*5,item);
+
+                    if(pDataList[4] == "") pDataList[4] = "-";
+                    item = new QTableWidgetItem( pDataList[4] );
+                    item->setTextAlignment(Qt::AlignCenter);
+                    ui->tableWidget->setItem(pRow,6+j*5,item);
                 }
             }
             else
             {
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(pRow,2+j*4,item);
+                ui->tableWidget->setItem(pRow,2+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(pRow,3+j*4,item);
+                ui->tableWidget->setItem(pRow,3+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(pRow,4+j*4,item);
+                ui->tableWidget->setItem(pRow,4+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget->setItem(pRow,5+j*4,item);
+                ui->tableWidget->setItem(pRow,5+j*5,item);
+
+                item = new QTableWidgetItem( "-" );
+                item->setTextAlignment(Qt::AlignCenter);
+                ui->tableWidget->setItem(pRow,6+j*5,item);
             }
         }
         ++pRow;
@@ -2647,8 +2868,8 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
 
     ui->tableWidget_Factor->clear();
     setTableFaHeader();
-    QTableWidgetItem *pItemID,*pItemCode,*pItemAlias,*pItemTagID;
-    QPushButton *pOperSaved,*pOperDele;
+    QTableWidgetItem *pItemID = NULL,*pItemCode = NULL,*pItemAlias = NULL,*pItemTagID = NULL;
+    QPushButton *pOperSaved = NULL,*pOperDele = NULL;
 
     // get..
 
@@ -2674,26 +2895,30 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
 
                 QString pFactor_ID = pJsonFa.value("id").toString();
 
-                pItemID = new QTableWidgetItem(pFactor_ID);
-                pItemID->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget_Factor->setItem(row, 0, pItemID);
+//                pItemID = new QTableWidgetItem(pFactor_ID);
+//                pItemID->setTextAlignment(Qt::AlignCenter);
+//                ui->tableWidget_Factor->setItem(row, 0, pItemID);
 
                 pItemCode = new QTableWidgetItem(pJsonFa.value("factor_code").toString());
                 pItemCode->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget_Factor->setItem(row, 1, pItemCode);
+                ui->tableWidget_Factor->setItem(row, 0, pItemCode);
 
                 pItemAlias = new QTableWidgetItem(pJsonFa.value("factor_alias").toString());
                 pItemAlias->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget_Factor->setItem(row, 2, pItemAlias);
+                ui->tableWidget_Factor->setItem(row, 1, pItemAlias);
 
-                pItemTagID = new QTableWidgetItem(pJsonFa.value("tag_id").toString());
-                pItemTagID->setTextAlignment(Qt::AlignCenter);
-                ui->tableWidget_Factor->setItem(row, 3, pItemTagID);
+//                pItemTagID = new QTableWidgetItem(pJsonFa.value("tag_id").toString());
+//                pItemTagID->setTextAlignment(Qt::AlignCenter);
+//                ui->tableWidget_Factor->setItem(row, 0, pItemTagID);
 
                 pOperSaved = new QPushButton();
+                pOperSaved->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+                pOperSaved->setFont(QFont("Ubuntu",20,75));
                 pOperSaved->setText("详情");
 
                 pOperDele = new QPushButton();
+                pOperDele->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+                pOperDele->setFont(QFont("Ubuntu",20,75));
                 pOperDele->setText("删除");
 
                 connect(pOperSaved,SIGNAL(clicked()),m_SignalMapper_FaEdit,SLOT(map()));
@@ -2703,11 +2928,12 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
 
                 QWidget *btnWidget = new QWidget(this);
                 QHBoxLayout *btnLayout = new QHBoxLayout(btnWidget);    // FTIXME：内存是否会随着清空tablewidget而释放
-                btnLayout->addWidget(pOperSaved);
-                btnLayout->addWidget(pOperDele);
-                btnLayout->setMargin(5);
+                btnLayout->addWidget(pOperSaved,1);
+                btnLayout->addWidget(pOperDele,1);
+                btnLayout->setMargin(3);
                 btnLayout->setAlignment(Qt::AlignCenter);
-                ui->tableWidget_Factor->setCellWidget(row, 4, btnWidget);
+                ui->tableWidget_Factor->setCellWidget(row, 2, btnWidget);
+                ui->tableWidget_Factor->setRowHeight(row,64);
 
                 row++;
             }
@@ -2942,4 +3168,11 @@ bool MainWindow::Conf_TeshuzhiUpdate()
 void MainWindow::on_pushButton_ReturnDev_clicked()
 {
     ui->stackedWidget->setCurrentIndex(10);
+}
+
+void MainWindow::onReceiveDeviceCMDCtrl()
+{
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
+    devicecmddlg = new DeviceCMDCtrlDlg(this);
+    devicecmddlg->exec();
 }

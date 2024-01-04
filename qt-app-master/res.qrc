@@ -24,5 +24,18 @@
         <file>images/radioButtonU.png</file>
         <file>images/Off.png</file>
         <file>images/On.png</file>
+        <file>images/appdft.png</file>
+        <file>images/device1.png</file>
+        <file>images/logosim.png</file>
+        <file>images/restart.png</file>
+        <file>images/checkboxstyle.qss</file>
+        <file>images/down_arrow.png</file>
+        <file>images/close_hover.png</file>
+        <file>images/keyboard-off.png</file>
+        <file>images/keyboard-on.png</file>
+        <file>images/No_Upan.png</file>
+        <file>images/usb.png</file>
+        <file>images/state_off.png</file>
+        <file>images/state_on.png</file>
     </qresource>
 </RCC>

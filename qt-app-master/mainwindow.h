@@ -22,6 +22,10 @@
 #include "dialogdevprop.h"
 #include "devedit.h"
 #include "facedit.h"
+#include "devicecmdctrldlg.h"
+#include <QPointer>
+#include <QProcess>
+#include <QJsonValue>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,6 +44,7 @@ class UpsetAdd;
 class TeshuzhiAdd;
 class TeshuzhiDele;
 class DialogDevProp;
+class DeviceCMDCtrlDlg;
 
 class MainWindow : public QMainWindow
 {
@@ -136,6 +141,8 @@ private slots:
     void onButtonFaEdit(QString id);
     void onButtonFaDele(QString id);
 
+    void onReceiveDeviceCMDCtrl();
+
 signals:
     /* 工人开始工作（做些耗时的操作 ） */
     void startWork();
@@ -183,6 +190,9 @@ private:
 
     QList<QLabel *> labelList;
     QList<std::function<void()>> funcList;
+    DeviceCMDCtrlDlg* devicecmddlg = nullptr;
+    Util util;
+
 };
 
 class CHttpWork : public QObject

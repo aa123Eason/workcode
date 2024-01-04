@@ -9,7 +9,7 @@ httpclinet::httpclinet()
 bool httpclinet::get(QString api,QJsonArray &pJsonArray)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -42,7 +42,7 @@ bool httpclinet::get(QString api,QJsonArray &pJsonArray)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<< "Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             QByteArray replyData = pReply->readAll();
@@ -69,7 +69,7 @@ bool httpclinet::get(QString api,QJsonArray &pJsonArray)
 bool httpclinet::get(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -102,7 +102,7 @@ bool httpclinet::get(QString api,QJsonObject &pJsonObj)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<<"Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             QByteArray replyData = pReply->readAll();
@@ -127,7 +127,7 @@ bool httpclinet::get(QString api,QJsonObject &pJsonObj)
 bool httpclinet::post(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -172,7 +172,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<< "Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             QByteArray replyData = pReply->readAll();
@@ -202,7 +202,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj)
 bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -247,7 +247,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<< "Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             QByteArray replyData = pReply->readAll();
@@ -261,6 +261,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
                 return false;
             }
             pJsonReply = jsonDoc.object();
+            qDebug()<<__LINE__<<__FUNCTION__<<pJsonReply<<endl;
             return true;
         }
     } else {  // 处理超时
@@ -277,7 +278,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
 bool httpclinet::put(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -322,7 +323,7 @@ bool httpclinet::put(QString api,QJsonObject &pJsonObj)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<< "Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             QByteArray replyData = pReply->readAll();
@@ -351,7 +352,7 @@ bool httpclinet::put(QString api,QJsonObject &pJsonObj)
 bool httpclinet::deleteSource(QString api,QString item)
 {
     QTimer timer;
-    timer.setInterval(1000);  // 设置超时时间 30 秒
+    timer.setInterval(3000);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -394,7 +395,7 @@ bool httpclinet::deleteSource(QString api,QString item)
             int nStatusCode = variant.toInt();
             // 根据状态码做进一步数据处理
             //QByteArray bytes = pReply->readAll();
-            qDebug() << "Status Code : " << nStatusCode;
+            qDebug() <<__LINE__<<__FUNCTION__<< "Status Code : " << nStatusCode;
 
             //解析返回的Json结果
             // QByteArray replyData = pReply->readAll();
