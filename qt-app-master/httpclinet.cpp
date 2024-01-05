@@ -9,7 +9,7 @@ httpclinet::httpclinet()
 bool httpclinet::get(QString api,QJsonArray &pJsonArray)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -69,7 +69,7 @@ bool httpclinet::get(QString api,QJsonArray &pJsonArray)
 bool httpclinet::get(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -127,7 +127,7 @@ bool httpclinet::get(QString api,QJsonObject &pJsonObj)
 bool httpclinet::post(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -202,7 +202,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj)
 bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -278,7 +278,7 @@ bool httpclinet::post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply)
 bool httpclinet::put(QString api,QJsonObject &pJsonObj)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求
@@ -352,7 +352,7 @@ bool httpclinet::put(QString api,QJsonObject &pJsonObj)
 bool httpclinet::deleteSource(QString api,QString item)
 {
     QTimer timer;
-    timer.setInterval(3000);  // 设置超时时间 30 秒
+    timer.setInterval(300);  // 设置超时时间 30 秒
     timer.setSingleShot(true);  // 单次触发
 
     //生成对应的网络请求

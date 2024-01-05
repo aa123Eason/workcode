@@ -10,6 +10,8 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
     interGroup = new QButtonGroup(this);
     interGroup->addButton(ui->radioButton_Com, 0);
     interGroup->addButton(ui->radioButton_Net, 1);
+    map = util.Uart_devicetype();
+    namemap = util.Uart_devicetypeNameMatch();
 
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
@@ -47,7 +49,7 @@ void DevEdit::DevEdit_Init(QString dev_id)
         QJsonObject::const_iterator end_proto = g_Dcm_SupportDevice.constEnd();
         while(itor != end_proto)
         {
-            ui->comboBox_devProto->addItem(itor.key());
+            ui->comboBox_devProto->addItem(namemap[itor.key()]);
             itor++;
         }
     }
@@ -85,9 +87,9 @@ void DevEdit::DevEdit_Init(QString dev_id)
 
                 ui->textEdit_devParams->setText(pJsondev.value("dev_params").toString());
                 QString pDevType = pJsondev.value("dev_type").toString();
-                if(pDevType == "analog") g_IsAnalogDevOperated = true;
+                if(pDevType == namemap["analog"]) g_IsAnalogDevOperated = true;
 
-                ui->comboBox_devProto->setCurrentText(pDevType);
+                ui->comboBox_devProto->setCurrentText(namemap[pDevType]);
                 ui->lineEdit_Name->setText(pJsondev.value("dev_name").toString());
 
                 ui->comboBox_devBaud->setCurrentText(QString::number(pJsondev.value("baudrate").toInt()));
@@ -105,7 +107,7 @@ void DevEdit::DevEdit_Init(QString dev_id)
 
 void DevEdit::on_pushButton_Detail_clicked()
 {
-    DialogProto *pDialogProto = new DialogProto(ui->comboBox_devProto->currentText());
+    DialogProto *pDialogProto = new DialogProto(namemap.key(ui->comboBox_devProto->currentText()));
     pDialogProto->show();
 }
 
@@ -125,7 +127,7 @@ void DevEdit::on_pushButton_UpdateDev_clicked()
     obj.insert(QLatin1String("data_bit"), ui->comboBox_devDatabit->currentText().toInt());
     obj.insert(QLatin1String("dev_name"), ui->lineEdit_Name->text());
     obj.insert(QLatin1String("dev_params"), ui->textEdit_devParams->toPlainText());
-    obj.insert(QLatin1String("dev_type"), ui->comboBox_devProto->currentText());
+    obj.insert(QLatin1String("dev_type"), namemap.key(ui->comboBox_devProto->currentText()));
     obj.insert(QLatin1String("ip_addr"), ui->lineEdit_ipAddr->text());
     obj.insert(QLatin1String("parity"), ui->comboBox_devParity->currentText());
     obj.insert(QLatin1String("stop_bit"), ui->comboBox_devStopBit->currentText());

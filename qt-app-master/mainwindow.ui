@@ -167,7 +167,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>9</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -205,13 +205,13 @@ background-color:#55ff00;</string>
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
         <y>530</y>
         <width>1251</width>
-        <height>61</height>
+        <height>72</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,5">
@@ -272,7 +272,7 @@ background-color:#55ff00;</string>
             <x>0</x>
             <y>0</y>
             <width>954</width>
-            <height>57</height>
+            <height>68</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -1004,7 +1004,7 @@ QPushButton:press
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>410</x>
@@ -1096,7 +1096,7 @@ background: lightblue;
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>410</x>

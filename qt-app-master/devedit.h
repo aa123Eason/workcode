@@ -6,6 +6,7 @@
 #include "httpclinet.h"
 #include <QButtonGroup>
 #include "dialogproto.h"
+#include "util.h"
 
 namespace Ui {
 class DevEdit;
@@ -32,8 +33,10 @@ private slots:
 
 private:
     Ui::DevEdit *ui;
-
+    Util util;
     QButtonGroup *interGroup = nullptr;
+    QMap<QString,QStringList> map;
+    QMap<QString,QString> namemap;
 };
 
 #endif // DEVEDIT_H

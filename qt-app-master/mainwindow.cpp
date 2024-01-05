@@ -45,6 +45,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_pDateTimer, SIGNAL(timeout()), this, SLOT(handleDateTimeout()));
     m_pDateTimer->start();
 
+//    QJsonObject pJsonObj;
+//    httpclinet hCLient;
+//    if(hCLient.get(DCM_REALTIME_DATA,pJsonObj))
+//    {
+//        handleResults("realtime_data",pJsonObj);
+//    }
+
+//    if(hCLient.get(DCM_COONECT_STAT,pJsonObj))
+//    {
+//        handleResults("connect_stat",pJsonObj);
+//    }
+
     // 1.新建串口处理子线程
     m_httpWorker = new CHttpWork();
 
@@ -403,6 +415,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
                     ui->checkBox->setChecked(true);
+                    ui->label_46->hide();
+                    ui->comboBox_3->hide();
+                    ui->label_48->show();
+                    ui->factorBox->show();
                     on_pushButtonFind_clicked();
                     return true;
                 }
@@ -428,6 +444,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
                     ui->checkBox->setChecked(true);
+                    ui->label_46->hide();
+                    ui->comboBox_3->hide();
+                    ui->label_48->show();
+                    ui->factorBox->show();
                     on_pushButtonFind_clicked();
                     return true;
                 }
@@ -453,6 +473,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
                     ui->checkBox->setChecked(true);
+                    ui->label_46->hide();
+                    ui->comboBox_3->hide();
+                    ui->label_48->show();
+                    ui->factorBox->show();
                     on_pushButtonFind_clicked();
                     return true;
                 }

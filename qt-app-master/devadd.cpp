@@ -16,6 +16,8 @@ DevAdd::DevAdd(QWidget *parent) :
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
 
+    connectevent();
+
     interGroup = new QButtonGroup(this);
     interGroup->addButton(ui->radioButton_Com, 0);
     interGroup->addButton(ui->radioButton_Net, 1);
@@ -25,9 +27,11 @@ DevAdd::DevAdd(QWidget *parent) :
     ui->comboBox_2->clear();
     QJsonObject::const_iterator itor = g_Dcm_SupportDevice.constBegin();
     QJsonObject::const_iterator end_proto = g_Dcm_SupportDevice.constEnd();
+    map = util.Uart_devicetype();
+    namemap = util.Uart_devicetypeNameMatch();
     while(itor != end_proto)
     {
-        ui->comboBox_2->addItem(itor.key());
+        ui->comboBox_2->addItem(namemap[itor.key()]);
         itor++;
     }
 
@@ -76,7 +80,7 @@ void DevAdd::on_pushButton_clicked()
     obj.insert(QLatin1String("dev_name"), ui->lineEdit_Name->text());
     obj.insert(QLatin1String("dev_params"), ui->textEdit_devParams->toPlainText());
 
-    QString pDevType = ui->comboBox_2->currentText();
+    QString pDevType = namemap.key(ui->comboBox_2->currentText());
     if(pDevType == "analog") g_IsAnalogDevOperated = true;
     obj.insert(QLatin1String("dev_type"), pDevType);
 
@@ -102,4 +106,116 @@ void DevAdd::on_pushButton_clicked()
 void DevAdd::on_pushButton_2_clicked()
 {
     this->close();
+}
+
+void DevAdd::connectevent()
+{
+    connect(ui->comboBox_2,&QComboBox::currentTextChanged,this,&DevAdd::onCurrentDevTypeChanged);
+}
+
+void DevAdd::onCurrentDevTypeChanged(const QString &text)
+{
+
+    QString code = namemap.key(text);
+    QStringList infoList = map[code];
+    ui->paramtable->clear();
+    ui->paramtable->setRowCount(0);
+    if(infoList.count()>1)
+    {
+        qDebug()<<__LINE__<<text<<":";
+        for(int i=1;i<infoList.count();++i)
+        {
+            qDebug()<<i<<"."<<infoList[i];
+            ui->paramtable->insertRow(i-1);
+            QString paramName;
+            QString paramCode;
+            QString paramValue;
+            QStringList paramValueList;
+            QString paramRes;
+            if(infoList[i].split(">").count()==2)
+            {
+                paramCode = infoList[i].split(">")[0];
+                QString tmpstr = infoList[i].split(">")[1];
+                if(tmpstr.split(":").count()==2)
+                {
+                    paramName = tmpstr.split(":")[0];
+                    QString tmpstr1 = tmpstr.split(":")[1];
+                    qDebug()<<tmpstr1<<endl;
+                    if(tmpstr1.split(",").count()>0)
+                    {
+                        for(int k=0;k<tmpstr1.split(",").count();++k)
+                        {
+                            if(namemap.keys().contains(tmpstr1.split(",")[k]))
+                                paramValueList<<namemap[tmpstr1.split(",")[k]];
+                            else
+                                paramValueList<<tmpstr1.split(",")[k];
+                        }
+                        qDebug()<<paramValueList<<paramValueList.count()<<endl;
+
+
+
+                    }
+                }
+                else
+                {
+                    paramName = tmpstr;
+                }
+            }
+            else if(infoList[i].split("=").count()==2)
+            {
+                paramName = infoList[i].split("=")[0];
+                paramValue = infoList[i].split("=")[1];
+            }
+            else
+            {
+                paramName = infoList[i];
+            }
+            QTableWidgetItem *itemName = new QTableWidgetItem(paramName);
+
+            QTableWidgetItem *itemValue = new QTableWidgetItem(paramValue);
+
+            QFont font;
+            font.setBold(true);
+            font.setPointSize(20);
+
+            itemName->setTextAlignment(Qt::AlignCenter);
+            itemName->setFont(font);
+
+            itemValue->setTextAlignment(Qt::AlignCenter);
+            itemValue->setFont(font);
+
+            QComboBox *combox = new QComboBox();
+            if(paramValueList.count()>0)
+            {
+                for(auto paramvalue:paramValueList)
+                {
+                    combox->addItem(paramvalue);
+
+                }
+
+                combox->setCurrentIndex(0);
+                combox->setFont(QFont("Ubuntu",20,75));
+                combox->setEditable(false);
+
+            }
+
+
+            ui->paramtable->setItem(i-1,0,itemName);
+            if(!paramValue.isEmpty())
+            {
+                ui->paramtable->setItem(i-1,1,itemValue);
+            }
+            else if(paramValueList.count()>0)
+            {
+                ui->paramtable->setCellWidget(i-1,1,combox);
+            }
+
+            ui->paramtable->setRowHeight(i-1,44);
+            ui->paramtable->setWordWrap(true);
+
+
+        }
+        qDebug()<<endl;
+    }
+
 }
