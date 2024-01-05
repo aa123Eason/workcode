@@ -92,6 +92,8 @@ void HistoryChartView::connectevent()
         connect(w,&MainWindow::sendGlobalMapAndList,this,&HistoryChartView::onReceiveGlobalMapAndList);
     }
 
+    connect(this,&HistoryChartView::sendlogmsg,this,&HistoryChartView::onPrintlog);
+
 
 }
 
@@ -200,6 +202,10 @@ void HistoryChartView::on_pushbutton_query()
     }
         rangeStartDT = dt_begin.toString(queryFormat);
         rangeEndDT = dt_end.toString(queryFormat);
+        emit sendlogmsg("历史曲线窗口——查询起始时间："+rangeStartDT);
+        emit sendlogmsg("历史曲线窗口——查询结束时间："+rangeEndDT);
+        emit sendlogmsg("历史曲线窗口——查询方式："+curDTType);
+        emit sendlogmsg("历史曲线窗口——查询表名："+tableName);
 
         //获取勾选的因子复选框
         selBoxMap.clear();
@@ -210,6 +216,7 @@ void HistoryChartView::on_pushbutton_query()
             {
                 if(it.value()->isChecked())
                 {
+                    emit sendlogmsg("历史曲线窗口——勾选查询因子:"+it.key());
                     selBoxMap[it.key()]=it.value();
                 }
 
@@ -243,6 +250,7 @@ void HistoryChartView::on_pushbutton_query()
         queStr += rangeStartDT + "\' and \'"+ rangeEndDT + "\';";
 
         qDebug()<<__LINE__<<queStr<<endl;
+        emit sendlogmsg("历史曲线窗口——查询sql命令:"+queStr);
 
         QSqlQuery query(queStr);
         query.exec();
@@ -471,4 +479,29 @@ void HistoryChartView::handleMarkersClicked()
     default:
         break;
     }
+}
+
+void HistoryChartView::onPrintlog(QString msg)
+{
+
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ msg;
+    QString txt = "\r\n"+str+"";
+    QLOG_INFO() << txt;
+    QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
+
+    // 声明目录对象
+    QString path_root = QDateTime::currentDateTime().date().toString(QLatin1String("yyyy-MM"));
+    QString file_name = QDateTime::currentDateTime().date().toString(QLatin1String("dd")) + ".txt";
+
+    QString dir_str = dir_root + path_root;
+    QString pDir_FileName = dir_str + "/" + file_name;
+    QFile file(pDir_FileName);
+    QByteArray array;
+    array.append(txt);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    if(file.waitForBytesWritten(3000))
+        file.write(array,array.length());
+    else
+        file.flush();
+    file.close();
 }

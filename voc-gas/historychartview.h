@@ -65,13 +65,14 @@ public:
     static QMap<QString,QString> facNameMap();
 
 signals:
-
+    void sendlogmsg(QString text);
 
 public slots:
     void on_comboboxDTType_currentChanged(const QString &text);
     void on_pushbutton_query();
     void onReceiveGlobalMapAndList(QStringList &g_FactorsNameList,QMap<QString, FactorInfo*> &map_Factors);
     void handleMarkersClicked();
+    void onPrintlog(QString msg);
 private:
     Ui::HistoryChartView *ui;
     QMap<QString,QCheckBox *> legendBoxMap;

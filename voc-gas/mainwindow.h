@@ -19,7 +19,6 @@
 #include <QDateTime>
 #include <QToolTip>
 #include <QDir>
-#include <QProcess>
 
 #include "msgbox.h"
 #include "Crc16Class.h"
@@ -71,7 +70,7 @@ class SerialWorker : public QObject
 
 public:
     explicit SerialWorker(Win_QextSerialPort *ser,QObject *parent = nullptr);
-
+    ~SerialWorker();
     /* 打断线程（注意此方法不能放在槽函数下） */
     void stopWork() {
         // qDebug()<<"打断自动监控线程";
@@ -169,6 +168,7 @@ private slots:
     void handleResults(const QString & results);
     void handleMarkersClicked();
     void onReceiveFluParamsMap(QMap<QString,QString>&);
+    void onPrintlog(QString msg);
 
 public slots:
     void writeLog(QString content);

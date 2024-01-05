@@ -70,6 +70,9 @@ ParamSet::ParamSet(QWidget *parent) :
         emit sendlogmsg("当前页："+str);
     });
 
+    connect(ui->clearStr,&QPushButton::clicked,ui->textBrowser,&QTextBrowser::clear);
+
+
 }
 
 ParamSet::~ParamSet()
@@ -1047,7 +1050,7 @@ void ParamSet::on_pushButton_clicked()
 {
     ui->textBrowser->clear();
 
-    QString dir_root = LOG_PATH;
+    QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
 
     // 声明目录对象
     QString path_root = ui->dateEdit->date().toString(QLatin1String("yyyy-MM"));
@@ -1067,6 +1070,7 @@ void ParamSet::on_pushButton_clicked()
             array = file.readLine();
             ui->textBrowser->append(array.trimmed());
         }
+        ui->textBrowser->setTextColor(QColor("#00147f"));
 
         QMessageBox::about(NULL, "提示", "<font color='black'>获取日志信息成功！</font>");
     }
@@ -1104,6 +1108,7 @@ bool ParamSet::Save_FactorSet()
             for(int row=0; row<ui->tableWidget->rowCount(); row++)
             {
                 QString pFactorName = ui->tableWidget->item(row,0)->text();
+                emit sendlogmsg("修改因子："+pFactorName);
 
                 QJsonValueRef RefVersionF = jsonObjectNode.find(pFactorName).value();
                 QJsonObject jsonObjectNodeF = RefVersionF.toObject();
@@ -1428,6 +1433,7 @@ void ParamSet::on_pushButton_7_clicked()
 
 bool ParamSet::Save_SysSet()
 {
+    emit sendlogmsg("修改系统设置");
     QFile file(QApplication::applicationDirPath()+"/"+SYSTEM_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
@@ -1551,6 +1557,7 @@ void ParamSet::on_pushButton_8_clicked()
 
 bool ParamSet::Save_FanSet()
 {
+    emit sendlogmsg("修改反吹设置");
     QFile file(QApplication::applicationDirPath()+"/"+FAN_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
@@ -1612,6 +1619,7 @@ void ParamSet::on_pushButton_11_clicked()
 
 bool ParamSet::Save_UserSet()
 {
+    emit sendlogmsg("修改用户信息");
     QFile file(QApplication::applicationDirPath()+"/"+USERS_SETTING_FILE);
     if (file.exists()){
         // judge if json format is correct!!
@@ -1829,13 +1837,16 @@ void ParamSet::onReceiveUpLoadType(int uploadtype)
 
     case UPLOAD_WET:
         QMessageBox::about(this,"提示","只上传湿值设置成功");
+        emit sendlogmsg("只上传湿值");
         break;
     case UPLOAD_DRY:
         QMessageBox::about(this,"提示","只上传干值设置成功");
+        emit sendlogmsg("只上传干湿值");
         break;
     case UPLOAD_ALL:
     default:
         QMessageBox::about(this,"提示","上传所有值设置成功");
+        emit sendlogmsg("上传所有值");
         break;
     }
 }
@@ -1844,5 +1855,25 @@ void ParamSet::onPrintlog(QString msg)
 {
     QString txt = ui->textBrowser->toPlainText();
     QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ msg;
-    txt += "\r\n<font color:#104f00>"+str+"</font>";
+    txt += "\r\n"+str+"";
+    QLOG_INFO() << txt;
+    QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
+
+    // 声明目录对象
+    QString path_root = ui->dateEdit->date().toString(QLatin1String("yyyy-MM"));
+    QString file_name = ui->dateEdit->date().toString(QLatin1String("dd")) + ".txt";
+
+    QString dir_str = dir_root + path_root;
+    QString pDir_FileName = dir_str + "/" + file_name;
+    QFile file(pDir_FileName);
+    QByteArray array;
+    array.append(txt);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    if(file.waitForBytesWritten(3000))
+        file.write(array,array.length());
+    else
+        file.flush();
+    file.close();
+
+//    ui->textBrowser->setText(txt);
 }

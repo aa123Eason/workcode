@@ -122,7 +122,7 @@ Chart::Chart(QMap<QString,FactorInfo *> &map,QGraphicsItem *parent, Qt::WindowFl
 
 Chart::~Chart()
 {
-
+    m_timer.stop();
 }
 
 void Chart::handleTimeout()

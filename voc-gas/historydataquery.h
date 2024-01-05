@@ -54,12 +54,13 @@ public:
     void calStastics();
 
 signals:
-
+    void sendlogmsg(QString text);
 
 public slots:
     void onQuery();
     void onExport();
     void on_comboBox_currentChanged(const QString &);
+    void onPrintlog(QString msg);
 
 private:
     Ui::HistoryDataQuery *ui;

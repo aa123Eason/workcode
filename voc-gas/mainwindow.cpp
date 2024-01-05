@@ -139,8 +139,8 @@ MainWindow::~MainWindow()
 
 
      db.close();
-     QString progress = "taskkill /F /IM VocGas.exe /T";
-     QProcess::execute(progress);
+//     QString progress = "taskkill /F /IM VocGas.exe /T";
+//     QProcess::execute(progress);
 
      delete ui;
 
@@ -202,6 +202,32 @@ void MainWindow::onReceiveFluParamsMap(QMap<QString,QString> &map)
     {
         ui->label_20->setText(map["标况流量"]);
     }
+}
+
+void MainWindow::onPrintlog(QString msg)
+{
+
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ msg;
+    QString txt = "\r\n"+str+"";
+    QLOG_INFO() << txt;
+
+    QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
+
+    // 声明目录对象
+    QString path_root = QDateTime::currentDateTime().date().toString(QLatin1String("yyyy-MM"));
+    QString file_name = QDateTime::currentDateTime().date().toString(QLatin1String("dd")) + ".txt";
+
+    QString dir_str = dir_root + path_root;
+    QString pDir_FileName = dir_str + "/" + file_name;
+    QFile file(pDir_FileName);
+    QByteArray array;
+    array.append(txt);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    if(file.waitForBytesWritten(3000))
+        file.write(array,array.length());
+    else
+        file.flush();
+    file.close();
 }
 
 void MainWindow::chartinit()
@@ -302,6 +328,9 @@ void MainWindow::connectevent()
             }
         }
 
+        connect(this,&MainWindow::sendlogmsg,this,&MainWindow::onPrintlog);
+        connect(this,&MainWindow::sendlogmsg,this,&MainWindow::writeLog);
+
         if(flag == 0)
         {
             emit sendJSMode(true);
@@ -324,10 +353,12 @@ void MainWindow::connectevent()
         if(isOn)
         {
             QMessageBox::about(this,"提示","校准模式开启");
+            emit sendlogmsg("校准模式开启");
         }
         else
         {
             QMessageBox::about(this,"提示","校准模式关闭");
+            emit sendlogmsg("校准模式关闭");
         }
     });
 
@@ -385,6 +416,8 @@ void MainWindow::connectevent()
         recordrtkdata(db,"min");
     });
 
+
+
 }
 
 void MainWindow::handleResults(const QString & results)
@@ -396,6 +429,11 @@ void MainWindow::handleResults(const QString & results)
 SerialWorker::SerialWorker(Win_QextSerialPort *ser,QObject *parent) : QObject(parent),serial(ser)
 {
 
+}
+
+SerialWorker::~SerialWorker()
+{
+    isCanRun = false;
 }
 
 void MainWindow::writeLog(QString content)
@@ -1492,6 +1530,7 @@ void MainWindow::InitFactorMaps()
 
         if(pItemInfo->m_display)
         {
+            emit sendlogmsg("可见因子："+pItemName);
             map_Factors.insert(pItemName,pItemInfo);
             seqlist.append(pItemInfo->m_Alias);
             nameseqlist.append(pItemName);
@@ -1514,6 +1553,8 @@ void MainWindow::InitFactorMaps()
         histoyChartView = new HistoryChartView(db);
         connect(this,&MainWindow::sendGlobalMapAndList,histoyChartView,&HistoryChartView::onReceiveGlobalMapAndList);
         emit sendGlobalMapAndList(g_FactorsNameList,map_Factors);
+        emit sendlogmsg("打开历史曲线窗口");
+        connect(histoyChartView,&HistoryChartView::sendlogmsg,this,&MainWindow::sendlogmsg);
         histoyChartView->show();
     });
 
@@ -1528,6 +1569,8 @@ void MainWindow::InitFactorMaps()
             }
         }
         historyDateQuery = new HistoryDataQuery();
+        emit sendlogmsg("打开历史数据窗口");
+        connect(historyDateQuery,&HistoryDataQuery::sendlogmsg,this,&MainWindow::sendlogmsg);
         historyDateQuery->show();
     });
 
@@ -1861,7 +1904,7 @@ void MainWindow::InitComm()
                 /* 判断线程是否在运行 */
                 if(!serialThread_4.isRunning()) {
                     /* 开启线程 */
-                    serialThread_4.start();
+//                    serialThread_4.start();
                 }
 
                 /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
@@ -2283,6 +2326,51 @@ void MainWindow::on_pushButton_3_clicked()
     {
         serialThread_4.quit();
     }
+
+    if(m_pSerialCom1)
+    {
+        m_pSerialCom1->moveToThread(nullptr);
+        m_pSerialCom1->close();
+        m_pSerialCom1->deleteLater();
+
+//        m_pSerialCom1 = nullptr;
+    }
+    if(m_pSerialCom2)
+    {
+        m_pSerialCom2->moveToThread(nullptr);
+        m_pSerialCom2->close();
+        m_pSerialCom2->deleteLater();
+
+        //        m_pSerialCom1 = nullptr;
+    }
+    if(m_pSerialCom3)
+    {
+        m_pSerialCom3->moveToThread(nullptr);
+        m_pSerialCom3->close();
+        m_pSerialCom3->deleteLater();
+
+        //        m_pSerialCom1 = nullptr;
+    }
+    if(m_pSerialCom4)
+    {
+        m_pSerialCom4->moveToThread(nullptr);
+        m_pSerialCom4->close();
+        m_pSerialCom4->deleteLater();
+
+        //        m_pSerialCom1 = nullptr;
+    }
+
+    disconnect(this, &MainWindow::startWork1,
+               serialWorker1, &SerialWorker::doWork1);   // 主线程串口数据发送的信号
+    disconnect(this, &MainWindow::startWork2,
+               serialWorker2, &SerialWorker::doWork2);   // 主线程串口数据发送的信号
+    disconnect(this, &MainWindow::startWork3,
+               serialWorker3, &SerialWorker::doWork3);   // 主线程串口数据发送的信号
+    disconnect(this, &MainWindow::startWork4,
+            serialWorker4, &SerialWorker::doWork4);   // 主线程串口数据发送的信号
+    my_Process.execute("taskkill /im VocGas.exe /f");
+    my_Process.close();
+
     this->close();
 }
 
@@ -2309,6 +2397,7 @@ void MainWindow::on_pushButton_4_clicked()
     }
 
     my_Process.startDetached(QApplication::applicationDirPath()+"/VocLogin.exe");
+    my_Process.close();
     this->close();
 }
 
@@ -2397,6 +2486,8 @@ void MainWindow::on_pushButton_Set_clicked()
     });
     connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
     connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
+
+
     emit sendlogmsg("打开参数设置");
     paramSet->show();
 }

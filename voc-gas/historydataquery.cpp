@@ -56,6 +56,7 @@ void HistoryDataQuery::connectevent()
     {
         ui->mainTable->verticalScrollBar()->setValue(ui->mainTable->verticalScrollBar()->maximum());
     });
+    connect(this,&HistoryDataQuery::sendlogmsg,this,&HistoryDataQuery::onPrintlog);
 }
 
 void HistoryDataQuery::databaseinit()
@@ -247,11 +248,16 @@ void HistoryDataQuery::onQuery()
         QMessageBox::warning(this,"提示","请选择查询方式");
         return;
     }
+    else
+    {
+        emit sendlogmsg("历史数据查询窗口——查询方式："+ui->queryDTType->currentText());
+    }
 
     QString dtStr1 = dt1.toString(queryFormat);
     QString dtStr2 = dt2.toString(queryFormat);
 
     qDebug()<<__LINE__<<dtStr1<<dtStr2<<endl;
+    emit sendlogmsg("历史数据查询窗口——时间范围："+dtStr1+"~"+dtStr2);
 
     //补充数据区域的行
     editDataRow(dt1,dt2);
@@ -285,7 +291,10 @@ void HistoryDataQuery::onQuery()
     queStr += "from " + tableName + " where HistoryTime between ";
     queStr += "\'" + dtStr1 + "\' and \'" + dtStr2 + "\';";
 
+    emit sendlogmsg("历史数据查询窗口——查询表名："+tableName);
+
     qDebug()<<__LINE__<<queStr<<endl;
+    emit sendlogmsg("历史数据查询窗口——查询sql命令："+queStr);
 
     QSqlQuery q(queStr);
     q.exec();
@@ -343,6 +352,7 @@ void HistoryDataQuery::onExport()
     }
     QString fileName = tableTitle+"_"+queryDT+".xlsx";
     QString filePath = QApplication::applicationDirPath()+"/export/"+fileName;
+    emit sendlogmsg("历史数据查询窗口——导出文件："+filePath);
 
     QXlsx::Document xlsx;
     xlsx.addSheet(tableTitle);
@@ -939,4 +949,30 @@ void HistoryDataQuery::on_comboBox_currentChanged(const QString &curText)
     ui->mainTable->setItem(rows-2,0,item22);
     ui->mainTable->setItem(rows-1,0,item23);
 
+}
+
+void HistoryDataQuery::onPrintlog(QString msg)
+{
+
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ msg;
+    QString txt = "\r\n"+str+"";
+    QLOG_INFO() << txt;
+
+    QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
+
+    // 声明目录对象
+    QString path_root = QDateTime::currentDateTime().date().toString(QLatin1String("yyyy-MM"));
+    QString file_name = QDateTime::currentDateTime().date().toString(QLatin1String("dd")) + ".txt";
+
+    QString dir_str = dir_root + path_root;
+    QString pDir_FileName = dir_str + "/" + file_name;
+    QFile file(pDir_FileName);
+    QByteArray array;
+    array.append(txt);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    if(file.waitForBytesWritten(3000))
+        file.write(array,array.length());
+    else
+        file.flush();
+    file.close();
 }
