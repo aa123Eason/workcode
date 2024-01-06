@@ -65,6 +65,34 @@ void DevAdd::typeRadioBtnClicked() {
 void DevAdd::on_pushButton_clicked()
 {
 
+    if(namemap.key(ui->comboBox_2->currentText()) == "lc-modbus")
+    {
+        QString nameStart = "start";
+        QString nameQuantity = "quantity";
+        QString nameFucntionCode = "functionCode";
+        QString namevtype = "vtype";
+
+        QString valueStart = ui->paramtable->item(0,1)->text();
+        QString valueQuantity = ui->paramtable->item(1,1)->text();
+
+        QComboBox *box1 = (QComboBox *)ui->paramtable->cellWidget(2,1);
+        QString valueFucntionCode = box1->currentText();
+
+        QComboBox *box2 = (QComboBox *)ui->paramtable->cellWidget(3,1);
+        QString valuevtype = box2->currentText();
+
+        QString str;
+        str += nameStart + "=" + valueStart + ",";
+        str += nameQuantity + "=" + valueQuantity + ",";
+        str += nameFucntionCode + "=" + valueFucntionCode + ",";
+        str += namevtype + "=" + valuevtype;
+        ui->textEdit_devParams->setText(str);
+        QFont font;
+        font.setBold(true);
+        font.setPointSize(20);
+        ui->textEdit_devParams->setFont(font);
+    }
+
     QJsonObject obj;
     obj.insert(QLatin1String("id"), "");
     obj.insert(QLatin1String("address"), ui->lineEdit_devAddr->text().toInt());
@@ -115,7 +143,9 @@ void DevAdd::connectevent()
 
 void DevAdd::onCurrentDevTypeChanged(const QString &text)
 {
-
+    QFont font;
+    font.setBold(true);
+    font.setPointSize(20);
     QString code = namemap.key(text);
     QStringList infoList = map[code];
     ui->paramtable->clear();
@@ -174,9 +204,7 @@ void DevAdd::onCurrentDevTypeChanged(const QString &text)
 
             QTableWidgetItem *itemValue = new QTableWidgetItem(paramValue);
 
-            QFont font;
-            font.setBold(true);
-            font.setPointSize(20);
+
 
             itemName->setTextAlignment(Qt::AlignCenter);
             itemName->setFont(font);
@@ -209,6 +237,13 @@ void DevAdd::onCurrentDevTypeChanged(const QString &text)
             {
                 ui->paramtable->setCellWidget(i-1,1,combox);
             }
+            else
+            {
+                QTableWidgetItem *item = new QTableWidgetItem("0");
+                item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(font);
+                ui->paramtable->setItem(i-1,1,item);
+            }
 
             ui->paramtable->setRowHeight(i-1,44);
             ui->paramtable->setWordWrap(true);
@@ -216,6 +251,33 @@ void DevAdd::onCurrentDevTypeChanged(const QString &text)
 
         }
         qDebug()<<endl;
+    }
+
+    //show on textbroswer
+
+    if(namemap.key(text) == "lc-modbus")
+    {
+        QString nameStart = "start";
+        QString nameQuantity = "quantity";
+        QString nameFucntionCode = "functionCode";
+        QString namevtype = "vtype";
+
+        QString valueStart = ui->paramtable->item(0,1)->text();
+        QString valueQuantity = ui->paramtable->item(1,1)->text();
+
+        QComboBox *box1 = (QComboBox *)ui->paramtable->cellWidget(2,1);
+        QString valueFucntionCode = box1->currentText();
+
+        QComboBox *box2 = (QComboBox *)ui->paramtable->cellWidget(3,1);
+        QString valuevtype = box2->currentText();
+
+        QString str;
+        str += nameStart + "=" + valueStart + ",";
+        str += nameQuantity + "=" + valueQuantity + ",";
+        str += nameFucntionCode + "=" + valueFucntionCode + ",";
+        str += namevtype + "=" + valuevtype;
+        ui->textEdit_devParams->setText(str);
+        ui->textEdit_devParams->setFont(font);
     }
 
 }

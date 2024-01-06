@@ -7,6 +7,11 @@
 #include <QButtonGroup>
 #include "dialogproto.h"
 #include "util.h"
+#include <QComboBox>
+#include <QStringList>
+#include <QString>
+#include <QTableWidgetItem>
+#include <QTableWidget>
 
 namespace Ui {
 class DevEdit;
@@ -23,12 +28,13 @@ public:
     ~DevEdit();
 
     void DevEdit_Init(QString dev_id);
+    void loadParamtable(QString dev_params);
 
 private slots:
     void typeRadioBtnClicked();
     void on_pushButton_Detail_clicked();
     void on_pushButton_UpdateDev_clicked();
-
+    void onComboBoxProtoCurrentChanged(const QString &text);
     void on_pushButton_Cancel_clicked();
 
 private:
