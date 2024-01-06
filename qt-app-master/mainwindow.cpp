@@ -84,6 +84,9 @@ MainWindow::MainWindow(QWidget *parent)
     /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
     emit this->startWork();
 
+    map = util.Uart_devicetype();
+    namemap = util.Uart_devicetypeNameMatch();
+
     this->installEvents();
     connect(ui->buttonVer,SIGNAL(clicked()),this,SLOT(OpenSysInfo()));
     connect(ui->interacess,SIGNAL(clicked()),this,SLOT(OpenNeworkSetting()));
@@ -1351,7 +1354,7 @@ bool MainWindow::DevGui_Init()
 //            pItemName->setTextAlignment(Qt::AlignCenter);
 //            ui->tableWidget_Dev->setItem(row, 1, pItemName);
 
-            pItemType = new QTableWidgetItem(pJsonDev.value("dev_type").toString());
+            pItemType = new QTableWidgetItem(namemap[pJsonDev.value("dev_type").toString()]);
             pItemType->setTextAlignment(Qt::AlignCenter);
             ui->tableWidget_Dev->setItem(row, 1, pItemType);
 

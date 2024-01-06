@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>618</height>
+    <width>1280</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
     <number>3</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_57" stretch="0,10,10">
+    <layout class="QHBoxLayout" name="horizontalLayout_57" stretch="0,6,10">
      <property name="spacing">
       <number>3</number>
      </property>
@@ -1032,7 +1032,7 @@ p, li { white-space: pre-wrap; }
                <enum>Qt::ScrollBarAsNeeded</enum>
               </property>
               <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>120</number>
+               <number>220</number>
               </attribute>
               <attribute name="horizontalHeaderStretchLastSection">
                <bool>true</bool>

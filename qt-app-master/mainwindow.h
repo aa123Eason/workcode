@@ -192,6 +192,8 @@ private:
     QList<std::function<void()>> funcList;
     DeviceCMDCtrlDlg* devicecmddlg = nullptr;
     Util util;
+    QMap<QString,QStringList> map;
+    QMap<QString,QString> namemap;
 
 };
 

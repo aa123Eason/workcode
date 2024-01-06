@@ -29,6 +29,7 @@ public:
 
     void DevEdit_Init(QString dev_id);
     void loadParamtable(QString dev_params);
+    QString builddevparams();
 
 private slots:
     void typeRadioBtnClicked();
@@ -43,6 +44,7 @@ private:
     QButtonGroup *interGroup = nullptr;
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
+    QFont font;
 };
 
 #endif // DEVEDIT_H
