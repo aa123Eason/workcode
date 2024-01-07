@@ -142,6 +142,7 @@ private slots:
     void onButtonFaDele(QString id);
 
     void onReceiveDeviceCMDCtrl();
+    void openModbus();
 
 signals:
     /* 工人开始工作（做些耗时的操作 ） */

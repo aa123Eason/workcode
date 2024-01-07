@@ -335,17 +335,16 @@ void DevEdit::on_pushButton_Cancel_clicked()
 
 QString DevEdit::builddevparams()
 {
+    QString resStr;
     if(ui->tabWidget_params->currentWidget() == ui->tab_text)
     {
         QString str = ui->textEdit_devParams->toPlainText();
 
-
-
-        return str;
+        resStr = str;
     }
     else
     {
-        QString resStr;
+
         if(namemap.key(ui->comboBox_devProto->currentText()) == "lc-modbus")
         {
             QString tmpStr1;
@@ -363,7 +362,7 @@ QString DevEdit::builddevparams()
             QString tmpStr2;
             httpclinet h;
             QJsonObject jDevObj;
-            int num;
+            int num=0;
             if(h.get(DCM_DEVICE_FACTOR,jDevObj))
             {
                 QJsonObject::iterator it = jDevObj.begin();
@@ -380,11 +379,11 @@ QString DevEdit::builddevparams()
             qDebug()<<__LINE__<<num<<endl;
             for(int i = 0;i<num;++i)
             {
-                int t = i / 4;
-                tmpStr2 += "analog_max_"+QString::number(i+1)+"="+ui->paramtable->item(4*t,1)->text()+",";
-                tmpStr2 += "analog_min_"+QString::number(i+1)+"="+ui->paramtable->item(4*t+1,1)->text()+",";
-                tmpStr2 += "upper_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*t+2,1)->text()+",";
-                tmpStr2 += "lower_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*t+3,1)->text();
+
+                tmpStr2 += "analog_max_"+QString::number(i+1)+"="+ui->paramtable->item(4*i,1)->text()+",";
+                tmpStr2 += "analog_min_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+1,1)->text()+",";
+                tmpStr2 += "upper_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+2,1)->text()+",";
+                tmpStr2 += "lower_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+3,1)->text();
                 if(i!=num-1)
                 {
                     tmpStr2 += ",";
@@ -394,6 +393,149 @@ QString DevEdit::builddevparams()
 
             resStr = tmpStr2;
         }
+        qDebug()<<__LINE__<<resStr<<endl;
+
+        //write in device_factor
+        if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
+        {
+            QStringList paramlist = resStr.split(",");
+            httpclinet h;
+            QJsonObject jObj;
+            if(h.get(DCM_DEVICE_FACTOR,jObj))
+            {
+                for(int i =0;i<jObj.count();++i)
+                {
+                    if(ui->lineEdit_id->text()==jObj.keys()[i].split("-")[0])
+                    {
+                        QString keyName = jObj.keys()[i];
+                        QJsonObject jSubObj = jObj.value(jObj.keys()[i]).toObject();
+                        QString seq = jSubObj.value("factor_alias").toString();
+                        for(int j=0;j<paramlist.count();++j)
+                        {
+                            QString paramitem = paramlist[j];
+                            if(paramitem.split("=").count()==2)
+                            {
+                                QString paraName = paramitem.split("=")[0];
+                                QString paramValue = paramitem.split("=")[1];
+                                if(paraName.split("_").count()==3)
+                                {
+                                    qDebug()<<__LINE__<<paraName<<endl;
+                                    QString refseq = paraName.split("_")[2];
+                                    qDebug()<<__LINE__<<seq<<"vs"<<refseq<<endl;
+                                    if(seq == refseq)
+                                    {
+
+                                        if(!jSubObj.contains(CONF_IS_ANALOG_PARAM))
+                                        {
+                                            jSubObj.insert(CONF_IS_ANALOG_PARAM,true);
+
+                                            if(paraName == "analog_max_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AU1);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AU1,paramValue.toDouble());
+                                            }
+                                            else if(paraName == "analog_min_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AD1);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AD1,paramValue.toDouble());
+                                            }
+                                            else if(paraName == "upper_limit_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AU2);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AU2,paramValue.toDouble());
+                                            }
+                                            else if(paraName == "lower_limit_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AD2);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AD2,paramValue.toDouble());
+                                            }
+                                        }
+                                        else
+                                        {
+
+
+                                            if(jSubObj.value(CONF_IS_ANALOG_PARAM).toBool())
+                                            {
+                                                if(paraName == "analog_max_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU1);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU1,paramValue.toDouble());
+                                                }
+                                                else if(paraName == "analog_min_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD1);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD1,paramValue.toDouble());
+                                                }
+                                                else if(paraName == "upper_limit_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU2);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU2,paramValue.toDouble());
+                                                }
+                                                else if(paraName == "lower_limit_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD2);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD2,paramValue.toDouble());
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                if(paraName == "analog_max_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU1);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU1,QString::number(0.00,'f',2));
+                                                }
+                                                else if(paraName == "analog_min_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD1);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD1,QString::number(0.00,'f',2));
+                                                }
+                                                else if(paraName == "upper_limit_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU2);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU2,QString::number(5));
+                                                }
+                                                else if(paraName == "lower_limit_"+seq)
+                                                {
+                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
+                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD2);
+                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD2,QString::number(1));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        jObj.remove(keyName);
+                        jObj.insert(keyName,jSubObj);
+                        qDebug()<<__LINE__<<jSubObj<<endl;
+
+
+
+                    }
+                }
+
+                qDebug()<<__LINE__<<jObj<<endl;
+
+                h.put(DCM_DEVICE_FACTOR,jObj);
+
+            }
+
+
+        }
+
         return resStr;
     }
 }

@@ -84,4 +84,5 @@ extern QJsonObject g_ConfObjDevParam;
 extern QString g_Device_ID;
 extern bool g_IsAnalogDevOperated;
 
+
 #endif // COMMON_H

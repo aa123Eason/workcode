@@ -102,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->Username->setText("admin");
         ui->Password->setText("lcdcm");
     });
+    connect(ui->modbus,SIGNAL(clicked()),this,SLOT(openModbus()));
 }
 
 MainWindow::~MainWindow()
@@ -340,11 +341,17 @@ void MainWindow::installEvents() {
     labelList.append(ui->label_71);
     funcList.append(std::bind(&MainWindow::onReceiveDeviceCMDCtrl, this));
 
+    labelList.append(ui->label_35);
+    labelList.append(ui->label_36);
+    funcList.append(std::bind(&MainWindow::openModbus, this));
+
+
     for(int i = 0; i < labelList.size(); ++ i) {
         labelList.at(i)->installEventFilter(this);
     }
 
     ui->pushButton_devicecmdctrl->installEventFilter(this);
+    ui->modbus->installEventFilter(this);
 }
 
 //事件过滤器
@@ -489,6 +496,108 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
     return QWidget::eventFilter(obj, event);
+}
+
+void MainWindow::openModbus()
+{
+    ui->stackedWidget->setCurrentIndex(13);
+    QStringList comlist,baudlist,databitlist,paritylist,stopbitlist;
+    comlist<<"COM1"<<"COM2"<<"COM3"<<"COM4"<<"COM5"<<"COM6"<<"COM7"<<"COM8"<<"COM9"<<"COM10"<<"COM11"<<"COM12";
+    baudlist<<"9600"<<"4800"<<"115200";
+    databitlist<<"7"<<"8";
+    paritylist<<"N"<<"E"<<"O";
+    stopbitlist<<"1"<<"0";
+    ui->com->clear();
+    ui->baudrate->clear();
+    ui->databit->clear();
+    ui->parity->clear();
+    ui->stopbit->clear();
+    ui->ctrl->clear();
+    ui->address->clear();
+    ui->isactive->setCheckable(true);
+
+
+    ui->com->addItems(comlist);
+    ui->baudrate->addItems(baudlist);
+    ui->databit->addItems(databitlist);
+    ui->parity->addItems(paritylist);
+    ui->stopbit->addItems(stopbitlist);
+    ui->ctrl->addItem("03");
+
+//    "address": 0,
+//      "com": "string",
+//      "baudrate": 0,
+//      "data_bit": 0,
+//      "parity": "string",
+//      "stop_bit": 0,
+//      "active": 0
+
+    httpclinet h;
+    QJsonObject jObj;
+    if(h.get("/dcm/modbus_server",jObj))
+    {
+        qDebug()<<__LINE__<<jObj<<endl;
+        ui->com->setCurrentText(util.Uart_Revert(jObj.value("com").toString()));
+        ui->baudrate->setCurrentText(QString::number(jObj.value("baudrate").toInt()));
+        ui->databit->setCurrentText(QString::number(jObj.value("data_bit").toInt()));
+        ui->parity->setCurrentText(jObj.value("parity").toString());
+        ui->stopbit->setCurrentText(QString::number(jObj.value("stop_bit").toInt()));
+        if(jObj.value("active").toBool())
+            ui->isactive->setChecked(true);
+        else
+            ui->isactive->setChecked(false);
+        ui->address->setText(QString::number(jObj.value("address").toInt()));
+    }
+
+    connect(ui->btn_clr,&QPushButton::clicked,ui->infoedit,&QTextBrowser::clear);
+
+    connect(ui->btn_ok,&QPushButton::clicked,this,[=]()
+    {
+        QJsonObject jObj0;
+        jObj0.insert("com",util.Uart_Convert(ui->com->currentText()));
+        jObj0.insert("baudrate",ui->baudrate->currentText().toInt());
+        jObj0.insert("data_bit",ui->databit->currentText().toInt());
+        jObj0.insert("parity",ui->parity->currentText().toInt());
+        jObj0.insert("stop_bit",ui->stopbit->currentText().toInt());
+        if(ui->isactive->isChecked())
+            jObj0.insert("active",1);
+        else
+            jObj0.insert("active",0);
+        jObj0.insert("address",ui->address->text().toInt());
+
+        qDebug()<<__LINE__<<jObj0<<endl;
+
+        //串口号，波特率，数据位，停止位，校验位，设备地址，是否开启，控制指令
+        httpclinet h;
+        QString str;
+        if(h.put("/dcm/modbus_server",jObj0))
+        {
+            str += "***************配置成功***************";
+            str += "串口号:"+ui->com->currentText()+";";
+            str += "波特率:"+ui->baudrate->currentText()+";";
+            str += "数据位:"+ui->databit->currentText()+";";
+            str += "停止位:"+ui->stopbit->currentText()+";";
+            str += "校验位:"+ui->parity->currentText()+";";
+            str += "设备地址:"+ui->address->text()+";";
+            str += "控制指令:"+ui->ctrl->currentText()+";";
+            if(ui->isactive->isChecked())
+                str += "是否开启:是;";
+            else
+                str += "是否开启:否;";
+
+        }
+        else
+        {
+            str = "***************配置失败***************";
+        }
+        ui->infoedit->setPlainText(str);
+
+
+    });
+
+
+
+
 }
 
 void MainWindow::handleDateTimeout()
@@ -2651,16 +2760,16 @@ void MainWindow::refresh_AnalogDevParam()
                         {
                             QString pAlias,pAU1,pAD1,pAU2,pAD2;
                             if(QJsonObjectFator.contains(CONF_ANALOG_PARAM_AU1))
-                                pAU1 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AU1).toDouble());
+                                pAU1 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AU1).toVariant().toDouble());
                             if(QJsonObjectFator.contains(CONF_ANALOG_PARAM_AD1))
-                                pAD1 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AD1).toDouble());
+                                pAD1 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AD1).toVariant().toDouble());
                             if(QJsonObjectFator.contains(CONF_ANALOG_PARAM_AU2))
-                                pAU2 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AU2).toDouble());
+                                pAU2 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AU2).toVariant().toDouble());
                             if(QJsonObjectFator.contains(CONF_ANALOG_PARAM_AD2))
-                                pAD2 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AD2).toDouble());
+                                pAD2 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AD2).toVariant().toDouble());
 
                             if(QJsonObjectFator.contains(CONF_FACTOR_ALIAS))
-                                pAlias = QString::number(QJsonObjectFator.value(CONF_FACTOR_ALIAS).toInt());
+                                pAlias = QString::number(QJsonObjectFator.value(CONF_FACTOR_ALIAS).toVariant().toInt());
 
                             // qDebug() << "pAlias---->>>>>" <<pAlias;
 
@@ -2972,7 +3081,7 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
         return true;
     }
 
-    QMessageBox::about(NULL, "提示", "<font color='black'>获取因子配置失败!</font>");
+//    QMessageBox::about(NULL, "提示", "<font color='black'>获取因子配置失败!</font>");
     return false;
 }
 

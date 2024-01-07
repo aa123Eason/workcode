@@ -1,6 +1,7 @@
 #include "facedit.h"
 #include "ui_facedit.h"
 
+QJsonObject jMainObj;
 FacEdit::FacEdit(QString id, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FacEdit)
@@ -11,6 +12,9 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
     m_FcodeID = id;
     FacEdit_Init(id);
+
+//    connect(ui->pushButton_Saved,&QPushButton::clicked,this,&FacEdit::on_pushButton_Saved_clicked);
+    connect(ui->pushButton_cancel,&QPushButton::clicked,this,&FacEdit::on_pushButton_cancel_clicked);
 }
 
 FacEdit::~FacEdit()
@@ -72,6 +76,8 @@ void FacEdit::FacEdit_Init(QString id)
                     ui->radioButton_decY->setChecked(true);
                 }
 
+                ui->modbus_add->setText(QString::number(pJsonFac.value("modbus_index").toInt()));
+
                 bool is_change_send_msg = pJsonFac.value("is_change_send_msg").toInt() == 0;
                 if(is_change_send_msg) ui->radioButton_FBJC->setChecked(false);
                 else ui->radioButton_FBJC->setChecked(true);
@@ -119,17 +125,17 @@ void FacEdit::FacEdit_Init(QString id)
                 QString pItem = g_Device_ID+"-"+pFcode;
 
                 qDebug() << "pItem===>>" << pItem;
-                ConfFactor_Filled(pItem);
+//                ConfFactor_Filled(pItem);
+
 
                 break;
             }
             it++;
         }
     }
-    else
-    {
-        QMessageBox::about(NULL, "提示", "<font color='black'>获取因子信息失败!</font>");
-    }
+
+    loadinfo("/home/rpdzkj/tmpFiles/"+g_Device_ID+".json");
+
 }
 
 bool FacEdit::ConfFactor_Filled(QString pItem)
@@ -177,28 +183,37 @@ bool FacEdit::ConfFactor_Filled(QString pItem)
 
                 if(pJsonFac.contains(CONF_ANALOG_PARAM_AU1))
                 {
-                    ui->lineEdit_AU1->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AU1).toDouble()));
+                    ui->lineEdit_AU1->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AU1).toVariant().toDouble()));
                 }
 
                 if(pJsonFac.contains(CONF_ANALOG_PARAM_AD1))
                 {
-                    ui->lineEdit_AD1->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AD1).toDouble()));
+                    ui->lineEdit_AD1->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AD1).toVariant().toDouble()));
                 }
 
                 if(pJsonFac.contains(CONF_ANALOG_PARAM_AU2))
                 {
-                    ui->lineEdit_AU2->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AU2).toDouble()));
+                    ui->lineEdit_AU2->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AU2).toVariant().toDouble()));
                 }
 
                 if(pJsonFac.contains(CONF_ANALOG_PARAM_AD2))
                 {
-                    ui->lineEdit_AD2->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AD2).toDouble()));
+                    ui->lineEdit_AD2->setText(QString::number(pJsonFac.value(CONF_ANALOG_PARAM_AD2).toVariant().toDouble()));
                 }
+
+//                loadinfo("/homr/rpdzkj/tmpFiles/"+g_Device_ID+".json");
+
+                qDebug()<<__LINE__<<"YES"<<endl;
 
                 return true;
             }
             it++;
         }
+    }
+    else
+    {
+//        loadinfo("/homr/rpdzkj/tmpFiles/"+g_Device_ID+".json");
+        qDebug()<<__LINE__<<"NO"<<endl;
     }
     return false;
 }
@@ -231,7 +246,7 @@ void FacEdit::on_pushButton_Saved_clicked()
     QString pFCode = ui->comboBox_fcode->currentData().toString();
     QString pKey = g_Device_ID + "-" + pFCode;
 
-    QJsonObject obj;
+    QJsonObject obj,obj1;
     obj.insert(QLatin1String("id"), m_FcodeID);
     obj.insert(QLatin1String("st"), ui->comboBox_fst->currentData().toString());
     obj.insert(QLatin1String("device_id"), g_Device_ID);
@@ -241,7 +256,7 @@ void FacEdit::on_pushButton_Saved_clicked()
     obj.insert(QLatin1String("alarm_upper"), ui->lineEdit_alarmUpper->text().toDouble());
     obj.insert(QLatin1String("tag_id"), ui->lineEdit_tagId->text());
     obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toInt());
-
+    obj.insert(QLatin1String("modbus_index"),ui->modbus_add->text().toInt());
     if(ui->radioButton_decN->isChecked())
     {
         obj.insert(QLatin1String("decimals"), ui->lineEdit_dec->text().toInt());
@@ -273,26 +288,153 @@ void FacEdit::on_pushButton_Saved_clicked()
     if(ui->radioButton_CXBJ->isChecked()) obj.insert(QLatin1String("is_continuous_alarm_over_standard"), 1);
     else obj.insert(QLatin1String("is_continuous_alarm_over_standard"), 0);
 
-    // qDebug() << "obj==>>" << obj;
 
-    httpclinet pClient;
-    if(pClient.put(DCM_DEVICE_FACTOR,obj))
+
+
+
+    qDebug() << "obj==>>" << obj;
+    obj1 = obj;
+
+    obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AU1), ui->lineEdit_AU1->text().toDouble());
+    obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AD1), ui->lineEdit_AD1->text().toDouble());
+    obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AU2), ui->lineEdit_AU2->text().toDouble());
+    obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AD2), ui->lineEdit_AD2->text().toDouble());
+    obj1.insert(QLatin1String(CONF_FACTOR_ALIAS), ui->comboBox_falias->currentText().toInt());
+
+
+
+
+//    if(ui->radioButton_MNL->isChecked())
+//    {
+//        obj.insert("dev_params",devParams);
+//        obj1.insert("dev_params",devParams);
+//    }
+
+    if(ui->radioButton_YQCS->isChecked()) obj1.insert(CONF_IS_DEVICE_PROPERTY,true);
+    else obj1.insert(CONF_IS_DEVICE_PROPERTY,false);
+
+    if(ui->radioButton_MNL->isChecked()) obj1.insert(CONF_IS_ANALOG_PARAM,true);
+    else obj1.insert(CONF_IS_ANALOG_PARAM,false);
+
+    qDebug() << "obj1===>>" << obj1;
+    if(jMainObj.contains(pKey))
+        jMainObj.remove(pKey);
+
+    jMainObj.insert(pKey,obj1);
+    qDebug() << "jMainObj===>>" << jMainObj;
+
+
+    httpclinet pClient,pClient1;
+    QJsonObject jObj0,jObj1;
+    if(pClient.get(DCM_DEVICE_FACTOR,jObj0))
     {
-        // update conf
-        if(Conf_FactorUpdate(pKey))
+        jObj1 = jObj0;
+        QJsonObject::iterator it = jObj0.begin();
+        while(it != jObj0.end())
         {
-            emit editSuccess();
-            QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置成功！</font>");
+            if(pKey ==it.key())
+            {
+
+                jObj0.insert(pKey,obj1);
+
+
+                jObj1.insert(pKey,obj);
+
+            }
+            it++;
         }
-        else
-        {
-            QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置失败！</font>");
-        }
+    }
+
+    qDebug() << "jObj0==>>" << jObj0<<endl;
+    qDebug() << "jObj1==>>" << jObj1<<endl;
+
+
+    QString devParams;
+    for(int i=0;i<jMainObj.count();++i)
+    {
+        QString key = jObj1.keys()[i];
+        QJsonObject o = jObj1.value(key).toObject();
+        devParams += "analog_max_"+QString::number(i+1)+"="+QString::number(o.value("analogupper1").toDouble(),'f',2)+",";
+        devParams += "analog_min_"+QString::number(i+1)+"="+QString::number(o.value("analoglower1").toDouble(),'f',2)+",";
+        devParams += "upper_limit_"+QString::number(i+1)+"="+QString::number(o.value("analogupper2").toDouble(),'f',2)+",";
+        devParams += "lower_limit_"+QString::number(i+1)+"="+QString::number(o.value("analoglower2").toDouble(),'f',2);
+        if(i!=jObj1.count()-1)
+            devParams += ",";
+    }
+
+    qDebug()<<__LINE__<<devParams<<endl;
+    QJsonObject devObj;
+    if(pClient1.get(DCM_DEVICE,devObj))
+    {
+       if(devObj.contains(g_Device_ID))
+       {
+           QJsonObject objx = devObj.value(g_Device_ID).toObject();
+           objx.remove("dev_params");
+           objx.insert("dev_params",devParams);
+           devObj.remove(g_Device_ID);
+           devObj.insert(g_Device_ID,objx);
+
+
+       }
+
+       httpclinet h2;
+       h2.put(DCM_DEVICE,devObj);
+    }
+
+    obj.insert("dev_params",devParams);
+
+
+    QString filestr = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
+
+    QFile file(filestr);
+    qDebug() <<"file:"<<filestr<<endl;
+    if(file.exists())
+    {
+        file.remove();
+
+    }
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    QJsonDocument jDoc;
+    jDoc.setObject(jMainObj);
+    QByteArray bytArr;
+    bytArr.append(jDoc.toJson());
+
+    file.flush();
+    file.write(bytArr);
+
+    file.close();
+    bytArr.clear();
+
+    if(pClient1.put(DCM_DEVICE_FACTOR,obj))
+    {
+        qDebug()<<__LINE__<<"YES"<<endl;
     }
     else
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置失败！</font>");
+        qDebug()<<__LINE__<<"NO"<<endl;
     }
+
+    QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置成功！</font>");
+
+
+//    QJsonObject obj0;
+//    if(pClient1.get(DCM_CONF,obj0))
+//    {
+////        // update conf
+//        if(Conf_FactorUpdate(pKey))
+//        {
+            emit editSuccess();
+//            QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置成功！</font>");
+//        }
+////        else
+////        {
+////            QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置失败！</font>");
+////        }
+//    }
+//    else
+//    {
+//        QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置失败！</font>");
+//    }
     this->close();
 }
 
@@ -318,4 +460,140 @@ bool FacEdit::Conf_FactorUpdate(QString pKey)
     }
 
     return false;
+}
+
+void FacEdit::loadinfo(QString path)
+{
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+    file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+
+
+
+    QString fullName;
+    if(ui->comboBox_fcode->currentText().split("-").count()==2)
+    {
+        fullName = g_Device_ID+"-"+ui->comboBox_fcode->currentText().split("-")[0];
+    }
+    else
+    {
+        fullName = g_Device_ID+"-"+ui->comboBox_fcode->currentText();
+    }
+
+    qDebug()<<__LINE__<<fullName<<endl;
+    qDebug()<<__LINE__<<jObj.keys()<<endl;
+
+    if(jObj.contains(fullName))
+    {
+        QJsonObject jValueObj = jObj.value(fullName).toObject();
+
+        bool calc_type = jValueObj.value("calc_type").toInt() == 0;
+        if(!calc_type)
+        {
+            ui->radioButton_decN->setChecked(true);
+            ui->lineEdit_dec->setText(QString::number(jValueObj.value("decimals").toInt()));
+        }
+        else
+        {
+            ui->radioButton_decY->setChecked(true);
+        }
+
+        bool is_change_send_msg = jValueObj.value("is_change_send_msg").toInt() == 0;
+        if(is_change_send_msg) ui->radioButton_FBJC->setChecked(false);
+        else ui->radioButton_FBJC->setChecked(true);
+
+        bool is_change_send_msg_store = jValueObj.value("is_change_send_msg_store").toInt() == 0;
+        if(is_change_send_msg_store) ui->radioButton_FBJCC->setChecked(false);
+        else ui->radioButton_FBJCC->setChecked(true);
+
+        bool is_continuous_alarm_over_standard = jValueObj.value("is_continuous_alarm_over_standard").toInt() == 0;
+        if(is_continuous_alarm_over_standard) ui->radioButton_CXBJ->setChecked(false);
+        else ui->radioButton_CXBJ->setChecked(true);
+
+        bool is_manual_flag = jValueObj.value("is_manual_flag").toInt() == 0;
+        if(is_manual_flag)
+        {
+            ui->radioButton_SDSZF->setChecked(false);
+        }
+        else
+        {
+            ui->radioButton_SDSZF->setChecked(true);
+            ui->lineEdit_mf->setText(jValueObj.value("manual_flag").toString());
+        }
+
+        ui->comboBox_fst->setCurrentText(jValueObj.value("st").toString());
+        ui->lineEdit_tagId->setText(jValueObj.value("tag_id").toString());
+
+        QString pFcode = jValueObj.value("factor_code").toString();
+
+        int index = -1;
+        index = ui->comboBox_fcode->findData(pFcode);
+        //qDebug() << "index==>" << index;
+        if(index>=0) ui->comboBox_fcode->setCurrentIndex(index);
+        else{
+            ui->comboBox_fcode->setEditable(true);
+            ui->comboBox_fcode->setCurrentText(pFcode);
+        }
+
+        ui->comboBox_falias->setCurrentText(jValueObj.value("factor_alias").toString());
+        ui->lineEdit_alarmUpper->setText(QString::number(jValueObj.value("alarm_upper").toDouble()));
+        ui->lineEdit_alarmLower->setText(QString::number(jValueObj.value("alarm_lower").toDouble()));
+        ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toInt()));
+
+        // read from CONF
+
+        QString pItem = g_Device_ID+"-"+pFcode;
+
+        qDebug() << "pItem===>>" << pItem;
+
+
+
+        if(!jValueObj.contains(CONF_IS_ANALOG_PARAM))
+        {
+            ui->radioButton_MNL->setChecked(false);
+        }
+        else
+        {
+            if(jValueObj.value(CONF_IS_ANALOG_PARAM).toBool())
+            {
+                ui->radioButton_MNL->setChecked(true);
+            }
+            else
+            {
+                ui->radioButton_MNL->setChecked(false);
+            }
+        }
+
+
+        if(jValueObj.contains(CONF_ANALOG_PARAM_AU1))
+        {
+            ui->lineEdit_AU1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU1).toVariant().toDouble()));
+        }
+
+        if(jValueObj.contains(CONF_ANALOG_PARAM_AD1))
+        {
+            ui->lineEdit_AD1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD1).toVariant().toDouble()));
+        }
+
+        if(jValueObj.contains(CONF_ANALOG_PARAM_AU2))
+        {
+            ui->lineEdit_AU2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU2).toVariant().toDouble()));
+        }
+
+        if(jValueObj.contains(CONF_ANALOG_PARAM_AD2))
+        {
+            ui->lineEdit_AD2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD2).toVariant().toDouble()));
+        }
+    }
+
 }

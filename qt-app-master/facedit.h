@@ -4,6 +4,11 @@
 #include <QDialog>
 #include "common.h"
 #include "httpclinet.h"
+#include <QFile>
+#include <QJsonDocument>
+#include <QByteArray>
+#include <QJsonObject>
+#include <QDir>
 
 namespace Ui {
 class FacEdit;
@@ -18,6 +23,7 @@ public:
     ~FacEdit();
 
     void FacEdit_Init(QString id);
+    void loadinfo(QString path);
     bool ConfFactor_Filled(QString id);
     bool Conf_FactorUpdate(QString pKey);
 
@@ -32,6 +38,7 @@ private:
     Ui::FacEdit *ui;
 
     QString m_FcodeID;
+
 };
 
 #endif // FACEDIT_H
