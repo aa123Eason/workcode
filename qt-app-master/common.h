@@ -23,6 +23,7 @@
 #define QTAPP_VER "QDesktopV1.0.230307"
 #define SCHEME "http"
 #define SERVER_IP "172.20.0.69"
+//#define SERVER_IP "172.20.0.218"
 //#define SERVER_IP "172.20.0.238"
 //#define SERVER_IP "localhost"
 #define SERVER_PORT "8888"

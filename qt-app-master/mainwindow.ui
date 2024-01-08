@@ -167,7 +167,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>13</number>
+     <number>6</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -2730,7 +2730,7 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>220</x>
-        <y>120</y>
+        <y>80</y>
         <width>811</width>
         <height>51</height>
        </rect>
@@ -2784,7 +2784,7 @@ p, li { white-space: pre-wrap; }
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 20px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
@@ -2854,6 +2854,255 @@ padding-top:1px;
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QLabel" name="label_name_6">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>140</y>
+        <width>125</width>
+        <height>49</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(186, 189, 182);</string>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="text">
+       <string>CN类型选择</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_2">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>140</y>
+        <width>201</width>
+        <height>49</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Source Han Sans CN</family>
+        <pointsize>-1</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 20px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>1000</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1011</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1012</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1013</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1061</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1062</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1063</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1064</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1072</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2011</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2012</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2021</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2022</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2031</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2041</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2051</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2061</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2081</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3011</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3012</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3013</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3014</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3015</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3016</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3017</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3018</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3019</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3020</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3021</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9011</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9012</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9013</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9014</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="QWidget" name="page_7">
@@ -4345,7 +4594,7 @@ QCheckBox::indicator:checked {
        <string>是否开启</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>50</x>
@@ -4354,7 +4603,7 @@ QCheckBox::indicator:checked {
         <height>394</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,5">
+      <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,5,0">
        <item>
         <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,1,1,1,1,1" columnstretch="0,1">
          <property name="sizeConstraint">
@@ -4783,9 +5032,23 @@ QComboBox QAbstractItemView::item {
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string>Tab 1</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
+           <string>Tab 2</string>
+          </attribute>
+         </widget>
+        </widget>
+       </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>390</x>

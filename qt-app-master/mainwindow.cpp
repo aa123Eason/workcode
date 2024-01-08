@@ -554,10 +554,10 @@ void MainWindow::openModbus()
     connect(ui->btn_ok,&QPushButton::clicked,this,[=]()
     {
         QJsonObject jObj0;
-        jObj0.insert("com",util.Uart_Convert(ui->com->currentText()));
+        jObj0.insert("com",ui->com->currentText());
         jObj0.insert("baudrate",ui->baudrate->currentText().toInt());
         jObj0.insert("data_bit",ui->databit->currentText().toInt());
-        jObj0.insert("parity",ui->parity->currentText().toInt());
+        jObj0.insert("parity",ui->parity->currentText());
         jObj0.insert("stop_bit",ui->stopbit->currentText().toInt());
         if(ui->isactive->isChecked())
             jObj0.insert("active",1);
@@ -570,25 +570,30 @@ void MainWindow::openModbus()
         //串口号，波特率，数据位，停止位，校验位，设备地址，是否开启，控制指令
         httpclinet h;
         QString str;
+        str = "需要配置的信息:\n";
+        str += "串口号:"+ui->com->currentText()+";\n";
+        str += "波特率:"+ui->baudrate->currentText()+";\n";
+        str += "数据位:"+ui->databit->currentText()+";\n";
+        str += "停止位:"+ui->stopbit->currentText()+";\n";
+        str += "校验位:"+ui->parity->currentText()+";\n";
+        str += "设备地址:"+ui->address->text()+";\n";
+        str += "控制指令:"+ui->ctrl->currentText()+";\n";
+        if(ui->isactive->isChecked())
+            str += "是否开启:是;\n";
+        else
+            str += "是否开启:否;\n";
+
         if(h.put("/dcm/modbus_server",jObj0))
         {
-            str += "***************配置成功***************";
-            str += "串口号:"+ui->com->currentText()+";";
-            str += "波特率:"+ui->baudrate->currentText()+";";
-            str += "数据位:"+ui->databit->currentText()+";";
-            str += "停止位:"+ui->stopbit->currentText()+";";
-            str += "校验位:"+ui->parity->currentText()+";";
-            str += "设备地址:"+ui->address->text()+";";
-            str += "控制指令:"+ui->ctrl->currentText()+";";
-            if(ui->isactive->isChecked())
-                str += "是否开启:是;";
-            else
-                str += "是否开启:否;";
+            str += "***************配置成功***************\n";
+            ui->infoedit->setTextColor(QColor(Qt::darkGreen));
 
         }
         else
         {
-            str = "***************配置失败***************";
+            str += "***************配置失败***************\n";
+            ui->infoedit->setTextColor(QColor(Qt::darkRed));
+
         }
         ui->infoedit->setPlainText(str);
 

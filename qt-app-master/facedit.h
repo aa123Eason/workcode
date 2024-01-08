@@ -26,7 +26,7 @@ public:
     void loadinfo(QString path);
     bool ConfFactor_Filled(QString id);
     bool Conf_FactorUpdate(QString pKey);
-
+    void updatedevparams();
 signals:
     void editSuccess();
 

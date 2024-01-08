@@ -13,6 +13,7 @@ public:
     bool post(QString api,QJsonObject &pJsonObj);
     bool post(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply);
     bool put(QString api,QJsonObject &pJsonObj);
+    bool put(QString api,QJsonObject &pJsonObj,QJsonObject &pJsonReply);
     bool deleteSource(QString api,QString item);
 };
 
