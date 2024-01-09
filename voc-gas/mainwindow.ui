@@ -109,7 +109,7 @@ background-color: rgb(0, 170, 255);</string>
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-image: url(:/images/timer.png);</string>
+        <string notr="true">border-image: url(:/images/uart.png);</string>
        </property>
        <property name="text">
         <string/>

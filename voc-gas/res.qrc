@@ -33,5 +33,6 @@
         <file>images/icon.ico</file>
         <file>images/keyboard-on.png</file>
         <file>images/keyboard-off.png</file>
+        <file>images/uart.png</file>
     </qresource>
 </RCC>
