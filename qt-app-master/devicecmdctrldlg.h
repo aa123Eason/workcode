@@ -13,12 +13,18 @@
 #include <QProcess>
 #include <QFile>
 #include <QDateTime>
+#include <QCheckBox>
+#include <QList>
+#include <QHBoxLayout>
+#include <QColumnView>
+#include <QTimer>
 
 #ifdef Q_OS_LINUX
 #include "util.h"
 #include "uartThread/uartthread.h"
 #endif
 #include <unistd.h>
+#include "httpclinet.h"
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
@@ -33,7 +39,9 @@ public:
     ~DeviceCMDCtrlDlg();
 
     void init();
+    void loadFactorAndPort();
     void connectevent();
+    void timeCheckInit();
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
@@ -41,11 +49,13 @@ protected:
 signals:
     void sendReback(bool);
     void sendCMD(QString cmd);
+    void sendIsSendBytime(bool issendbytime);
 
 public slots:
     #ifdef Q_OS_LINUX
     void onReceiveCMD(QString cmd);
     #endif
+    void onReceivecurDT(QDateTime &);
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
@@ -55,6 +65,14 @@ private:
     QString str;
     QString comstr;
     Util util;
+    QMap<QString,QStringList> map;
+    QMap<QString,QString> namemap;
+    QList<QCheckBox *> timecks;
+    QStringList ontimecks;
+    QDateTime curDT;
+    bool isSendBytime = false;
+    QTimer timer;
+
 };
 
 #endif // DEVICECMDCTRLDLG_H

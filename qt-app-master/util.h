@@ -16,6 +16,8 @@ public:
     QString Uart_Revert(QString pTex);
     QMap<QString,QStringList> Uart_devicetype();
     QMap<QString,QString> Uart_devicetypeNameMatch();
+    QMap<QString,QString> Uart_facnameMatch();
+
 
 };
 

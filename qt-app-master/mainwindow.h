@@ -147,6 +147,7 @@ private slots:
 signals:
     /* 工人开始工作（做些耗时的操作 ） */
     void startWork();
+    void sendCurDT(QDateTime &);
 
 private:
     Ui::MainWindow *ui;

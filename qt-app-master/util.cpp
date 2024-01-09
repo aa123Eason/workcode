@@ -251,3 +251,25 @@ QMap<QString,QString> Util::Uart_devicetypeNameMatch()
      return map;
 }
 
+QMap<QString,QString> Util::Uart_facnameMatch()
+{
+    QMap<QString,QString> map;
+    httpclinet h;
+    QJsonObject jObj;
+
+    if(h.get(DCM_FACTOR,jObj))
+    {
+        QJsonObject::iterator it = jObj.begin();
+        while(it != jObj.end())
+        {
+            QString code = it.key();
+            QJsonObject valueObj = it.value().toObject();
+            QString name = valueObj.value("name").toString();
+            map.insert(code,name);
+            it++;
+        }
+    }
+
+    return map;
+}
+

@@ -608,6 +608,7 @@ void MainWindow::openModbus()
 void MainWindow::handleDateTimeout()
 {
     QDateTime time = QDateTime::currentDateTime();
+    emit sendCurDT(time);
     QString str = time.toString("yyyy-MM-dd hh:mm:ss");
     ui->textEditDataTime->setAlignment( Qt::AlignCenter);//文字水平居中
     ui->textEditDataTime->setText(str);
@@ -3315,5 +3316,6 @@ void MainWindow::onReceiveDeviceCMDCtrl()
 {
     qDebug()<<__LINE__<<__FUNCTION__<<endl;
     devicecmddlg = new DeviceCMDCtrlDlg(this);
-    devicecmddlg->exec();
+    connect(this,&MainWindow::sendCurDT,devicecmddlg,&DeviceCMDCtrlDlg::onReceivecurDT);
+    devicecmddlg->show();
 }
