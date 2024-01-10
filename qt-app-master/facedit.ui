@@ -1303,7 +1303,7 @@ QRadioButton::indicator:checked {
          </font>
         </property>
         <property name="text">
-         <string>modbus地址</string>
+         <string>modbus序号</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

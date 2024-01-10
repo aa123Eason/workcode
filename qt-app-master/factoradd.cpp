@@ -1,18 +1,19 @@
 #include "factoradd.h"
 #include "ui_factoradd.h"
 
-FactorAdd::FactorAdd(QString pDevID,QWidget *parent) :
+FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FactorAdd)
 {
     ui->setupUi(this);
     setModal(true);
     setAttribute(Qt::WA_DeleteOnClose);
-    setWindowTitle(QStringLiteral(" "));
+    setWindowTitle(QStringLiteral("新增因子"));
 
     // qDebug() << "pDevID===>>" << pDevID;
 
     m_DevId = pDevID;
+    m_DevType = devtype;
 
     ui->comboBox_fcode->clear();
     //g_Dcm_Factor
@@ -60,6 +61,7 @@ FactorAdd::FactorAdd(QString pDevID,QWidget *parent) :
     ui->lineEdit_mf->setVisible(false);
 
     ui->radioButton_MNL->setChecked(false);
+    ui->modbus_add->setText("0");
     analogRadioBtnClicked();
 }
 
@@ -71,6 +73,10 @@ FactorAdd::~FactorAdd()
 }
 
 void FactorAdd::analogRadioBtnClicked() {
+
+    qDebug()<<__LINE__<<m_DevType<<endl;
+//    ui->radioButton_MNL->setCheckable(m_DevType.contains("analog"));
+
     if(ui->radioButton_MNL->isChecked())
     {
         ui->lineEdit_AU1->setVisible(true);
@@ -93,6 +99,10 @@ void FactorAdd::analogRadioBtnClicked() {
         ui->label_ad1->setVisible(false);
         ui->label_ad2->setVisible(false);
     }
+
+
+
+
 }
 
 void FactorAdd::decRadioBtnClicked() {
@@ -124,6 +134,8 @@ void FactorAdd::mfRadioBtnClicked() {
 
 void FactorAdd::on_pushButton_clicked()
 {
+
+    QString pKey;
     if(ui->comboBox_fcode->currentText() == "")
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>因子编码不能为空！</font>");
@@ -139,6 +151,12 @@ void FactorAdd::on_pushButton_clicked()
     if(ui->comboBox_fst->currentText() == "")
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>ST不能为空！</font>");
+        return;
+    }
+
+    if(findSameALias(ui->comboBox_falias->currentText()))
+    {
+        QMessageBox::about(NULL, "提示", "<font color='red'>序号与其他因子重复</font>");
         return;
     }
 
@@ -186,12 +204,32 @@ void FactorAdd::on_pushButton_clicked()
     else obj.insert(QLatin1String("is_continuous_alarm_over_standard"), 0);
 
     // qDebug() << "obj==>>" << obj;
+    pKey = g_Device_ID + "-" + pFcode;
+
+
+    if(ui->radioButton_YQCS->isChecked()) obj.insert(CONF_IS_DEVICE_PROPERTY,true);
+    else obj.insert(CONF_IS_DEVICE_PROPERTY,false);
+
+    if(ui->radioButton_MNL->isChecked()) obj.insert(CONF_IS_ANALOG_PARAM,true);
+    else obj.insert(CONF_IS_ANALOG_PARAM,false);
+
+    obj.insert(CONF_ANALOG_PARAM_AU1,ui->lineEdit_AU1->text().toDouble());
+    obj.insert(CONF_ANALOG_PARAM_AD1,ui->lineEdit_AD1->text().toDouble());
+    obj.insert(CONF_ANALOG_PARAM_AU2,ui->lineEdit_AU2->text().toDouble());
+    obj.insert(CONF_ANALOG_PARAM_AD2,ui->lineEdit_AD2->text().toDouble());
+    obj.insert(CONF_FACTOR_ALIAS,ui->comboBox_falias->currentText());
+
+    QJsonObject jFacObj;
+    jFacObj.insert(pKey,obj);
+    QString fileName = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
+    writeinLocalJson(fileName,jFacObj,pKey);
 
     httpclinet pClient;
     if(pClient.put(DCM_DEVICE_FACTOR,obj))
     {
-        QString pKey = g_Device_ID + "-" + pFcode;
-        if(Conf_FactorUpdate(pKey))
+
+        QJsonObject jFac;
+        if(Conf_FactorUpdate(pKey,jFac))
         {
             emit addSuccess();
             QMessageBox::about(NULL, "提示", "<font color='black'>新增因子配置信息成功！</font>");
@@ -200,6 +238,8 @@ void FactorAdd::on_pushButton_clicked()
         {
             QMessageBox::about(NULL, "提示", "<font color='black'>新增因子配置信息失败！</font>");
         }
+
+
     }
     else
     {
@@ -208,12 +248,61 @@ void FactorAdd::on_pushButton_clicked()
     this->close();
 }
 
+void FactorAdd::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
+{
+        QFile file(filename);
+        if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+        {
+            return;
+        }
+        QByteArray byt;
+        byt.append(file.readAll());
+        file.flush();
+
+        QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+        QJsonObject jObj = jDoc.object();
+        if(!jObj.contains("factors"))
+        {
+            jObj.insert("factors",obj);
+        }
+        else
+        {
+            QJsonObject jFacs = jObj.value("factors").toObject();
+            if(jFacs.contains(pKey))
+            {
+                jFacs.remove(pKey);
+            }
+            jFacs.insert(pKey,obj.value(pKey).toObject());
+            jObj.remove("factors");
+            jObj.insert("factors",jFacs);
+        }
+
+        QJsonDocument jDoc1;
+        jDoc1.setObject(jObj);
+        QFile file1(filename);
+        file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+        //提示，因子数据已同步到本地JSON,文件路径
+        if(file1.write(jDoc1.toJson()))
+        {
+            QMessageBox::information(this,"提示","因子数据已同步到本地JSON,文件路径:\n"+filename);
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","因子数据未能同步到本地JSON,文件路径:\n"+filename);
+        }
+
+        file1.close();
+        byt.clear();
+        file.close();
+
+}
+
 void FactorAdd::on_pushButton_2_clicked()
 {
     this->close();
 }
 
-bool FactorAdd::Conf_FactorUpdate(QString pKey)
+bool FactorAdd::Conf_FactorUpdate(QString pKey,QJsonObject &jFac)
 {
 
     QJsonObject pFactor;
@@ -228,6 +317,7 @@ bool FactorAdd::Conf_FactorUpdate(QString pKey)
     pFactor.insert(CONF_ANALOG_PARAM_AU2,ui->lineEdit_AU2->text().toDouble());
     pFactor.insert(CONF_ANALOG_PARAM_AD2,ui->lineEdit_AD2->text().toDouble());
     pFactor.insert(CONF_FACTOR_ALIAS,ui->comboBox_falias->currentText());
+    jFac = pFactor;
 
     httpclinet pClient;
     if(pClient.post(DCM_CONF_FACTOR_EDIT+pKey,pFactor))
@@ -235,4 +325,45 @@ bool FactorAdd::Conf_FactorUpdate(QString pKey)
         return true;
     }
     return  false;
+}
+
+bool FactorAdd::findSameALias(QString alias)
+{
+    QJsonObject jObj;
+    httpclinet h;
+    if(h.get(DCM_DEVICE_FACTOR,jObj))
+    {
+        QJsonObject::iterator it = jObj.begin();
+        while(it != jObj.end())
+        {
+            QJsonObject valueObj = it.value().toObject();
+            if(alias == valueObj.value("factor_alias").toString())
+            {
+                return true;
+            }
+            it++;
+        }
+        return false;
+    }
+    else
+    {
+//        QString dirpath = "/home/rpdzkj/tmpFiles/";
+//        QDir dir(dirpath);
+//        if(!dir.exists())
+//        {
+//            return false;
+//        }
+//        QStringList filter;
+//        filter<<".json";
+//        dir.setNameFilters(filter);
+//        QFileInfoList *fileInfoList = new QFileInfoList(dir.entryInfoList(filter));
+//        for(int i=0;i<fileInfoList->count();++i)
+//        {
+//            qDebug()<<__LINE__<<fileInfoList->at(i).filePath()<<endl;
+//            qDebug()<<__LINE__<<fileInfoList->at(i).fileName()<<endl;
+
+//        }
+
+        return false;
+    }
 }

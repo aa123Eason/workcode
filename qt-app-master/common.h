@@ -83,6 +83,7 @@ extern QJsonArray g_Dcm_SystemCode;
 extern QJsonObject g_Dcm_SupportDevice;
 extern QJsonObject g_ConfObjDevParam;
 extern QString g_Device_ID;
+extern QString g_Device_Type;
 extern bool g_IsAnalogDevOperated;
 
 

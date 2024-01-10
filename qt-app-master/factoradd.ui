@@ -61,7 +61,7 @@
      <x>20</x>
      <y>40</y>
      <width>891</width>
-     <height>411</height>
+     <height>461</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_56" stretch="4,5">
@@ -917,6 +917,42 @@ QRadioButton::indicator:checked {
          </layout>
         </widget>
        </widget>
+      </widget>
+      <widget class="QWidget" name="layoutWidget_10">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>390</y>
+         <width>265</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_50" stretch="3,7">
+        <item>
+         <widget class="QLabel" name="label_alarmUpper_2">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>modbus序号</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="modbus_add">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

@@ -112,6 +112,76 @@ void DevEdit::DevEdit_Init(QString dev_id)
             it++;
         }
     }
+    else
+    {
+        QString str = "/home/rpdzkj/tmpFiles/"+dev_id+".json";
+        QFile file(str);
+        if(file.exists())
+        {
+            if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                QByteArray byt;
+                byt.append(file.readAll());
+                file.flush();
+                QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+                byt.clear();
+                QJsonObject jObj = jDoc.object();
+                QJsonObject jDevice = jObj.value("device").toObject();
+                QJsonObject::iterator it = jDevice.begin();
+                QJsonObject::iterator end = jDevice.end();
+                while(it != end)
+                {
+                    if(it.key() == dev_id)
+                    {
+                        QJsonObject pJsondev = it.value().toObject();
+                        if(pJsondev.value("ip_addr").toString() == "")
+                        {
+                            ui->radioButton_Com->setChecked(true);
+                            ui->tabWidget->setCurrentIndex(0);
+                        }else
+                        {
+                            ui->radioButton_Net->setChecked(true);
+                            ui->tabWidget->setCurrentIndex(1);
+                        }
+
+                        ui->lineEdit_id->setText(pJsondev.value("id").toString());
+                        ui->lineEdit_ipAddr->setText(pJsondev.value("ip_addr").toString());
+                        ui->lineEdit_devAddr->setText(QString::number(pJsondev.value("address").toInt()));
+
+                        QString pTex = pJsondev.value("com").toString();
+                        Util pUtil;
+                        QString pComTex = pUtil.Uart_Revert(pTex);
+                        if(pComTex == "") ui->comboBox_6->setCurrentText(pTex);
+                        else ui->comboBox_6->setCurrentText(pComTex);
+
+                        ui->textEdit_devParams->clear();
+                        ui->textEdit_devParams->setText(pJsondev.value("dev_params").toString());
+
+                        QString pDevType = pJsondev.value("dev_type").toString();
+                        if(pDevType == namemap["analog"]) g_IsAnalogDevOperated = true;
+
+                        ui->comboBox_devProto->setCurrentText(namemap[pDevType]);
+                        loadParamtable(pJsondev.value("dev_params").toString());
+                        ui->lineEdit_Name->setText(pJsondev.value("dev_name").toString());
+
+                        ui->comboBox_devBaud->setCurrentText(QString::number(pJsondev.value("baudrate").toInt()));
+                        ui->comboBox_devDatabit->setCurrentText(QString::number(pJsondev.value("data_bit").toInt()));
+                        ui->comboBox_devParity->setCurrentText(pJsondev.value("parity").toString());
+                        ui->comboBox_devStopBit->setCurrentText(pJsondev.value("stop_bit").toString());
+
+                        break;
+                    }
+
+                    it++;
+                }
+
+            }
+
+
+
+        }
+
+    }
 }
 
 void DevEdit::loadParamtable(QString dev_params)
@@ -315,6 +385,8 @@ void DevEdit::on_pushButton_UpdateDev_clicked()
     obj.insert(QLatin1String("stop_bit"), ui->comboBox_devStopBit->currentText());
 
     // qDebug() << "obj==>>" << obj;
+    QString path = "/home/rpdzkj/tmpFiles/"+ui->lineEdit_id->text()+".json";
+    writeinfile(path,obj);
 
     httpclinet pClient;
     if(pClient.put(DCM_DEVICE,obj))
@@ -326,6 +398,52 @@ void DevEdit::on_pushButton_UpdateDev_clicked()
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>更新设备配置信息失败！</font>");
     }
+}
+
+void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
+{
+    qDebug() << "0:jObjx==>>" << obj;
+    qDebug() << "path==>>" << filepath;
+
+
+    QFile fileR(filepath),fileW(filepath);
+    if(fileR.exists())
+    {
+        if(fileR.open(QIODevice::ReadOnly|QIODevice::Text))
+        {
+            QByteArray byt;
+            byt.append(fileR.readAll());
+            fileR.flush();
+            fileR.close();
+            QJsonDocument jDocx = QJsonDocument::fromJson(byt);
+            QJsonObject jObjx = jDocx.object();
+            qDebug() << "1:jObjx==>>"<<jObjx<<endl;
+            if(jObjx.contains("device"))
+            {
+                qDebug() << "device==>>" << jObjx.value("device").toObject()<<endl;
+                jObjx.remove("device");
+            }
+            jObjx.insert("device",obj);
+            qDebug() << "2:jObjx==>>"<<jObjx<<endl;
+            QJsonDocument jNewDoc;
+            jNewDoc.setObject(jObjx);
+            fileW.open(QIODevice::WriteOnly|QIODevice::Text);
+            fileW.write(jNewDoc.toJson());
+            fileW.close();
+
+
+        }
+    }
+    else
+    {
+        QJsonDocument jNewDoc;
+        QJsonObject jNewObj;
+        jNewObj.insert("device",obj);
+        fileW.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+        fileW.write(jNewDoc.toJson());
+        fileW.close();
+    }
+
 }
 
 void DevEdit::on_pushButton_Cancel_clicked()

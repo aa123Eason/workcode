@@ -119,9 +119,12 @@ void DevAdd::on_pushButton_clicked()
     // qDebug() << "obj==>>" << obj;
 
     httpclinet pClient;
-    if(pClient.put(DCM_DEVICE,obj))
+    QJsonObject jRes;
+    if(pClient.put(DCM_DEVICE,obj,jRes))
     {
+        qDebug()<<"Res==>"<<jRes<<endl;
         //OpenDev_Setting();
+        buildLocalJson(obj);
         QMessageBox::about(NULL, "提示", "<font color='black'>新增设备配置信息成功！</font>");
     }
     else
@@ -139,6 +142,71 @@ void DevAdd::on_pushButton_2_clicked()
 void DevAdd::connectevent()
 {
     connect(ui->comboBox_2,&QComboBox::currentTextChanged,this,&DevAdd::onCurrentDevTypeChanged);
+}
+
+void DevAdd::buildLocalJson(QJsonObject &obj)
+{
+
+    httpclinet h;
+    QJsonObject jObj,jDevice;
+    if(h.get(DCM_DEVICE,jObj))
+    {
+        qDebug() << "inputobj==>>" << obj<<endl;
+        qDebug() << "outputobj==>>" << jObj<<endl;
+        QString currentid;
+        if(compare2devices(obj,jObj,currentid))
+        {
+             jDevice.insert("device",jObj.value(currentid).toObject());
+             QString filestr = "/home/rpdzkj/tmpFiles/"+currentid+".json";
+             qDebug()<<__LINE__<<filestr<<endl;
+//             QDir dir;
+//             if(!dir.exists(filestr))
+//             {
+//                 qDebug()<<__LINE__<<filestr<<" is not exist!"<<endl;
+//                 dir.mkdir(filestr);
+
+//             }
+
+             QFile file(filestr);
+             QJsonDocument jDoc;
+             jDoc.setObject(jDevice);
+             file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+             file.write(jDoc.toJson());
+             file.close();
+
+        }
+    }
+}
+
+bool DevAdd::compare2devices(QJsonObject &nowobj,QJsonObject &refobj,QString &idcode)
+{
+    QJsonObject::iterator it = refobj.begin();
+    while(it!=refobj.end())
+    {
+        QJsonObject subObj = it.value().toObject();
+        qDebug()<<__LINE__<<subObj<<endl;
+        bool isSame = true;
+        isSame = isSame && (nowobj.value("address").toString()==subObj.value("address").toString());
+        isSame = isSame && (nowobj.value("baudrate").toInt()==subObj.value("baudrate").toInt());
+        isSame = isSame && (nowobj.value("com").toString()==subObj.value("com").toString());
+        isSame = isSame && (nowobj.value("data_bit").toInt()==subObj.value("data_bit").toInt());
+        isSame = isSame && (nowobj.value("parity").toString()==subObj.value("parity").toString());
+        isSame = isSame && (nowobj.value("stop_bit").toString()==subObj.value("stop_bit").toString());
+        isSame = isSame && (nowobj.value("dev_name").toString()==subObj.value("dev_name").toString());
+        isSame = isSame && (nowobj.value("dev_type").toString()==subObj.value("dev_type").toString());
+        isSame = isSame && (nowobj.value("ip_addr").toString()==subObj.value("ip_addr").toString());
+        isSame = isSame && (nowobj.value("dev_params").toString()==subObj.value("dev_params").toString());
+        if(isSame)
+        {
+            idcode = subObj.value("id").toString();
+            qDebug()<<__LINE__<<"curID:"<<idcode<<endl;
+            return true;
+        }
+
+        it++;
+    }
+
+    return false;
 }
 
 void DevAdd::onCurrentDevTypeChanged(const QString &text)
@@ -254,7 +322,7 @@ void DevAdd::onCurrentDevTypeChanged(const QString &text)
     }
 
     //show on textbroswer
-
+    ui->textEdit_devParams->clear();
     if(namemap.key(text) == "lc-modbus")
     {
         QString nameStart = "start";
@@ -279,5 +347,6 @@ void DevAdd::onCurrentDevTypeChanged(const QString &text)
         ui->textEdit_devParams->setText(str);
         ui->textEdit_devParams->setFont(font);
     }
+
 
 }

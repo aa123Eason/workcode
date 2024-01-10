@@ -5,6 +5,13 @@
 #include <QButtonGroup>
 #include "common.h"
 #include "httpclinet.h"
+#include <QFile>
+#include <QDir>
+#include <QStringList>
+#include <QFileInfo>
+#include <QString>
+#include <QDebug>
+#include <QFileInfoList>
 
 namespace Ui {
 class FactorAdd;
@@ -17,10 +24,11 @@ class FactorAdd : public QDialog
     Q_OBJECT
 
 public:
-    explicit FactorAdd(QString pDevID,QWidget *parent = nullptr);
+    explicit FactorAdd(QString pDevID,QString devtype,QWidget *parent = nullptr);
     ~FactorAdd();
-    bool Conf_FactorUpdate(QString pKey);
-
+    bool Conf_FactorUpdate(QString pKey,QJsonObject &jFac);
+    bool findSameALias(QString alias);
+    void writeinLocalJson(QString filename,QJsonObject &obj,QString pKey);
 signals:
     void addSuccess();
 
@@ -34,6 +42,7 @@ private slots:
 private:
     Ui::FactorAdd *ui;
     QString m_DevId;
+    QString m_DevType;
 
     QButtonGroup *GroupF1 = nullptr;
 };

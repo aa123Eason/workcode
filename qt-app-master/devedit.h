@@ -30,6 +30,7 @@ public:
     void DevEdit_Init(QString dev_id);
     void loadParamtable(QString dev_params);
     QString builddevparams();
+    void writeinfile(QString filepath,QJsonObject &obj);
 
 private slots:
     void typeRadioBtnClicked();

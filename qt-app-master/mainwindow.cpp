@@ -8,6 +8,7 @@ QJsonArray g_Dcm_SystemCode;
 QJsonObject g_Dcm_SupportDevice;
 QJsonObject g_ConfObjDevParam;
 QString g_Device_ID;
+QString g_Device_Type;
 bool g_IsAnalogDevOperated = false;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -955,6 +956,13 @@ void MainWindow::onButtonDevDele(QString id)
     httpclinet pClient;
     if(pClient.deleteSource(DCM_DEVICE_DELETE,id))
     {
+
+        QString filedir = "/home/rpdzkj/tmpFiles/"+id+".json";
+        QFile file(filedir);
+        if(file.exists())
+        {
+            file.remove();
+        }
         QMessageBox::about(NULL, "提示", "<font color='black'>删除设备配置成功！</font>");
     }else
     {
@@ -976,8 +984,18 @@ void MainWindow::onButtonDevMore(QString id)
 void MainWindow::onButtonDevFactor(QString id)
 {
     // qDebug() << "dev id =factor==>>  " << id;
+
     ui->stackedWidget->setCurrentIndex(11);
     g_Device_ID = id;
+
+    QJsonObject jDevice;
+    httpclinet h;
+    if(h.get(DCM_DEVICE,jDevice))
+    {
+        QJsonObject jId = jDevice.value(g_Device_ID).toObject();
+        g_Device_Type = jId.value("dev_type").toString();
+    }
+
     FactorGui_Init(id);
 }
 
@@ -2848,7 +2866,7 @@ void MainWindow::refresh_AnalogDevParam()
 
 void MainWindow::on_pushButton_Addf_clicked()
 {
-    FactorAdd *pFactorAdd = new FactorAdd(g_Device_ID);
+    FactorAdd *pFactorAdd = new FactorAdd(g_Device_ID,g_Device_Type);
     pFactorAdd->show();
     connect(pFactorAdd, SIGNAL(addSuccess()),this, SLOT(refresh_AnalogDevParam()));
     return;

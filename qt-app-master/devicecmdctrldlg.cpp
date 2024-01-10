@@ -205,6 +205,15 @@ void DeviceCMDCtrlDlg::connectevent()
 
     #ifdef Q_OS_LINUX
     connect(this,&DeviceCMDCtrlDlg::sendCMD,this,&DeviceCMDCtrlDlg::onReceiveCMD);
+    connect(this,&DeviceCMDCtrlDlg::sendCMD,this,[=](QString text)
+    {
+        //str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr+"\r\n";
+        QString str = ui->receiveEdit->toPlainText();
+        str += QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ui->curPort->currentText()+"[S]:"+text+"\r\n";
+        qDebug()<<__LINE__<<str<<endl;
+        ui->receiveEdit->setPlainText(str);
+    });
+
     #endif
     connect(ui->sendEdit,&QLineEdit::textChanged,[=](const QString &text)
     {
@@ -278,22 +287,31 @@ void DeviceCMDCtrlDlg::connectevent()
 
     connect(ui->btn_sendbytime,&QPushButton::clicked,this,[=]()
     {
-
+        emit sendIsSendBytime(isSendBytime);
         if(isSendBytime)
         {
-            QMessageBox::about(this,"提示","停止定时发送");
+
+            ui->btn_sendbytime->setStyleSheet("QPushButton\n{\n	\n	background-color: rgb(30, 120, 0);\n	border-radius:5px;\ncolor: rgb(255, 255, 255);\n	font: 75 18pt '微软雅黑';\n}\n\nQPushButton::hover\n{\n	\n	background-color: rgb(129, 194, 0);\n}\n");
+            if(QMessageBox::Ok == QMessageBox::information(this,"提示","停止定时发送"))
+            {
+                ui->btn_sendbytime->setText("停止定时发送");
+            }
             isSendBytime = false;
         }
         else
         {
 
-            QMessageBox::about(this,"提示","启动定时发送");
+            ui->btn_sendbytime->setStyleSheet("QPushButton\n{\n	\n	background-color: rgb(120, 30, 0);\n	border-radius:5px;\ncolor: rgb(255, 255, 255);\n	font: 75 18pt '微软雅黑';\n}\n\nQPushButton::hover\n{\n	\n	background-color: rgb(194, 129, 0);\n}\n");
+            if(QMessageBox::Ok == QMessageBox::information(this,"提示","启动定时发送"))
+            {
+                 ui->btn_sendbytime->setText("启动定时发送");
+            }
             isSendBytime = true;
         }
 
 
 
-        emit sendIsSendBytime(isSendBytime);
+
 
 
 
@@ -304,23 +322,37 @@ void DeviceCMDCtrlDlg::connectevent()
 
     connect(this,&DeviceCMDCtrlDlg::sendIsSendBytime,this,[=](bool state)
     {
-        timer.start(1000);
+        QString str = ui->receiveEdit->toPlainText();
+
+        if(state)
+        {
+            str += "-------停止定时发送-------";
+            timer.stop();
+
+        }
+        else
+        {
+            str += "-------启动定时发送-------";
+            timer.start(1000);
+        }
+
+        ui->receiveEdit->setPlainText(str);
+
     });
 
     connect(&timer,&QTimer::timeout,this,[=]()
     {
-
+        int hour = curDT.time().hour();
+        qDebug()<<__LINE__<<hour<<endl;
         if(curDT.time().msec()==0&&curDT.time().second()==0&&curDT.time().minute()==0)
         {
-            int hour = curDT.time().hour();
+
             if(isSendBytime)
             {
                 if(ontimecks.contains(QString::number(hour)))
                 {
 
-                    QString str = "SEMD:"+ui->sendEdit->text();
-                    qDebug()<<__LINE__<<str<<endl;
-                    ui->receiveEdit->setPlainText(str);
+
                     emit sendCMD(ui->sendEdit->text());
                 }
             }
@@ -367,14 +399,14 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
         QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper()).toHex(' ');
 
         muartThread->writeUart(QString2Hex(cmd));
-        str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr+"\r\n";
+//        str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr+"\r\n";
 
     }
 
     QByteArray resByt = muartThread->readUart();
     qDebug()<<__LINE__<<"RECEIVE1:"<<resByt<<endl;
 
-
+    str = ui->receiveEdit->toPlainText();
     str += QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[R]:"+resByt+"\r\n";
 
 

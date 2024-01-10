@@ -6,6 +6,7 @@
 #include "httpclinet.h"
 #include "QButtonGroup"
 #include "util.h"
+#include <QDir>
 
 namespace Ui {
 class DevAdd;
@@ -21,6 +22,8 @@ public:
     explicit DevAdd(QWidget *parent = nullptr);
     ~DevAdd();
     void connectevent();
+    void buildLocalJson(QJsonObject &obj);
+    bool compare2devices(QJsonObject &nowobj,QJsonObject &refobj,QString &idcode);
 
 private slots:
     void typeRadioBtnClicked();

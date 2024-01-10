@@ -18,6 +18,7 @@
 #include <QHBoxLayout>
 #include <QColumnView>
 #include <QTimer>
+#include <QMessageBox>
 
 #ifdef Q_OS_LINUX
 #include "util.h"
