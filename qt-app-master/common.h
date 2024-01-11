@@ -41,7 +41,7 @@
 #define CONF_TE_VALUE "value"
 
 #define FACTORS "factors"
-#define CONF_FACTOR_ALIAS "factoralias"
+#define CONF_FACTOR_ALIAS "factor_alias"
 #define CONF_IS_DEVICE_PROPERTY "isdeviceprop"
 #define CONF_IS_ANALOG_PARAM "isanalogparam"
 #define CONF_ANALOG_PARAM_AU1 "analogupper1"

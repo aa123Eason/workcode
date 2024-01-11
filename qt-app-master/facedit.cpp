@@ -10,7 +10,8 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
     qDebug() << "id=--***********-->>" <<id;
 
-    m_FcodeID = id;
+    m_FcodeID = id.split("-")[0];
+    m_Fcode = id.split("-")[1];
     FacEdit_Init(id);
 
 //    connect(ui->pushButton_Saved,&QPushButton::clicked,this,&FacEdit::on_pushButton_Saved_clicked);
@@ -50,6 +51,7 @@ void FacEdit::FacEdit_Init(QString id)
 
     QJsonObject jsonObjectFa;
     httpclinet pClient;
+    QString pItem;
 
     if(pClient.get(DCM_DEVICE_FACTOR,jsonObjectFa))
     {
@@ -120,9 +122,9 @@ void FacEdit::FacEdit_Init(QString id)
                 ui->lineEdit_alarmLower->setText(QString::number(pJsonFac.value("alarm_lower").toDouble()));
                 ui->lineEdit_coeff->setText(QString::number(pJsonFac.value("coefficient").toInt()));
 
-                // read from CONF
 
-                QString pItem = g_Device_ID+"-"+pFcode;
+//                m_Fcode = pFcode;
+                pItem = g_Device_ID+"-"+pFcode;
 
                 qDebug() << "pItem===>>" << pItem;
 //                ConfFactor_Filled(pItem);
@@ -134,7 +136,9 @@ void FacEdit::FacEdit_Init(QString id)
         }
     }
 
+
     loadinfo("/home/rpdzkj/tmpFiles/"+g_Device_ID+".json");
+
 
 }
 
@@ -226,7 +230,7 @@ void FacEdit::on_pushButton_cancel_clicked()
 void FacEdit::on_pushButton_Saved_clicked()
 {
     QString filestr = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
-    loadinfo(filestr);
+
 
     if(ui->comboBox_fcode->currentText() == "")
     {
@@ -299,7 +303,7 @@ void FacEdit::on_pushButton_Saved_clicked()
     obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AD1), ui->lineEdit_AD1->text().toDouble());
     obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AU2), ui->lineEdit_AU2->text().toDouble());
     obj1.insert(QLatin1String(CONF_ANALOG_PARAM_AD2), ui->lineEdit_AD2->text().toDouble());
-    obj1.insert(QLatin1String(CONF_FACTOR_ALIAS), ui->comboBox_falias->currentText().toInt());
+    obj1.insert(QLatin1String(CONF_FACTOR_ALIAS), ui->comboBox_falias->currentText());
 
     if(ui->radioButton_YQCS->isChecked()) obj1.insert(CONF_IS_DEVICE_PROPERTY,true);
     else obj1.insert(CONF_IS_DEVICE_PROPERTY,false);
@@ -307,40 +311,15 @@ void FacEdit::on_pushButton_Saved_clicked()
     if(ui->radioButton_MNL->isChecked()) obj1.insert(CONF_IS_ANALOG_PARAM,true);
     else obj1.insert(CONF_IS_ANALOG_PARAM,false);
 
-
-
     qDebug() << "obj1===>>" << obj1;
-    if(jMainObj.contains(pKey))
-        jMainObj.remove(pKey);
-
-    jMainObj.insert(pKey,obj1);
-    qDebug() << "jMainObj===>>" << jMainObj;
 
 
-
-
-    QFile file(filestr);
-    qDebug() <<"file:"<<filestr<<endl;
-//    if(file.exists())
-//    {
-//        file.remove();
-
-//    }
-    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
-    QJsonDocument jDoc;
-    jDoc.setObject(jMainObj);
-    QByteArray bytArr;
-    bytArr.append(jDoc.toJson());
-
-    file.flush();
-    file.write(bytArr);
-
-    file.close();
-    bytArr.clear();
-
-    updatedevparams();
 
     QMessageBox::about(NULL, "提示", "<font color='black'>修改因子配置成功！</font>");
+
+    QString path = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
+    writeinLocalJson(path,obj1,pKey);
+
     emit editSuccess();
 
 //    QJsonObject obj0;
@@ -364,134 +343,162 @@ void FacEdit::on_pushButton_Saved_clicked()
     this->close();
 }
 
-void FacEdit::updatedevparams()
-{
-    QString filestr = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
-    qDebug() <<"file:"<<filestr<<endl;
 
-    QFile file(filestr);
-    QJsonObject obj;
-    if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+
+void FacEdit::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
+{
+    qDebug()<<"filename==>"<<filename<<endl;
+    qDebug()<<"refobj==>"<<obj<<endl;
+    qDebug()<<"pKey==>"<<pKey<<endl;
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
-        QByteArray bytArr;
-        bytArr.append(file.readAll());
-        QJsonDocument jDoc = QJsonDocument::fromJson(bytArr);
-        obj = jDoc.object();
-        file.close();
+        return;
+    }
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+    if(!jObj.contains("factors"))
+    {
+        jObj.insert("factors",obj);
     }
     else
     {
-        obj = jMainObj;
-    }
+        QJsonObject jFacs = jObj.value("factors").toObject();
 
-    QJsonObject::iterator it = obj.begin();
-    QString dev_params;
-    while(it != obj.end())
-    {
-        QString key = it.key();
-        qDebug()<<__LINE__<<key<<":"<<obj.keys().indexOf(key)<<endl;
-        int index = obj.keys().indexOf(key);
-        QJsonObject valueobj = it.value().toObject();
-        int alias = valueobj.value("factoralias").toString().toInt();
-        if(valueobj.contains("isanalogparam"))
-        {
-            bool isanalog = valueobj.value("isanalogparam").toBool();
-            int decimals = valueobj.value("decimals").toInt();
-            if(isanalog)
-            {
-                double au1 = valueobj.value("analogupper1").toDouble();
-                double ad1 = valueobj.value("analoglower1").toDouble();
-                double au2 = valueobj.value("analogupper2").toDouble();
-                double ad2 = valueobj.value("analoglower2").toDouble();
-
-                dev_params += "analog_max_"+QString::number(index+1)+"="+QString::number(au1,'f',decimals)+",";
-                dev_params += "analog_min_"+QString::number(index+1)+"="+QString::number(ad1,'f',decimals)+",";
-                dev_params += "upper_limit_"+QString::number(index+1)+"="+QString::number(au2,'f',decimals)+",";
-                dev_params += "lower_limit_"+QString::number(index+1)+"="+QString::number(ad2,'f',decimals);
-                if(index != obj.count()-1)
-                {
-                    dev_params += ",";
-                }
-
-            }
-        }
-
-
-
-
-        it++;
-    }
-    qDebug()<<__LINE__<<"dev_params==>"<<dev_params<<endl;
-
-    httpclinet pDeviceClient,pDeviceClient1;
-    QJsonObject jDevice,jDevice1;
-    if(pDeviceClient.get(DCM_DEVICE,jDevice))
-    {
-        qDebug()<<__LINE__<<"jDevice==>"<<jDevice<<endl;
-        qDebug()<<__LINE__<<"jFac==>"<<obj<<endl;
-        while(it != obj.end())
-        {
-
-            QString key = it.key();
-            if(key.split("-").count()==2)
-            {
-                QString deviceid = key.split("-")[0];
-                QJsonObject jItem = jDevice.value(deviceid).toObject();
-                qDebug()<<__LINE__<<"jItem==>"<<jItem<<endl;
-                if(jItem.value("dev_type").toString()=="analog")
-                {
-                    jItem.remove("dev_params");
-                    jItem.insert("dev_params",dev_params);
-                    QJsonObject jRes;
-                    if(pDeviceClient1.put(DCM_DEVICE,jItem,jRes))
-                    {
-                        qDebug()<<__LINE__<<"YES"<<jItem<<endl;
-                    }
-                    else
-                    {
-                        qDebug()<<__LINE__<<"NO"<<endl;
-                    }
-                }
-
-
-            }
-            it++;
-        }
-
-
-
-//        QJsonObject::iterator itp = jDevice.begin();
-
-//        while(itp != jDevice.end())
+//        if(jFacs.isEmpty())
 //        {
-//            QJsonObject ite = jDevice.value(itp.key()).toObject();
-//            QJsonObject jRes;
-//            if(pDeviceClient1.put(DCM_DEVICE,ite,jRes))
+//            httpclinet h;
+//            QJsonObject tmpObj;
+//            if(h.get(DCM_DEVICE_FACTOR,tmpObj))
 //            {
-//                qDebug()<<__LINE__<<"YES"<<ite<<endl;
+//                QJsonObject::iterator itrefFac = tmpObj.begin();
+//                while(itrefFac != tmpObj.end())
+//                {
+//                    if(itrefFac.key().contains(g_Device_ID))
+//                    {
+//                        jFacs.insert(itrefFac.key(),itrefFac.value());
+//                    }
+//                    itrefFac++;
+//                }
 //            }
-//            else
-//            {
-//                qDebug()<<__LINE__<<"NO"<<endl;
-//            }
-
-//            itp++;
 //        }
 
-//        "address": 0,
-//          "baudrate": 0,
-//          "com": "string",
-//          "data_bit": 0,
-//          "dev_name": "string",
-//          "dev_params": "string",
-//          "dev_type": "string",
-//          "id": "string",
-//          "ip_addr": "string",
-//          "parity": "string",
-//          "stop_bit": "string"
+        qDebug()<<__LINE__<<"add json==>"<<jFacs<<endl;
 
+
+        if(jFacs.contains(pKey))
+        {
+            jFacs.remove(pKey);
+        }
+        jFacs.insert(pKey,obj);
+        jObj.remove("factors");
+        jObj.insert("factors",jFacs);
     }
 
+    writeDevParams();
+
+
+
+    QJsonDocument jDoc1;
+    jDoc1.setObject(jObj);
+    QFile file1(filename);
+    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    //提示，因子数据已同步到本地JSON,文件路径
+    if(file1.write(jDoc1.toJson()))
+    {
+        QMessageBox::information(this,"提示","因子数据已同步到本地JSON,文件路径:\n"+filename);
+    }
+    else
+    {
+        QMessageBox::warning(this,"提示","因子数据未能同步到本地JSON,文件路径:\n"+filename);
+    }
+
+    file1.close();
+    byt.clear();
+    file.close();
+}
+
+void FacEdit::writeDevParams()
+{
+    QString devparams;
+    QString filename = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return ;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+    QJsonObject jDev = jObj.value("device").toObject();
+    QJsonObject jFacs = jObj.value("factors").toObject();
+
+    byt.clear();
+    file.close();
+
+    QJsonObject::iterator itFac = jFacs.begin();
+    int num=0;
+    int numFacs = jFacs.count();
+    while(itFac != jFacs.end())
+    {
+        QString alias = QString::number(num+1);
+        QString pKey = itFac.key();
+        QJsonObject jValue = itFac.value().toObject();
+        if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())
+        {
+            devparams += "analog_max_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2)+",";
+            devparams += "analog_min_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD1).toDouble(),'f',2)+",";
+            devparams += "upper_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU2).toDouble(),'f',2)+",";
+            devparams += "lower_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD2).toDouble(),'f',2);
+            if(num<numFacs-1)
+            {
+                devparams += ",";
+            }
+        }
+
+
+        num++;
+        itFac++;
+    }
+
+    if(jDev.value("dev_type").toString()=="analog")
+    {
+        if(jDev.contains("dev_params"))
+        {
+            jDev.remove("dev_params");
+        }
+        jDev.insert("dev_params",devparams);
+    }
+
+    if(jDev.value("dev_type").toString()=="analog")
+    {
+        if(jDev.contains("dev_params"))
+        {
+            jDev.remove("dev_params");
+        }
+        jDev.insert("dev_params",devparams);
+    }
+
+    jObj.remove("device");
+    jObj.insert("device",jDev);
+
+    QJsonDocument jDocW;
+    jDocW.setObject(jObj);
+
+
+    QFile file1(filename);
+    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file1.write(jDocW.toJson());
+    file1.flush();
+    file1.close();
 }
 
 bool FacEdit::Conf_FactorUpdate(QString pKey)
@@ -533,32 +540,59 @@ void FacEdit::loadinfo(QString path)
 
     QJsonDocument jDoc = QJsonDocument::fromJson(byt);
     QJsonObject jObj = jDoc.object();
+    byt.clear();
+    QJsonObject jDev = jObj.value("device").toObject();
+    QJsonObject jFacs = jObj.value("factors").toObject();
+    qDebug()<<__LINE__<<jFacs<<endl;
+
+
+//#pragma region getOnLinedata {
+//    if(jDev.isEmpty())
+//    {
+//        httpclinet h;
+//        QJsonObject tmpObj;
+//        if(h.get(DCM_DEVICE,tmpObj))
+//        {
+//            jDev = tmpObj.value(g_Device_ID).toObject();
+//        }
+//    }
+
+//    if(jFacs.isEmpty())
+//    {
+//        httpclinet h;
+//        QJsonObject tmpObj;
+//        if(h.get(DCM_DEVICE_FACTOR,tmpObj))
+//        {
+//            QJsonObject::iterator itrefFac = tmpObj.begin();
+//            while(itrefFac != tmpObj.end())
+//            {
+//                if(itrefFac.key().contains(g_Device_ID))
+//                {
+//                    jFacs.insert(itrefFac.key(),itrefFac.value());
+//                }
+//                itrefFac++;
+//            }
+//        }
+//    }
+
+//#pragma endregion getOnLinedata}
 
 
 
-    QString fullName;
-    if(ui->comboBox_fcode->currentText().split("-").count()==2)
-    {
-        fullName = g_Device_ID+"-"+ui->comboBox_fcode->currentText().split("-")[0];
-    }
-    else
-    {
-        fullName = g_Device_ID+"-"+ui->comboBox_fcode->currentText();
-    }
+    QString fullName = g_Device_ID + "-" + m_Fcode;
+
+
 
     qDebug()<<__LINE__<<fullName<<endl;
-    qDebug()<<__LINE__<<jObj.keys()<<endl;
+    qDebug()<<__LINE__<<jFacs.keys()<<endl;
 
 
-    if(jObj.contains(fullName))
+    if(jFacs.contains(fullName))
     {
-        QJsonObject jValueObj = jObj.value(fullName).toObject();
+        QJsonObject jValueObj = jFacs.value(fullName).toObject();
 
-        if(jMainObj.contains(fullName))
-        {
-            jMainObj.remove(fullName);
-        }
-        jMainObj.insert(fullName,jValueObj);
+        qDebug()<<__LINE__<<jValueObj<<endl;
+
 
         bool calc_type = jValueObj.value("calc_type").toInt() == 0;
         if(!calc_type)
@@ -638,24 +672,28 @@ void FacEdit::loadinfo(QString path)
         }
 
 
-        if(jValueObj.contains(CONF_ANALOG_PARAM_AU1))
+        if(jValueObj.value(CONF_IS_ANALOG_PARAM).toBool())
         {
-            ui->lineEdit_AU1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2));
-        }
+            if(jValueObj.contains(CONF_ANALOG_PARAM_AU1))
+            {
+                qDebug()<<__LINE__<<QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2)<<endl;
+                ui->lineEdit_AU1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2));
+            }
 
-        if(jValueObj.contains(CONF_ANALOG_PARAM_AD1))
-        {
-            ui->lineEdit_AD1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD1).toDouble(),'f',2));
-        }
+            if(jValueObj.contains(CONF_ANALOG_PARAM_AD1))
+            {
+                ui->lineEdit_AD1->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD1).toDouble(),'f',2));
+            }
 
-        if(jValueObj.contains(CONF_ANALOG_PARAM_AU2))
-        {
-            ui->lineEdit_AU2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU2).toDouble(),'f',0));
-        }
+            if(jValueObj.contains(CONF_ANALOG_PARAM_AU2))
+            {
+                ui->lineEdit_AU2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AU2).toDouble(),'f',0));
+            }
 
-        if(jValueObj.contains(CONF_ANALOG_PARAM_AD2))
-        {
-            ui->lineEdit_AD2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD2).toDouble(),'f',0));
+            if(jValueObj.contains(CONF_ANALOG_PARAM_AD2))
+            {
+                ui->lineEdit_AD2->setText(QString::number(jValueObj.value(CONF_ANALOG_PARAM_AD2).toDouble(),'f',0));
+            }
         }
     }
 

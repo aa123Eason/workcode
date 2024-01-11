@@ -529,6 +529,9 @@ QComboBox QAbstractItemView::item {
  
 </string>
                </property>
+               <property name="currentIndex">
+                <number>3</number>
+               </property>
                <item>
                 <property name="text">
                  <string>1200</string>
@@ -771,6 +774,9 @@ QComboBox QAbstractItemView::item {
 }
  
 </string>
+               </property>
+               <property name="currentIndex">
+                <number>1</number>
                </property>
                <item>
                 <property name="text">

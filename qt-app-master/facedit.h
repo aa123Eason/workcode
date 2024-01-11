@@ -26,7 +26,9 @@ public:
     void loadinfo(QString path);
     bool ConfFactor_Filled(QString id);
     bool Conf_FactorUpdate(QString pKey);
-    void updatedevparams();
+
+    void writeinLocalJson(QString filename,QJsonObject &obj,QString pKey);
+    void writeDevParams();
 signals:
     void editSuccess();
 
@@ -38,6 +40,7 @@ private:
     Ui::FacEdit *ui;
 
     QString m_FcodeID;
+    QString m_Fcode;
 
 };
 

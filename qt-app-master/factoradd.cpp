@@ -277,6 +277,10 @@ void FactorAdd::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
             jObj.insert("factors",jFacs);
         }
 
+        writeDevParams();
+
+
+
         QJsonDocument jDoc1;
         jDoc1.setObject(jObj);
         QFile file1(filename);
@@ -294,6 +298,88 @@ void FactorAdd::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
         file1.close();
         byt.clear();
         file.close();
+
+}
+
+void FactorAdd::writeDevParams()
+{
+    QString devparams;
+    QString filename = "/home/rpdzkj/tmpFiles/"+m_DevId+".json";
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return ;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+    QJsonObject jDev = jObj.value("device").toObject();
+    QJsonObject jFacs = jObj.value("factors").toObject();
+
+    byt.clear();
+    file.close();
+
+    QJsonObject::iterator itFac = jFacs.begin();
+    int num=0;
+    int numFacs = jFacs.count();
+    while(itFac != jFacs.end())
+    {
+        QString alias = QString::number(num+1);
+        QString pKey = itFac.key();
+        QJsonObject jValue = itFac.value().toObject();
+        if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())
+        {
+            devparams += "analog_max_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2)+",";
+            devparams += "analog_min_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD1).toDouble(),'f',2)+",";
+            devparams += "upper_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU2).toDouble(),'f',2)+",";
+            devparams += "lower_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD2).toDouble(),'f',2);
+            if(num<numFacs-1)
+            {
+                devparams += ",";
+            }
+        }
+
+
+        num++;
+        itFac++;
+    }
+
+    if(jDev.value("dev_type").toString()=="analog")
+    {
+        if(jDev.contains("dev_params"))
+        {
+            jDev.remove("dev_params");
+        }
+        jDev.insert("dev_params",devparams);
+    }
+
+    if(jDev.value("dev_type").toString()=="analog")
+    {
+        if(jDev.contains("dev_params"))
+        {
+            jDev.remove("dev_params");
+        }
+        jDev.insert("dev_params",devparams);
+    }
+
+    jObj.remove("device");
+    jObj.insert("device",jDev);
+
+    QJsonDocument jDocW;
+    jDocW.setObject(jObj);
+
+
+    QFile file1(filename);
+    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file1.write(jDocW.toJson());
+    file1.flush();
+    file1.close();
+
+
 
 }
 

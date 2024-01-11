@@ -54,6 +54,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    enum GET_TYPE
+    {
+        GET_DEVICE = 0,
+        GET_FACTORS,
+        GET_SPECIALS
+    };
+
     bool FactorGui_Init(QString pDev_ID);
     void setTableFaHeader();
     bool DevGui_Init();
@@ -86,6 +93,11 @@ public:
 
     bool eventFilter(QObject *obj, QEvent *event);	// 添加时间过滤器声明
     void installEvents();
+
+    void deletecurrid(QString deviceid,QString facname);
+    void writeDevParams();
+    QJsonObject loadlocalJson(int gettype,QString dev_id);
+
 
 private slots:
 
@@ -196,6 +208,7 @@ private:
     Util util;
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
+    QMap<QString,QString> facnamemap;
 
 };
 

@@ -29,6 +29,7 @@ public:
     bool Conf_FactorUpdate(QString pKey,QJsonObject &jFac);
     bool findSameALias(QString alias);
     void writeinLocalJson(QString filename,QJsonObject &obj,QString pKey);
+    void writeDevParams();
 signals:
     void addSuccess();
 

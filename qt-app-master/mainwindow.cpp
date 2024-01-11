@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     map = util.Uart_devicetype();
     namemap = util.Uart_devicetypeNameMatch();
+    facnamemap = util.Uart_facnameMatch();
 
     this->installEvents();
     connect(ui->buttonVer,SIGNAL(clicked()),this,SLOT(OpenSysInfo()));
@@ -854,8 +855,9 @@ void MainWindow::onButtonFaEdit(QString id)
     // qDebug() << "id ==>>" << id;
 
     FacEdit *pFacEdit = new FacEdit(id,this);
-    pFacEdit->show();
+
     connect(pFacEdit, SIGNAL(editSuccess()),this, SLOT(refresh_AnalogDevParam()));
+    pFacEdit->show();
 }
 
 void MainWindow::onButtonFaDele(QString id)
@@ -878,6 +880,8 @@ void MainWindow::onButtonFaDele(QString id)
             if(pJsonFa.value("id").toString() == id)
             {
                 pItem = it.key();
+                QString deviceid = pJsonFa.value("device_id").toString();
+                deletecurrid(deviceid,pItem);
                 break;
             }
             it++;
@@ -896,6 +900,156 @@ void MainWindow::onButtonFaDele(QString id)
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>删除因子配置失败！</font>");
     }
+
+
+
+}
+
+void MainWindow::deletecurrid(QString deviceid,QString facname)
+{
+    QString devFile = "/home/rpdzkj/tmpFiles/"+deviceid+".json";
+    QFile file(devFile);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+    byt.clear();
+    file.close();
+    QJsonObject jFacs = jObj.value("factors").toObject();
+    QJsonObject::iterator it = jFacs.begin();
+    while (it != jFacs.end())
+    {
+        QString fac_key = it.key();
+        QJsonObject jValue = it.value().toObject();
+//        QString fac_id = jValue.value("id").toString();
+        if(fac_key==facname)
+        {
+            if(jFacs.contains(it.key()))
+                jFacs.remove(it.key());
+            break;
+        }
+        it++;
+    }
+    jObj.remove("factors");
+    jObj.insert("factors",jFacs);
+    QFile file1(devFile);
+    QJsonDocument jDoc1;
+    jDoc1.setObject(jObj);
+    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file1.write(jDoc1.toJson());
+    file1.close();
+
+}
+
+void MainWindow::writeDevParams()
+{
+    QString devparams;
+    QString filename = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return ;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+    QJsonObject jDev = jObj.value("device").toObject();
+    QJsonObject jFacs = jObj.value("factors").toObject();
+
+    byt.clear();
+    file.close();
+
+    QJsonObject::iterator itFac = jFacs.begin();
+    int num=0;
+    int numFacs = jFacs.count();
+    qDebug()<<__LINE__<<jFacs<<endl;
+    while(itFac != jFacs.end())
+    {
+        QString alias = QString::number(num+1);
+        QString pKey = itFac.key();
+        QJsonObject jValue = itFac.value().toObject();
+        qDebug()<<__LINE__<<jValue<<endl;
+        if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())
+        {
+            devparams += "analog_max_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2)+",";
+            devparams += "analog_min_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD1).toDouble(),'f',2)+",";
+            devparams += "upper_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU2).toDouble(),'f',2)+",";
+            devparams += "lower_limit_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AD2).toDouble(),'f',2);
+            if(num<numFacs-1)
+            {
+                devparams += ",";
+            }
+        }
+
+
+        num++;
+        itFac++;
+    }
+
+    if(jDev.isEmpty())
+    {
+        httpclinet h;
+        QJsonObject tmpObj;
+        if(h.get(DCM_DEVICE,tmpObj))
+        {
+            jDev = tmpObj.value(g_Device_ID).toObject();
+        }
+    }
+
+    if(jFacs.isEmpty())
+    {
+        httpclinet h;
+        QJsonObject tmpObj;
+        if(h.get(DCM_DEVICE_FACTOR,tmpObj))
+        {
+            QJsonObject::iterator itrefFac = tmpObj.begin();
+            while(itrefFac != tmpObj.end())
+            {
+                if(itrefFac.key().contains(g_Device_ID))
+                {
+                    jFacs.insert(itrefFac.key(),itrefFac.value());
+                }
+                itrefFac++;
+            }
+        }
+    }
+
+    qDebug()<<__LINE__<<jDev<<endl;
+    if(jDev.value("dev_type").toString()=="analog")
+    {
+        qDebug()<<__LINE__<<devparams<<endl;
+        if(jDev.contains("dev_params"))
+        {
+            jDev.remove("dev_params");
+        }
+        jDev.insert("dev_params",devparams);
+    }
+
+    jObj.remove("device");
+    jObj.insert("device",jDev);
+
+    jObj.remove("factors");
+    jObj.insert("factors",jFacs);
+
+    QJsonDocument jDocW;
+    jDocW.setObject(jObj);
+
+
+    QFile file1(filename);
+    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file1.write(jDocW.toJson());
+    file1.flush();
+    file1.close();
 }
 
 void MainWindow::onButtonTeSaved(QString pFactor)
@@ -2752,16 +2906,20 @@ void MainWindow::on_pushButton_AddDev_clicked()
 
 void MainWindow::refresh_AnalogDevParam()
 {
+    QJsonObject jDev,jFac;
+    QString pDevParam = "";
+
+    httpclinet pClient;
     if(g_IsAnalogDevOperated)
     {
         g_IsAnalogDevOperated = false;
 
         int index = 0;
         // lineEdit_ID
-        QString pDevParam = "";
+
 
         QJsonObject jsonObject;
-        httpclinet pClient;
+
 
         if(pClient.get(DCM_CONF,jsonObject))
         {
@@ -2793,7 +2951,7 @@ void MainWindow::refresh_AnalogDevParam()
                                 pAD2 = QString::number(QJsonObjectFator.value(CONF_ANALOG_PARAM_AD2).toVariant().toDouble());
 
                             if(QJsonObjectFator.contains(CONF_FACTOR_ALIAS))
-                                pAlias = QString::number(QJsonObjectFator.value(CONF_FACTOR_ALIAS).toVariant().toInt());
+                                pAlias = QJsonObjectFator.value(CONF_FACTOR_ALIAS).toString();
 
                             // qDebug() << "pAlias---->>>>>" <<pAlias;
 
@@ -2813,62 +2971,123 @@ void MainWindow::refresh_AnalogDevParam()
                 it++;
             }
         }
+        else
+        {
+            jDev = loadlocalJson(GET_DEVICE,g_Device_ID);
+            jFac = loadlocalJson(GET_DEVICE,g_Device_ID);
+            pDevParam = jDev.value("dev_params").toString();
+            qDebug()<<__LINE__<<pDevParam<<endl;
+        }
+
         if(pDevParam != "")
         {
-            // get & update
-            QJsonObject pJsonDevs;
-            httpclinet pClient;
-            if(pClient.get(DCM_DEVICE,pJsonDevs))
-            {
-                QJsonObject::const_iterator it1 = pJsonDevs.constBegin();
-                QJsonObject::const_iterator end1 = pJsonDevs.constEnd();
-                while(it1 != end1)
-                {
-                    if(it1.key() == g_Device_ID)
-                    {
-                        QJsonObject pJsonDev = it1.value().toObject();
+            QJsonObject jRes;
+            pClient.put(DCM_DEVICE,jDev,jRes);
+        }
 
-                        QJsonObject obj;
-                        obj.insert(QLatin1String("id"), pJsonDev.value("id").toString());
-                        obj.insert(QLatin1String("address"), pJsonDev.value("address").toInt());
-                        obj.insert(QLatin1String("baudrate"), pJsonDev.value("baudrate").toInt());
-                        obj.insert(QLatin1String("com"), pJsonDev.value("com").toString());
+        QJsonObject jFacCopy = jFac;
+        QJsonObject::iterator itfac = jFacCopy.begin();
+        while(itfac != jFacCopy.end())
+        {
+            QJsonObject subObj = itfac.value().toObject();
 
-                        obj.insert(QLatin1String("data_bit"), pJsonDev.value("data_bit").toInt());
-                        obj.insert(QLatin1String("dev_name"), pJsonDev.value("dev_name").toString());
-                        obj.insert(QLatin1String("dev_params"), pDevParam);
-                        obj.insert(QLatin1String("dev_type"), pJsonDev.value("dev_type").toString());
-
-                        obj.insert(QLatin1String("ip_addr"), pJsonDev.value("ip_addr").toString());
-                        obj.insert(QLatin1String("parity"), pJsonDev.value("parity").toString());
-                        obj.insert(QLatin1String("stop_bit"), pJsonDev.value("stop_bit").toString());
-
-                        // qDebug() << "dev param obj==>>" << obj;
-
-                        httpclinet pClient;
-                        if(pClient.put(DCM_DEVICE,obj))
-                        {
-                            QMessageBox::about(NULL, "提示", "<font color='black'>更新设备参数成功！</font>");
-                        }
-                        else
-                        {
-                            QMessageBox::about(NULL, "提示", "<font color='black'>更新设备参数失败！</font>");
-                        }
-
-                        break;
-                    }
-                    it1++;
-                }
-            }
+            subObj.remove(CONF_IS_ANALOG_PARAM);
+            subObj.remove(CONF_ANALOG_PARAM_AU1);
+            subObj.remove(CONF_ANALOG_PARAM_AD1);
+            subObj.remove(CONF_ANALOG_PARAM_AU2);
+            subObj.remove(CONF_ANALOG_PARAM_AD2);
+            subObj.remove(CONF_IS_DEVICE_PROPERTY);
+            qDebug()<<__LINE__<<subObj<<endl;
+            QJsonObject jRes;
+            pClient.put(DCM_DEVICE_FACTOR,subObj,jRes);
+            qDebug()<<__LINE__<<jRes<<endl;
+            itfac++;
         }
     }
+    else
+    {
+        jDev = loadlocalJson(GET_DEVICE,g_Device_ID);
+        jFac = loadlocalJson(GET_FACTORS,g_Device_ID);
+        pDevParam = jDev.value("dev_params").toString();
+        qDebug()<<__LINE__<<pDevParam<<endl;
+
+        if(pDevParam != "")
+        {
+            QJsonObject jRes;
+            pClient.put(DCM_DEVICE,jDev,jRes);
+        }
+
+        QJsonObject jFacCopy = jFac;
+        QJsonObject::iterator itfac = jFacCopy.begin();
+        qDebug()<<__LINE__<<jFacCopy<<endl;
+        while(itfac != jFacCopy.end())
+        {
+
+            QJsonObject subObj = itfac.value().toObject();
+
+            subObj.remove(CONF_IS_ANALOG_PARAM);
+            subObj.remove(CONF_ANALOG_PARAM_AU1);
+            subObj.remove(CONF_ANALOG_PARAM_AD1);
+            subObj.remove(CONF_ANALOG_PARAM_AU2);
+            subObj.remove(CONF_ANALOG_PARAM_AD2);
+            subObj.remove(CONF_IS_DEVICE_PROPERTY);
+            qDebug()<<__LINE__<<subObj<<endl;
+            QJsonObject jRes;
+
+            if(pClient.put(DCM_DEVICE_FACTOR,subObj,jRes))
+            {
+                    qDebug()<<__LINE__<<jRes<<endl;
+//                    QThread(3);
+            }
+            itfac++;
+        }
+
+    }
+}
+
+QJsonObject MainWindow::loadlocalJson(int gettype,QString dev_id)
+{
+    QJsonObject jRes;
+    QString path = "/home/rpdzkj/tmpFiles/"+dev_id+".json";
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return QJsonObject();
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+    file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    byt.clear();
+    QJsonObject jObj = jDoc.object();
+
+    switch(gettype)
+    {
+    case GET_DEVICE:
+        return jObj.value("device").toObject();
+        break;
+    case GET_FACTORS:
+        return jObj.value("factors").toObject();
+        break;
+    case GET_SPECIALS:
+        return jObj.value("specials").toObject();
+        break;
+    default:
+        return QJsonObject();
+        break;
+    }
+
 }
 
 void MainWindow::on_pushButton_Addf_clicked()
 {
     FactorAdd *pFactorAdd = new FactorAdd(g_Device_ID,g_Device_Type);
-    pFactorAdd->show();
+
     connect(pFactorAdd, SIGNAL(addSuccess()),this, SLOT(refresh_AnalogDevParam()));
+    pFactorAdd->show();
     return;
 }
 
@@ -2878,6 +3097,7 @@ void MainWindow::on_pushButton_Updatef_clicked()
 
     if(FactorGui_Init(g_Device_ID))
     {
+//        writeDevParams();
         QMessageBox::about(NULL, "提示", "<font color='black'>获取因子信息成功！</font>");
     }
 }
@@ -3059,7 +3279,8 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
 //                pItemID->setTextAlignment(Qt::AlignCenter);
 //                ui->tableWidget_Factor->setItem(row, 0, pItemID);
 
-                pItemCode = new QTableWidgetItem(pJsonFa.value("factor_code").toString());
+                QString  fullfacname = pJsonFa.value("factor_code").toString() + "-" + facnamemap[pJsonFa.value("factor_code").toString()];
+                pItemCode = new QTableWidgetItem(fullfacname);
                 pItemCode->setTextAlignment(Qt::AlignCenter);
                 ui->tableWidget_Factor->setItem(row, 0, pItemCode);
 
@@ -3082,7 +3303,7 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
                 pOperDele->setText("删除");
 
                 connect(pOperSaved,SIGNAL(clicked()),m_SignalMapper_FaEdit,SLOT(map()));
-                m_SignalMapper_FaEdit->setMapping(pOperSaved,pFactor_ID);
+                m_SignalMapper_FaEdit->setMapping(pOperSaved,pFactor_ID+"-"+fullfacname.split("-")[0]);
                 connect(pOperDele,SIGNAL(clicked()),m_SignalMapper_FaDele,SLOT(map()));
                 m_SignalMapper_FaDele->setMapping(pOperDele,pFactor_ID);
 
