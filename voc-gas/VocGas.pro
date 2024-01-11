@@ -58,3 +58,5 @@ DISTFILES += \
 
 include(src/xlsx/qtxlsx.pri)
 include(QsLog/QsLog.pri)
+
+

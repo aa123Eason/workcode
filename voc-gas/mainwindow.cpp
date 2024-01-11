@@ -530,7 +530,7 @@ void SerialWorker::writeinLog(QString str)
     QByteArray bytArr;
     bytArr.append(logStr);
 
-    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
     file.write(bytArr);
     file.close();
     bytArr.clear();

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>VOCGas</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../VocLogin/res.qrc">
+    <normaloff>:/images/icon.ico</normaloff>:/images/icon.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
@@ -462,7 +466,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/wd.png</pixmap>
+            <pixmap>:/images/wd.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -534,7 +538,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/yl.png</pixmap>
+            <pixmap>:/images/yl.png</pixmap>
            </property>
           </widget>
          </item>
@@ -603,7 +607,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/ls.png</pixmap>
+            <pixmap>:/images/ls.png</pixmap>
            </property>
           </widget>
          </item>
@@ -672,7 +676,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/bk.png</pixmap>
+            <pixmap>:/images/bk.png</pixmap>
            </property>
           </widget>
          </item>
@@ -759,7 +763,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/sd.png</pixmap>
+            <pixmap>:/images/sd.png</pixmap>
            </property>
           </widget>
          </item>
@@ -828,7 +832,7 @@ background-color: rgb(0, 170, 255);</string>
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="res.qrc">:/images/o2.png</pixmap>
+            <pixmap>:/images/o2.png</pixmap>
            </property>
           </widget>
          </item>
@@ -911,35 +915,20 @@ background-color: rgb(0, 170, 255);</string>
     <property name="title">
      <string/>
     </property>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>780</x>
-       <y>10</y>
-       <width>231</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>13</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btn_swichseq">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>30</x>
        <y>20</y>
-       <width>101</width>
-       <height>31</height>
+       <width>180</width>
+       <height>41</height>
       </rect>
      </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QPushButton" name="btn_swichseq">
+        <property name="styleSheet">
+         <string notr="true">QPushButton
 {
 	background-color:transparent;
 	color:transparent;
@@ -951,25 +940,19 @@ QPushButton::hover
 
 }
 </string>
-     </property>
-     <property name="text">
-      <string>切换次序</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="valueseq">
-     <property name="geometry">
-      <rect>
-       <x>150</x>
-       <y>20</y>
-       <width>121</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLineEdit
+        </property>
+        <property name="text">
+         <string>切换次序</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="valueseq">
+        <property name="styleSheet">
+         <string notr="true">QLineEdit
 {
 	background-color:transparent;
 	color:transparent;
@@ -982,25 +965,19 @@ QLineEdit::hover
 
 }
 </string>
-     </property>
-     <property name="text">
-      <string>ABCD</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="record_btn">
-     <property name="geometry">
-      <rect>
-       <x>300</x>
-       <y>30</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton
+        </property>
+        <property name="text">
+         <string>ABCD</string>
+        </property>
+        <property name="frame">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="record_btn">
+        <property name="styleSheet">
+         <string notr="true">QPushButton
 {
 	background-color:transparent;
 	color:transparent;
@@ -1012,53 +989,96 @@ QPushButton::hover
 
 }
 </string>
-     </property>
-     <property name="text">
-      <string>记录数据</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+        </property>
+        <property name="text">
+         <string>记录数据</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
-    <widget class="QPushButton" name="keyboard">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>620</x>
-       <y>20</y>
-       <width>151</width>
-       <height>41</height>
+       <x>333</x>
+       <y>12</y>
+       <width>681</width>
+       <height>51</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>16</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="res.qrc">
-       <normaloff>:/images/keyboard-on.png</normaloff>:/images/keyboard-on.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1">
+      <item>
+       <widget class="QPushButton" name="keyboard">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+          <underline>false</underline>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton
+{
+	background-color:transparent;
+
+}
+
+QPushButton::hover
+{
+	
+	background-color: rgba(0, 85, 127, 100);
+
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>:/images/keyboard-on.png</normaloff>:/images/keyboard-on.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="autoDefault">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="layoutWidget">
@@ -1223,8 +1243,6 @@ outline:0px; /*禁止焦点*/
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

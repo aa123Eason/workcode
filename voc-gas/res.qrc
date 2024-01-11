@@ -30,9 +30,9 @@
         <file>images/yl.png</file>
         <file>images/wd.png</file>
         <file>images/checkboxstyle.qss</file>
-        <file>images/icon.ico</file>
         <file>images/keyboard-on.png</file>
         <file>images/keyboard-off.png</file>
         <file>images/uart.png</file>
+        <file>images/icon.ico</file>
     </qresource>
 </RCC>
