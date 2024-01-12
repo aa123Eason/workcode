@@ -417,6 +417,7 @@ void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
             fileR.close();
             QJsonDocument jDocx = QJsonDocument::fromJson(byt);
             QJsonObject jObjx = jDocx.object();
+            //device
             qDebug() << "1:jObjx==>>"<<jObjx<<endl;
             if(jObjx.contains("device"))
             {
@@ -425,6 +426,79 @@ void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
             }
             jObjx.insert("device",obj);
             qDebug() << "2:jObjx==>>"<<jObjx<<endl;
+
+            //factors
+            QJsonObject jNewDev = jObjx.value("device").toObject();
+            QJsonObject jOldFacs = jObjx.value("factors").toObject();
+            QJsonObject jNewFacs = jOldFacs;
+            qDebug() << "jOldFacs==>>"<<jOldFacs<<endl;
+            QString devparams;
+            if(jNewDev.value("dev_type").toString() == "analog")
+            {
+                devparams = jNewDev.value("dev_params").toString();
+                qDebug() <<__LINE__<<"dev_params:"<<devparams<<endl;
+                qDebug() <<__LINE__<<"dev_params count"<<devparams.split(",").count()<<endl;
+                if(devparams.split(",").count()>0)
+                {
+                    for(int i=0;i<devparams.split(",").count();++i)
+                    {
+                        QString facitem = devparams.split(",")[i];
+                        qDebug() <<__LINE__<<"["<<i<<"]:"<<facitem<<endl;
+                        if(facitem.split("=").count()==2)
+                        {
+                            QString key = facitem.split("=")[0];
+                            QString value = facitem.split("=")[1];
+                            qDebug() <<__LINE__<<key<<":"<<value<<endl;
+
+                            if(key.split("_").count()==3)
+                            {
+                                qDebug() <<__LINE__<<key.split("_")[0]<<" "<<key.split("_")[1]<<" "<<key.split("_")[2]<<endl;
+
+                                int alias = key.split("_")[2].toInt();
+                                QString oriname = key.split("_")[0]+"_"+key.split("_")[1];
+                                QString curFac = jNewFacs.keys()[alias-1];
+                                QJsonObject jValue = jNewFacs.value(curFac).toObject();
+                                qDebug() <<"**********************"<<endl;
+                                qDebug() <<__LINE__<<oriname<<" "<<curFac<<endl;
+
+
+                                if(oriname == "analog_max")
+                                {
+                                    jValue.remove(CONF_ANALOG_PARAM_AU1);
+                                    jValue.insert(CONF_ANALOG_PARAM_AU1,value.toDouble());
+                                }
+                                else if(oriname == "analog_min")
+                                {
+                                    jValue.remove(CONF_ANALOG_PARAM_AD1);
+                                    jValue.insert(CONF_ANALOG_PARAM_AD1,value.toDouble());
+                                }
+                                else if(oriname == "upper_limit")
+                                {
+                                    jValue.remove(CONF_ANALOG_PARAM_AU2);
+                                    jValue.insert(CONF_ANALOG_PARAM_AU2,value.toDouble());
+                                }
+                                else if(oriname == "lower_limit")
+                                {
+                                    jValue.remove(CONF_ANALOG_PARAM_AD2);
+                                    jValue.insert(CONF_ANALOG_PARAM_AD2,value.toDouble());
+                                }
+
+                                jNewFacs.remove(curFac);
+                                jNewFacs.insert(curFac,jValue);
+
+                            }
+                        }
+                    }
+
+                }
+
+                 qDebug() << "jNewFacs==>>"<<jNewFacs<<endl;
+
+                jObjx.remove("factors");
+                jObjx.insert("factors",jNewFacs);
+            }
+
+
             QJsonDocument jNewDoc;
             jNewDoc.setObject(jObjx);
             fileW.open(QIODevice::WriteOnly|QIODevice::Text);

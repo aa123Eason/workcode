@@ -72,6 +72,7 @@ public:
     void Analog_RenewDevParam();
     void ConfFactor_Filled(QString pTemp,bool isAnalogProtocl);
     bool TeshuzhiGui_Init();
+    void loadTesshuzhiLocal();
     bool Conf_TeshuzhiUpdate();
     void ConfNode_Init();
     void ConfFile_Init();
@@ -102,6 +103,7 @@ public:
 private slots:
 
     void refresh_AnalogDevParam();
+    void refresh_SpecialsDevParam();
     void onButtonDevDele(QString id);
     void onButtonDevMore(QString id);
     void onButtonDevFactor(QString id);
@@ -209,6 +211,7 @@ private:
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
     QMap<QString,QString> facnamemap;
+    QMap<QString,QString> specialsMap;
 
 };
 

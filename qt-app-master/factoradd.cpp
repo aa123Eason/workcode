@@ -154,7 +154,7 @@ void FactorAdd::on_pushButton_clicked()
         return;
     }
 
-    if(findSameALias(ui->comboBox_falias->currentText()))
+    if(findSameALias(g_Device_ID,ui->comboBox_falias->currentText()))
     {
         QMessageBox::about(NULL, "提示", "<font color='red'>序号与其他因子重复</font>");
         return;
@@ -171,6 +171,7 @@ void FactorAdd::on_pushButton_clicked()
     obj.insert(QLatin1String("alarm_upper"), ui->lineEdit_alarmUpper->text().toInt());
     obj.insert(QLatin1String("tag_id"), ui->lineEdit_tagId->text());
     obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toInt());
+    obj.insert(QLatin1String("modbus_index"), ui->modbus_add->text().toInt());
 
     if(GroupF1->checkedId() == 0)
     {
@@ -277,7 +278,9 @@ void FactorAdd::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
             jObj.insert("factors",jFacs);
         }
 
-        writeDevParams();
+        qDebug()<<__LINE__<<jObj<<endl;
+
+        writeDevParams(jObj);
 
 
 
@@ -301,27 +304,32 @@ void FactorAdd::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
 
 }
 
-void FactorAdd::writeDevParams()
+void FactorAdd::writeDevParams(QJsonObject &obj)
 {
     QString devparams;
     QString filename = "/home/rpdzkj/tmpFiles/"+m_DevId+".json";
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
-    {
-        return ;
-    }
+    qDebug()<<__LINE__<<filename<<endl;
+//    QFile file(filename);
+//    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+//    {
+//        return ;
+//    }
 
-    QByteArray byt;
-    byt.append(file.readAll());
-    file.flush();
+//    QByteArray byt;
+//    byt.append(file.readAll());
+//    file.flush();
 
-    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
-    QJsonObject jObj = jDoc.object();
+//    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+//    byt.clear();
+//    file.close();
+
+    QJsonObject jObj = obj;
     QJsonObject jDev = jObj.value("device").toObject();
     QJsonObject jFacs = jObj.value("factors").toObject();
 
-    byt.clear();
-    file.close();
+    qDebug()<<__LINE__<<jFacs.keys()<<endl;
+
+
 
     QJsonObject::iterator itFac = jFacs.begin();
     int num=0;
@@ -330,6 +338,7 @@ void FactorAdd::writeDevParams()
     {
         QString alias = QString::number(num+1);
         QString pKey = itFac.key();
+        qDebug()<<__LINE__<<pKey<<endl;
         QJsonObject jValue = itFac.value().toObject();
         if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())
         {
@@ -348,14 +357,7 @@ void FactorAdd::writeDevParams()
         itFac++;
     }
 
-    if(jDev.value("dev_type").toString()=="analog")
-    {
-        if(jDev.contains("dev_params"))
-        {
-            jDev.remove("dev_params");
-        }
-        jDev.insert("dev_params",devparams);
-    }
+    qDebug()<<__LINE__<<"dev_params"<<devparams<<endl;
 
     if(jDev.value("dev_type").toString()=="analog")
     {
@@ -365,19 +367,34 @@ void FactorAdd::writeDevParams()
         }
         jDev.insert("dev_params",devparams);
     }
+    qDebug()<<__LINE__<<"dev:"<<jDev<<endl;
+
+
 
     jObj.remove("device");
     jObj.insert("device",jDev);
+
+    qDebug()<<__LINE__<<"new:"<<jObj<<endl;
 
     QJsonDocument jDocW;
     jDocW.setObject(jObj);
 
 
     QFile file1(filename);
-    file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
-    file1.write(jDocW.toJson());
-    file1.flush();
-    file1.close();
+    if(file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate))
+    {
+        if(file1.write(jDocW.toJson()))
+        {
+            qDebug()<<__LINE__<<"YES"<<endl;
+        }
+        else
+        {
+            qDebug()<<__LINE__<<"NO"<<endl;
+        }
+        file1.flush();
+        file1.close();
+    }
+
 
 
 
@@ -402,18 +419,21 @@ bool FactorAdd::Conf_FactorUpdate(QString pKey,QJsonObject &jFac)
     pFactor.insert(CONF_ANALOG_PARAM_AD1,ui->lineEdit_AD1->text().toDouble());
     pFactor.insert(CONF_ANALOG_PARAM_AU2,ui->lineEdit_AU2->text().toDouble());
     pFactor.insert(CONF_ANALOG_PARAM_AD2,ui->lineEdit_AD2->text().toDouble());
-    pFactor.insert(CONF_FACTOR_ALIAS,ui->comboBox_falias->currentText());
+    pFactor.insert("factoralias",ui->comboBox_falias->currentText().toInt());
     jFac = pFactor;
+    qDebug()<<__LINE__<<jFac<<endl;
 
     httpclinet pClient;
-    if(pClient.post(DCM_CONF_FACTOR_EDIT+pKey,pFactor))
+    QJsonObject jRes;
+    if(pClient.post(DCM_CONF_FACTOR_EDIT+pKey,pFactor,jRes))
     {
+        qDebug()<<__LINE__<<jRes<<endl;
         return true;
     }
     return  false;
 }
 
-bool FactorAdd::findSameALias(QString alias)
+bool FactorAdd::findSameALias(QString devid,QString alias)
 {
     QJsonObject jObj;
     httpclinet h;
@@ -423,9 +443,12 @@ bool FactorAdd::findSameALias(QString alias)
         while(it != jObj.end())
         {
             QJsonObject valueObj = it.value().toObject();
-            if(alias == valueObj.value("factor_alias").toString())
+            if(devid == valueObj.value("device_id").toString())
             {
-                return true;
+                if(alias == valueObj.value("factor_alias").toString())
+                {
+                    return true;
+                }
             }
             it++;
         }

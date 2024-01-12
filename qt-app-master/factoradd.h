@@ -27,9 +27,9 @@ public:
     explicit FactorAdd(QString pDevID,QString devtype,QWidget *parent = nullptr);
     ~FactorAdd();
     bool Conf_FactorUpdate(QString pKey,QJsonObject &jFac);
-    bool findSameALias(QString alias);
+    bool findSameALias(QString devid,QString alias);
     void writeinLocalJson(QString filename,QJsonObject &obj,QString pKey);
-    void writeDevParams();
+    void writeDevParams(QJsonObject &obj);
 signals:
     void addSuccess();
 

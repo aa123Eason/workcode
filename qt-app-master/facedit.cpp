@@ -646,7 +646,7 @@ void FacEdit::loadinfo(QString path)
         ui->lineEdit_alarmUpper->setText(QString::number(jValueObj.value("alarm_upper").toDouble()));
         ui->lineEdit_alarmLower->setText(QString::number(jValueObj.value("alarm_lower").toDouble()));
         ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toInt()));
-
+        ui->modbus_add->setText(QString::number(jValueObj.value("modbus_index").toInt()));
         // read from CONF
 
         QString pItem = g_Device_ID+"-"+pFcode;

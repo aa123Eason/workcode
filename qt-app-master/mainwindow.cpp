@@ -1038,6 +1038,10 @@ void MainWindow::writeDevParams()
     jObj.remove("device");
     jObj.insert("device",jDev);
 
+    httpclinet h;
+    QJsonObject jRes;
+    h.put(DCM_DEVICE,jDev,jRes);
+
     jObj.remove("factors");
     jObj.insert("factors",jFacs);
 
@@ -1551,11 +1555,13 @@ ui->tableWidget_Te->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12)
 ui->tableWidget_Te->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget_Te->horizontalHeader()->font();
 font.setBold(true);
+font.setFamily(QLatin1String("Ubuntu"));
+font.setPointSize(20);
 ui->tableWidget_Te->horizontalHeader()->setFont(font);
 
-ui->tableWidget_Te->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
 
-int widths[] = {150, 200, 150, 300, 130};
+
+int widths[] = {120, 120, 100, 120, 100};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Te->setColumnWidth(i, widths[i]);
 }
@@ -2974,7 +2980,7 @@ void MainWindow::refresh_AnalogDevParam()
         else
         {
             jDev = loadlocalJson(GET_DEVICE,g_Device_ID);
-            jFac = loadlocalJson(GET_DEVICE,g_Device_ID);
+            jFac = loadlocalJson(GET_FACTORS,g_Device_ID);
             pDevParam = jDev.value("dev_params").toString();
             qDebug()<<__LINE__<<pDevParam<<endl;
         }
@@ -3097,7 +3103,7 @@ void MainWindow::on_pushButton_Updatef_clicked()
 
     if(FactorGui_Init(g_Device_ID))
     {
-//        writeDevParams();
+        writeDevParams();
         QMessageBox::about(NULL, "提示", "<font color='black'>获取因子信息成功！</font>");
     }
 }
@@ -3115,8 +3121,45 @@ void MainWindow::on_pushButton_AddFresh_clicked()
 void MainWindow::on_pushButton_AddT_clicked()
 {
     TeshuzhiAdd *pTeshuzhiAdd = new TeshuzhiAdd();
+    connect(pTeshuzhiAdd,&TeshuzhiAdd::addSuccess,this,&MainWindow::refresh_SpecialsDevParam);
     pTeshuzhiAdd->show();
     return;
+}
+
+void MainWindow::refresh_SpecialsDevParam()
+{
+    httpclinet h;
+    QJsonObject jDev;
+    specialsMap.clear();
+    if(h.get(DCM_DEVICE,jDev))
+    {
+        for(int i=0;i<jDev.count();++i)
+        {
+            QString devid = jDev.keys()[i];
+            QString fileName = "/home/rpdzkj/tmpFiles/"+devid+".json";
+            QFile file(fileName);
+            if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                QByteArray byt;
+                byt.append(file.readAll());
+                file.flush();
+                file.close();
+
+                QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+                QJsonObject jObj = jDoc.object();
+                QJsonObject jSpes = jObj.value("specials").toObject();
+                QJsonObject::iterator itx = jSpes.begin();
+                while(itx != jSpes.end())
+                {
+                    specialsMap.insert(itx.key(),itx.value().toString());
+                    itx++;
+                }
+            }
+        }
+    }
+
+
+
 }
 
 void MainWindow::on_pushButton_UpdateT_clicked()
@@ -3337,8 +3380,8 @@ bool MainWindow::TeshuzhiGui_Init()
 
     ui->tableWidget_Te->clear();
     setTableTeHeader();
-    QTableWidgetItem *pItem1,*pItem2,*pItem3,*pItem4;
-    QPushButton *pOperSaved,*pOperDele;
+    QTableWidgetItem *pItem1=nullptr,*pItem2=nullptr,*pItem3=nullptr,*pItem4=nullptr;
+    QPushButton *pOperSaved=nullptr,*pOperDele=nullptr;
 
     // get..
 
@@ -3412,9 +3455,93 @@ bool MainWindow::TeshuzhiGui_Init()
         }
     }
 
+    refresh_SpecialsDevParam();
+    loadTesshuzhiLocal();
+
+
     return true;
 }
 
+void MainWindow::loadTesshuzhiLocal()
+{
+    QTableWidgetItem *pItem1=nullptr,*pItem2=nullptr,*pItem3=nullptr,*pItem4=nullptr;
+    QPushButton *pOperSaved=nullptr,*pOperDele=nullptr;
+    QMap<QString,QString>::iterator it = specialsMap.begin();
+    QMap<QString,QString>::iterator itend = specialsMap.end();
+    QMap<QString,QString> facnameMap = util.Uart_facnameMatch();
+
+    QFont font;
+    font.setBold(true);
+    font.setPointSize(20);
+
+    ui->tableWidget_Te->setRowCount(specialsMap.count());
+    int row = 0;
+    while(it != itend)
+    {
+        QString key = it.key();
+        QString pTeCode = key.split("|")[0];
+        QString pTeName = facnameMap[pTeCode];
+        QString pTeKey = key.split("|")[1];
+        QString pTeVal = it.value();
+
+        pItem1 = new QTableWidgetItem(pTeCode);
+        pItem1->setTextAlignment(Qt::AlignCenter);
+        pItem1->setFlags(Qt::ItemIsEditable);
+        pItem1->setFont(font);
+        pItem1->setForeground(QBrush(QColor(Qt::black)));
+
+        ui->tableWidget_Te->setItem(row, 0, pItem1);
+
+
+
+        pItem2 = new QTableWidgetItem(pTeName);
+        pItem2->setTextAlignment(Qt::AlignCenter);
+        pItem2->setFont(font);
+        pItem2->setForeground(QBrush(QColor(Qt::black)));
+        ui->tableWidget_Te->setItem(row, 1, pItem2);
+
+        pItem3 = new QTableWidgetItem(pTeKey);
+        pItem3->setTextAlignment(Qt::AlignCenter);
+        pItem3->setFont(font);
+        pItem3->setForeground(QBrush(QColor(Qt::black)));
+        ui->tableWidget_Te->setItem(row, 2, pItem3);
+
+        pItem4 = new QTableWidgetItem(pTeVal);
+        pItem4->setTextAlignment(Qt::AlignCenter);
+        pItem4->setFont(font);
+        pItem4->setForeground(QBrush(QColor(Qt::black)));
+        ui->tableWidget_Te->setItem(row, 3, pItem4);
+
+        pOperSaved = new QPushButton();
+        pOperSaved->setText("保存");
+        pOperSaved->setFont(font);
+        pOperSaved->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+
+        pOperDele = new QPushButton();
+        pOperDele->setText("删除");
+        pOperDele->setFont(font);
+        pOperDele->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
+
+        connect(pOperSaved,SIGNAL(clicked()),m_SignalMapper_Te,SLOT(map()));
+        m_SignalMapper_Te->setMapping(pOperSaved,it.key());
+        connect(pOperDele,SIGNAL(clicked()),m_SignalMapper_Ted,SLOT(map()));
+        m_SignalMapper_Ted->setMapping(pOperDele,it.key());
+
+        QWidget *btnWidget = new QWidget(this);
+        QHBoxLayout *btnLayout = new QHBoxLayout(btnWidget);    // FTIXME：内存是否会随着清空tablewidget而释放
+        btnLayout->addWidget(pOperSaved);
+        btnLayout->addWidget(pOperDele);
+        btnLayout->setMargin(5);
+        btnLayout->setAlignment(Qt::AlignCenter);
+        ui->tableWidget_Te->setCellWidget(row, 4, btnWidget);
+
+        connect(m_SignalMapper_Te,SIGNAL(mapped(QString)),this,SLOT(onButtonTeSaved(QString)));
+        connect(m_SignalMapper_Ted,SIGNAL(mapped(QString)),this,SLOT(onButtonTeDele(QString)));
+
+        row++;
+        it++;
+    }
+}
 
 void MainWindow::Analog_RenewDevParam()
 {
@@ -3525,6 +3652,7 @@ QJsonObject MainWindow::Conf_RootObjGet()
 bool MainWindow::Conf_TeshuzhiUpdate()
 {
     QFile file(CONF);
+    qDebug()<<__LINE__<<file.fileName()<<endl;
     if (file.exists()){
         // judge if json format is correct!!
         file.open(QIODevice::ReadOnly | QIODevice::Text);

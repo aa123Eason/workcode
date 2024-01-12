@@ -146,7 +146,6 @@ void DevAdd::connectevent()
 
 void DevAdd::buildLocalJson(QJsonObject &obj)
 {
-
     httpclinet h;
     QJsonObject jObj,jDevice;
     if(h.get(DCM_DEVICE,jObj))

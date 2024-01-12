@@ -192,13 +192,14 @@ font: 18pt &quot;Ubuntu&quot;;</string>
                <string notr="true">QComboBox {
     border: 1px solid #4C84C3;
 	width: 181px;
-	height: 44px;
-	font-size: 18px;
+	height: 40px;
+	font-size: 15px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -352,6 +353,7 @@ font: 18pt &quot;Ubuntu&quot;;</string>
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -513,6 +515,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -612,6 +615,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -683,6 +687,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -759,6 +764,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {

@@ -223,6 +223,13 @@ background-color: rgb(211, 215, 207);</string>
                        <bold>true</bold>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">QComboBox
+{
+	combobox-popup: 0;
+
+}</string>
+                     </property>
                      <item>
                       <property name="text">
                        <string>COM1</string>
@@ -358,6 +365,13 @@ background-color: rgb(211, 215, 207);</string>
                        <bold>true</bold>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">QComboBox
+{
+	combobox-popup: 0;
+
+}</string>
+                     </property>
                      <item>
                       <property name="text">
                        <string>600</string>
@@ -439,6 +453,13 @@ background-color: rgb(211, 215, 207);</string>
                        <bold>true</bold>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">QComboBox
+{
+	combobox-popup: 0;
+
+}</string>
+                     </property>
                      <item>
                       <property name="text">
                        <string>1</string>
@@ -490,6 +511,13 @@ background-color: rgb(211, 215, 207);</string>
                        <bold>true</bold>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">QComboBox
+{
+	combobox-popup: 0;
+
+}</string>
+                     </property>
                      <item>
                       <property name="text">
                        <string>N</string>
@@ -539,6 +567,13 @@ background-color: rgb(211, 215, 207);</string>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QComboBox
+{
+	combobox-popup: 0;
+
+}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -860,7 +895,11 @@ p, li { white-space: pre-wrap; }
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(211, 215, 207);</string>
+                  <string notr="true">QComboBox
+{
+background-color: rgb(211, 215, 207);
+combobox-popup: 0;
+}</string>
                  </property>
                 </widget>
                </item>

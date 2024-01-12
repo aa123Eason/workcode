@@ -135,6 +135,7 @@
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -193,6 +194,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
@@ -251,6 +253,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
+	combobox-popup: 0;
 }
  
 QComboBox QAbstractItemView {
