@@ -28,6 +28,7 @@ SOURCES += \
     teshuzhiadd.cpp \
     teshuzhidele.cpp \
     upsetadd.cpp \
+    usbupdatedlg.cpp \
     util.cpp\
     uartThread/posix_qextserialport.cpp \
     uartThread/qextserialbase.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     teshuzhiadd.h \
     teshuzhidele.h \
     upsetadd.h \
+    usbupdatedlg.h \
     util.h \
     uartThread/posix_qextserialport.h \
     uartThread/qextserialbase.h \
@@ -65,6 +67,7 @@ FORMS += \
     teshuzhidele.ui \
     upsetadd.ui \
     devicecmdctrldlg.ui \
+    usbupdatedlg.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -5317,12 +5317,11 @@ QPushButton:hover
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="styleSheet">
+        <string notr="true">image: url(:/images/No_Upan.png);</string>
+       </property>
        <property name="text">
         <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="res.qrc">
-         <normaloff>:/images/No_Upan.png</normaloff>:/images/No_Upan.png</iconset>
        </property>
        <property name="iconSize">
         <size>

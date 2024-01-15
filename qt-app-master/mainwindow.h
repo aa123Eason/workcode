@@ -26,6 +26,9 @@
 #include <QPointer>
 #include <QProcess>
 #include <QJsonValue>
+#include <QFileInfoList>
+#include <QDir>
+#include "usbupdatedlg.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -98,6 +101,8 @@ public:
     void deletecurrid(QString deviceid,QString facname);
     void writeDevParams();
     QJsonObject loadlocalJson(int gettype,QString dev_id);
+    void usbUpdateEvent();
+    bool checkUSBDevice();
 
 
 private slots:
@@ -162,6 +167,7 @@ signals:
     /* 工人开始工作（做些耗时的操作 ） */
     void startWork();
     void sendCurDT(QDateTime &);
+    void sendUSBState(bool);
 
 private:
     Ui::MainWindow *ui;
@@ -212,6 +218,8 @@ private:
     QMap<QString,QString> namemap;
     QMap<QString,QString> facnamemap;
     QMap<QString,QString> specialsMap;
+    bool isUsbOn = false;
+    USBUpdateDlg *usbdlg = nullptr;
 
 };
 

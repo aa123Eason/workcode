@@ -265,6 +265,8 @@ void MainWindow::Widget_Init()
         process.close();
     });
 
+
+
 }
 
 void MainWindow::ClearTable()
@@ -1170,6 +1172,77 @@ void MainWindow::onButtonTeDele(QString pFactor)
     }
 }
 
+bool MainWindow::checkUSBDevice()
+{
+    qDebug()<<__LINE__<<__FUNCTION__<<endl;
+    QString dirpath = "/media/rpdzkj";
+    QDir dir(dirpath);
+    if(!dir.exists())
+    {
+        return false;
+    }
+
+
+    QFileInfoList list = dir.entryInfoList(QDir::AllEntries|QDir::NoDotAndDotDot);
+    int file_count = list.count();
+    qDebug()<<__LINE__<<file_count<<endl;
+    if(file_count<=0)
+    {
+
+        return false;
+    }
+    else
+    {
+        for(int i=0;i<file_count;++i)
+        {
+            QFileInfo fileInfo = list.at(i);
+            qDebug()<<fileInfo.fileName()<<":"<<fileInfo.absolutePath()<<endl;
+        }
+        return true;
+    }
+
+}
+
+void MainWindow::usbUpdateEvent()
+{
+    connect(this,&MainWindow::sendUSBState,this,[=](bool state)
+    {
+        isUsbOn = state;
+        if(!state)
+        {
+            ui->usb->setStyleSheet("image: url(:/images/No_Upan.png);");
+        }
+        else
+        {
+            ui->usb->setStyleSheet("image: url(:/images/usb.png);");
+        }
+
+    });
+
+    if(checkUSBDevice())
+    {
+        qDebug()<<__LINE__<<"USB OK"<<endl;
+        emit sendUSBState(true);
+    }
+    else
+    {
+        qDebug()<<__LINE__<<"USB NO"<<endl;
+        emit sendUSBState(false);
+    }
+
+    connect(ui->usb,&QPushButton::clicked,this,[=]()
+    {
+       if(isUsbOn)
+       {
+           if(usbdlg==nullptr)
+           {
+               usbdlg = new USBUpdateDlg();
+               usbdlg->show();
+           }
+       }
+    });
+}
+
 
 void MainWindow::handleResults(QString item,const QJsonObject & results)
 {
@@ -1268,6 +1341,11 @@ void MainWindow::handleResults(QString item,const QJsonObject & results)
             i++;
             it++;
         }
+
+    }
+    else if(item == "usb_stat")
+    {
+        usbUpdateEvent();
     }
 }
 
@@ -1438,6 +1516,7 @@ void CHttpWork::doWork1() {
         }
 
         QJsonObject pJsonObj;
+        emit resultReady("usb_stat",pJsonObj);
         if(pClient.get(DCM_REALTIME_DATA,pJsonObj))
         {
             emit resultReady("realtime_data",pJsonObj);
@@ -1447,6 +1526,8 @@ void CHttpWork::doWork1() {
         {
             emit resultReady("connect_stat",pJsonObj);
         }
+
+
     }
 }
 
