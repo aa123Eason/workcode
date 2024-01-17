@@ -9,7 +9,7 @@ DevAdd::DevAdd(QWidget *parent) :
     ui->setupUi(this);
 
     setModal(true);
-    setAttribute(Qt::WA_DeleteOnClose);
+//    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(QStringLiteral(" "));
 
     ui->radioButton_Com->setChecked(true);
@@ -22,13 +22,14 @@ DevAdd::DevAdd(QWidget *parent) :
     interGroup->addButton(ui->radioButton_Com, 0);
     interGroup->addButton(ui->radioButton_Net, 1);
 
-    ui->comboBox->setEditable(true);
+//    ui->comboBox->setEditable(true);
 
     ui->comboBox_2->clear();
     QJsonObject::const_iterator itor = g_Dcm_SupportDevice.constBegin();
     QJsonObject::const_iterator end_proto = g_Dcm_SupportDevice.constEnd();
     map = util.Uart_devicetype();
     namemap = util.Uart_devicetypeNameMatch();
+    ui->comboBox_2->addItem("");
     while(itor != end_proto)
     {
         ui->comboBox_2->addItem(namemap[itor.key()]);
@@ -41,12 +42,81 @@ DevAdd::DevAdd(QWidget *parent) :
     ui->comboBox_stopbit->setView(new QListView(this));
     ui->comboBox_databit->setView(new QListView(this));
     ui->comboBox_parity->setView(new QListView(this));
+    installEvents();
+
+
+    ui->comboBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_2->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_baud->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_stopbit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_databit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_parity->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
 }
 
 DevAdd::~DevAdd()
 {
     if(interGroup) interGroup->deleteLater();
     delete ui;
+}
+
+void DevAdd::installEvents()
+{
+    ui->comboBox->installEventFilter(this);
+    ui->comboBox_2->installEventFilter(this);
+    ui->comboBox_baud->installEventFilter(this);
+    ui->comboBox_parity->installEventFilter(this);
+    ui->comboBox_stopbit->installEventFilter(this);
+    ui->comboBox_databit->installEventFilter(this);
+}
+
+bool DevAdd::eventFilter(QObject *o, QEvent *e)
+{
+    if(e->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *me =(QMouseEvent *)e;
+        if(me->button()==Qt::LeftButton)
+        {
+            if(QString(o->metaObject()->className())==QString("QComboBox"))
+            {
+                QComboBox *box = (QComboBox*)o;
+                int count_item = box->count();
+                int row = 0,col = 0;
+                for(int i=0;i<count_item;++i)
+                {
+                    qDebug()<<__LINE__<<__FUNCTION__<<"name==>"<<box->itemText(i);
+
+
+//                    if(dlgbox==nullptr)
+//                    {
+//                        dlgbox = new ComBoBoxSelectDlg(o->objectName(),count_item/5+1,5);
+//                        dlgbox->addButton(row,col,box->itemText(i));
+
+//                        connect(dlgbox,&ComBoBoxSelectDlg::sendSelectedButton,this,[=](QString name)
+//                        {
+//                            box->setCurrentText(name);
+//                        });
+
+//                    }
+
+//                    if(col<5)
+//                    {
+//                        col++;
+//                    }
+//                    else
+//                    {
+//                        col=0;
+//                        row++;
+//                    }
+
+                }
+
+//                dlgbox->show();
+            }
+        }
+    }
+
+    return QDialog::eventFilter(o,e);
 }
 
 void DevAdd::typeRadioBtnClicked() {
@@ -142,6 +212,17 @@ void DevAdd::on_pushButton_2_clicked()
 void DevAdd::connectevent()
 {
     connect(ui->comboBox_2,&QComboBox::currentTextChanged,this,&DevAdd::onCurrentDevTypeChanged);
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
+
+
 }
 
 void DevAdd::buildLocalJson(QJsonObject &obj)

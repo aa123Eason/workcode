@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>848</width>
-    <height>607</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="7,2">
+  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="7,1">
    <property name="spacing">
     <number>4</number>
    </property>
@@ -38,7 +38,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,1">
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
        <property name="spacing">
         <number>2</number>
        </property>
@@ -132,10 +132,22 @@
             <item>
              <widget class="QLineEdit" name="lineEdit_devAddr">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
               </property>
               <property name="font">
                <font>
@@ -175,46 +187,38 @@ font: 18pt &quot;Ubuntu&quot;;</string>
             <item>
              <widget class="QComboBox" name="comboBox_2">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Source Han Sans CN</family>
-                <pointsize>-1</pointsize>
                 <weight>50</weight>
                 <bold>false</bold>
                </font>
               </property>
-              <property name="styleSheet">
-               <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-	combobox-popup: 0;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
+              <property name="maxVisibleItems">
+               <number>50</number>
+              </property>
+              <property name="insertPolicy">
+               <enum>QComboBox::InsertAtTop</enum>
+              </property>
+              <property name="frame">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -237,10 +241,22 @@ QComboBox QAbstractItemView::item {
             <item>
              <widget class="QLineEdit" name="lineEdit_Name">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
               </property>
               <property name="font">
                <font>
@@ -353,7 +369,7 @@ font: 18pt &quot;Ubuntu&quot;;</string>
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
-	combobox-popup: 0;
+	
 }
  
 QComboBox QAbstractItemView {
@@ -369,6 +385,9 @@ QComboBox QAbstractItemView::item {
 }
  
 </string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
                </property>
                <item>
                 <property name="text">
@@ -515,7 +534,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
-	combobox-popup: 0;
+	
 }
  
 QComboBox QAbstractItemView {
@@ -534,6 +553,9 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="currentIndex">
                 <number>3</number>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
                </property>
                <item>
                 <property name="text">
@@ -615,7 +637,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
-	combobox-popup: 0;
+	
 }
  
 QComboBox QAbstractItemView {
@@ -631,6 +653,9 @@ QComboBox QAbstractItemView::item {
 }
  
 </string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
                </property>
                <item>
                 <property name="text">
@@ -687,7 +712,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
-	combobox-popup: 0;
+	
 }
  
 QComboBox QAbstractItemView {
@@ -703,6 +728,9 @@ QComboBox QAbstractItemView::item {
 }
  
 </string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
                </property>
                <item>
                 <property name="text">
@@ -764,7 +792,7 @@ QComboBox QAbstractItemView::item {
 	font-weight: 400;
 	opacity: 1;
 	border-radius: 0px;
-	combobox-popup: 0;
+	
 }
  
 QComboBox QAbstractItemView {
@@ -783,6 +811,9 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="currentIndex">
                 <number>1</number>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
                </property>
                <item>
                 <property name="text">
@@ -897,7 +928,7 @@ QComboBox QAbstractItemView::item {
            <string notr="true">background-color: rgb(211, 215, 207);</string>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="iconSize">
            <size>
@@ -1030,7 +1061,7 @@ QComboBox QAbstractItemView::item {
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,1,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,0,1,1">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -1043,6 +1074,32 @@ QComboBox QAbstractItemView::item {
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="keyboard">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/images/keyboard-off.png</normaloff>:/images/keyboard-off.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">

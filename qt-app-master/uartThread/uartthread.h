@@ -4,7 +4,7 @@
 
 #include <QThread>
 #include <QDebug>
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
 #include "posix_qextserialport.h"
 
 class UartThread : public QThread
@@ -39,5 +39,5 @@ private:
 };
 
 
-#endif // UARTTHREAD_H
+//#endif // UARTTHREAD_H
 #endif

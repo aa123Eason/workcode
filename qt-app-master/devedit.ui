@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>800</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -218,17 +218,10 @@ background-color: rgb(211, 215, 207);</string>
                      </property>
                      <property name="font">
                       <font>
-                       <pointsize>18</pointsize>
+                       <pointsize>14</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox
-{
-	combobox-popup: 0;
-
-}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -360,17 +353,10 @@ background-color: rgb(211, 215, 207);</string>
                      </property>
                      <property name="font">
                       <font>
-                       <pointsize>18</pointsize>
+                       <pointsize>14</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox
-{
-	combobox-popup: 0;
-
-}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -448,17 +434,10 @@ background-color: rgb(211, 215, 207);</string>
                      </property>
                      <property name="font">
                       <font>
-                       <pointsize>18</pointsize>
+                       <pointsize>14</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox
-{
-	combobox-popup: 0;
-
-}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -506,17 +485,10 @@ background-color: rgb(211, 215, 207);</string>
                      </property>
                      <property name="font">
                       <font>
-                       <pointsize>18</pointsize>
+                       <pointsize>14</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox
-{
-	combobox-popup: 0;
-
-}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -563,17 +535,10 @@ background-color: rgb(211, 215, 207);</string>
                      </property>
                      <property name="font">
                       <font>
-                       <pointsize>18</pointsize>
+                       <pointsize>14</pointsize>
                        <weight>75</weight>
                        <bold>true</bold>
                       </font>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QComboBox
-{
-	combobox-popup: 0;
-
-}</string>
                      </property>
                      <item>
                       <property name="text">
@@ -889,17 +854,10 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>18</pointsize>
+                   <pointsize>14</pointsize>
                    <weight>75</weight>
                    <bold>true</bold>
                   </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QComboBox
-{
-background-color: rgb(211, 215, 207);
-combobox-popup: 0;
-}</string>
                  </property>
                 </widget>
                </item>
@@ -1070,6 +1028,9 @@ combobox-popup: 0;
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarAsNeeded</enum>
               </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::DoubleClicked</set>
+              </property>
               <attribute name="horizontalHeaderDefaultSectionSize">
                <number>220</number>
               </attribute>
@@ -1166,6 +1127,9 @@ combobox-popup: 0;
               <property name="styleSheet">
                <string notr="true">background-color: rgb(211, 215, 207);</string>
               </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
            </layout>
@@ -1178,7 +1142,7 @@ combobox-popup: 0;
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,1,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,0,1,1">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -1191,6 +1155,32 @@ combobox-popup: 0;
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="keyboard">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/images/keyboard-off.png</normaloff>:/images/keyboard-off.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_Cancel">
@@ -1234,7 +1224,7 @@ combobox-popup: 0;
         <string notr="true">background-color: rgb(239, 41, 41);</string>
        </property>
        <property name="text">
-        <string>保存</string>
+        <string>^保存^</string>
        </property>
       </widget>
      </item>

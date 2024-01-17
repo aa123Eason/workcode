@@ -16,6 +16,8 @@
 #include <QDateTime>
 #include <QProcess>
 #include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 namespace Ui {
 class USBUpdateDlg;
@@ -33,6 +35,7 @@ public:
     void loadUSBUpdateDemo();
     void connectevent();
     void init();
+    void recordVersioninfo(QString txt);
 
 
 public slots:

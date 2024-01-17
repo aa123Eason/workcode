@@ -54,6 +54,19 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     connect(ui->radioButton_decN, SIGNAL(clicked()), this, SLOT(decRadioBtnClicked()));
     connect(ui->radioButton_MNL, SIGNAL(clicked()), this, SLOT(analogRadioBtnClicked()));
 
+    ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_fcode->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
+
     ui->label_dec->setVisible(false);
     ui->lineEdit_dec->setVisible(false);
 

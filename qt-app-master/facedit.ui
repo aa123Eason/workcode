@@ -415,6 +415,24 @@ border-color: rgb(0, 0, 0);</string>
      <layout class="QHBoxLayout" name="horizontalLayout_37" stretch="3,7">
       <item>
        <widget class="QLabel" name="label_st">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>82</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>82</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>13</pointsize>
@@ -436,41 +454,25 @@ border-color: rgb(0, 0, 0);</string>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>191</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>191</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Source Han Sans CN</family>
-          <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-combobox-popup: 0;	
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
         </property>
        </widget>
       </item>
@@ -488,6 +490,24 @@ QComboBox QAbstractItemView::item {
      <layout class="QHBoxLayout" name="horizontalLayout_38" stretch="3,7">
       <item>
        <widget class="QLabel" name="label_fcode">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>82</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>82</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>13</pointsize>
@@ -509,41 +529,25 @@ QComboBox QAbstractItemView::item {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>191</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>191</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Source Han Sans CN</family>
-          <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-combobox-popup: 0;	
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
         </property>
        </widget>
       </item>
@@ -561,6 +565,24 @@ QComboBox QAbstractItemView::item {
      <layout class="QHBoxLayout" name="horizontalLayout_39" stretch="3,7">
       <item>
        <widget class="QLabel" name="label_falias">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>82</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>82</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>13</pointsize>
@@ -582,41 +604,25 @@ QComboBox QAbstractItemView::item {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>191</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>191</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Source Han Sans CN</family>
-          <pointsize>-1</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-combobox-popup: 0;	
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
         </property>
         <item>
          <property name="text">
@@ -712,7 +718,9 @@ QComboBox QAbstractItemView::item {
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
        </widget>
@@ -754,7 +762,9 @@ QComboBox QAbstractItemView::item {
         </property>
         <property name="font">
          <font>
-          <pointsize>13</pointsize>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
        </widget>
@@ -1352,7 +1362,41 @@ QRadioButton::indicator:checked {
     <string>保存</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="keyboard">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>520</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/images/keyboard-off.png</normaloff>:/images/keyboard-off.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

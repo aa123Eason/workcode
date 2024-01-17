@@ -7,6 +7,10 @@
 #include "QButtonGroup"
 #include "util.h"
 #include <QDir>
+#include <QEvent>
+#include <QMouseEvent>
+#include <QObjectList>
+#include "comboboxselectdlg.h"
 
 namespace Ui {
 class DevAdd;
@@ -24,6 +28,7 @@ public:
     void connectevent();
     void buildLocalJson(QJsonObject &obj);
     bool compare2devices(QJsonObject &nowobj,QJsonObject &refobj,QString &idcode);
+    void installEvents();
 
 private slots:
     void typeRadioBtnClicked();
@@ -31,12 +36,16 @@ private slots:
     void on_pushButton_2_clicked();
     void onCurrentDevTypeChanged(const QString &);
 
+protected:
+    bool eventFilter(QObject *, QEvent *) override;
+
 private:
     Ui::DevAdd *ui;
     QButtonGroup *interGroup = nullptr;
     Util util;
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
+    ComBoBoxSelectDlg *dlgbox = nullptr;
 };
 
 #endif // DEVADD_H

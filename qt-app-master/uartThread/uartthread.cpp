@@ -1,7 +1,7 @@
 
 #include "uartthread.h"
 
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
 UartThread::UartThread(QObject *parent) :
     QThread(parent)
 {
@@ -40,28 +40,36 @@ UartThread::~UartThread()
  */
 bool UartThread::initUart(const QString & name, BaudRateType baudRate, long delayTime, unsigned int timeOut)
 {
-    this->mcom = new Posix_QextSerialPort(name, QextSerialBase::Polling);//定义串口对象，指定串口名和查询模式，这里使用Polling
+    mcom = new Posix_QextSerialPort(name, QextSerialBase::EventDriven);//定义串口对象，指定串口名和查询模式，这里使用Polling
 
-    if(!this->mcom ->open(QIODevice::ReadWrite|QIODevice::Text))//以读写方式打开串口
+    if(!mcom ->open(QIODevice::ReadWrite))//以读写方式打开串口
             return false;
 
-    this->mcom->setBaudRate(baudRate);//波特率设置
+    mcom->setBaudRate(baudRate);//波特率设置
 
-    this->mcom->setDataBits(DATA_8);//数据位设置，我们设置为8位数据位
+    mcom->setDataBits(DATA_8);//数据位设置，我们设置为8位数据位
 
-    this->mcom->setParity(PAR_NONE);//奇偶校验设置，我们设置为无校验
+    mcom->setParity(PAR_NONE);//奇偶校验设置，我们设置为无校验
 
-    this->mcom->setStopBits(STOP_1);//停止位设置，我们设置为1位停止位
+    mcom->setStopBits(STOP_1);//停止位设置，我们设置为1位停止位
 
-    this->mcom->setFlowControl(FLOW_OFF);//数据流控制设置，我们设置为无数据流控制
+    mcom->setFlowControl(FLOW_OFF);//数据流控制设置，我们设置为无数据流控制
 
-    this->mcom->setTimeout(delayTime); //延时设置
+    mcom->setTimeout(delayTime); //延时设置
 
     //connect(this->mcom,SIGNAL(readyRead()),this,SLOT(readComSlot()));//信号和槽函数关联，当串口缓冲区有数据时，进行读串口操作(事件驱动EventDriven模式)
 
     this->mtimeOut = timeOut;
 
     this->mrunFlag = false;
+
+    connect(mcom,&Posix_QextSerialPort::readyRead,this,[=]()
+    {
+        QByteArray byt;
+        byt.append(readUart());
+        mcom->flush();
+        qDebug()<<__LINE__<<"RECEIVE3:"<<byt<<endl;
+    });
 
     printf("Initialise serial port %s(DAM8081) successfully.\n", name.toLatin1().data());
 
@@ -126,4 +134,4 @@ void UartThread::writeUart(const char *dataToWrite )
     this->mcom->flush();
     this->mcom->write(dataToWrite);
 }
-#endif
+//#endif

@@ -15,13 +15,35 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
     map = util.Uart_devicetype();
     namemap = util.Uart_devicetypeNameMatch();
 
-
     font.setBold(true);
     font.setPointSize(20);
 
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->comboBox_devProto,&QComboBox::currentTextChanged,this,&DevEdit::onComboBoxProtoCurrentChanged);
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
+
+    ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_6->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_devBaud->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_devDatabit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_devParity->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_devStopBit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+
+
+    QScrollBar *bar = ui->comboBox_devProto->view()->verticalScrollBar();
+    int h = bar->height();
+    bar->resize(50,h);
+
     DevEdit_Init(dev_id);
 }
 
@@ -43,6 +65,8 @@ void DevEdit::typeRadioBtnClicked() {
         ui->tabWidget->setCurrentIndex(1);
     }
 }
+
+
 
 
 void DevEdit::DevEdit_Init(QString dev_id)
@@ -384,7 +408,7 @@ void DevEdit::on_pushButton_UpdateDev_clicked()
     obj.insert(QLatin1String("parity"), ui->comboBox_devParity->currentText());
     obj.insert(QLatin1String("stop_bit"), ui->comboBox_devStopBit->currentText());
 
-    // qDebug() << "obj==>>" << obj;
+     qDebug() << "obj==>>" << obj;
     QString path = "/home/rpdzkj/tmpFiles/"+ui->lineEdit_id->text()+".json";
     writeinfile(path,obj);
 
@@ -400,8 +424,21 @@ void DevEdit::on_pushButton_UpdateDev_clicked()
     }
 }
 
+void DevEdit::writeloglocal(QString text)
+{
+    QString path = "/home/rpdzkj/log.txt";
+    QFile file(path);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm")+text+"\r\n";
+    file.write(str.toUtf8());
+    file.flush();
+    file.close();
+}
+
 void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
 {
+
     qDebug() << "0:jObjx==>>" << obj;
     qDebug() << "path==>>" << filepath;
 
@@ -427,39 +464,53 @@ void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
             jObjx.insert("device",obj);
             qDebug() << "2:jObjx==>>"<<jObjx<<endl;
 
+//            QMessageBox::about(NULL, "提示", strx);
+
             //factors
             QJsonObject jNewDev = jObjx.value("device").toObject();
             QJsonObject jOldFacs = jObjx.value("factors").toObject();
             QJsonObject jNewFacs = jOldFacs;
             qDebug() << "jOldFacs==>>"<<jOldFacs<<endl;
             QString devparams;
+//            strx = __LINE__+"\r\n";
+//            QMessageBox::about(NULL, "提示", strx);
             if(jNewDev.value("dev_type").toString() == "analog")
             {
                 devparams = jNewDev.value("dev_params").toString();
+//                strx = devparams+"\r\n";
+//                QMessageBox::about(NULL, "提示", strx);
                 qDebug() <<__LINE__<<"dev_params:"<<devparams<<endl;
                 qDebug() <<__LINE__<<"dev_params count"<<devparams.split(",").count()<<endl;
                 if(devparams.split(",").count()>0)
                 {
                     for(int i=0;i<devparams.split(",").count();++i)
                     {
+//                        QMessageBox::about(NULL, "提示", i);
                         QString facitem = devparams.split(",")[i];
                         qDebug() <<__LINE__<<"["<<i<<"]:"<<facitem<<endl;
+                        writeloglocal("["+QString::number(i)+"]:"+facitem);
                         if(facitem.split("=").count()==2)
                         {
                             QString key = facitem.split("=")[0];
                             QString value = facitem.split("=")[1];
                             qDebug() <<__LINE__<<key<<":"<<value<<endl;
+                            writeloglocal(key+":"+value);
+
 
                             if(key.split("_").count()==3)
                             {
                                 qDebug() <<__LINE__<<key.split("_")[0]<<" "<<key.split("_")[1]<<" "<<key.split("_")[2]<<endl;
+                                writeloglocal(key.split("_")[0]+" "+key.split("_")[1]+" "+key.split("_")[2]);
 
                                 int alias = key.split("_")[2].toInt();
+                                writeloglocal(key.split("_")[2]+" "+QString::number(alias));
                                 QString oriname = key.split("_")[0]+"_"+key.split("_")[1];
                                 QString curFac = jNewFacs.keys()[alias-1];
                                 QJsonObject jValue = jNewFacs.value(curFac).toObject();
                                 qDebug() <<"**********************"<<endl;
                                 qDebug() <<__LINE__<<oriname<<" "<<curFac<<endl;
+                                writeloglocal(oriname+" "+curFac);
+
 
 
                                 if(oriname == "analog_max")
@@ -475,28 +526,36 @@ void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
                                 else if(oriname == "upper_limit")
                                 {
                                     jValue.remove(CONF_ANALOG_PARAM_AU2);
-                                    jValue.insert(CONF_ANALOG_PARAM_AU2,value.toDouble());
+                                    jValue.insert(CONF_ANALOG_PARAM_AU2,value.toInt());
                                 }
                                 else if(oriname == "lower_limit")
                                 {
                                     jValue.remove(CONF_ANALOG_PARAM_AD2);
-                                    jValue.insert(CONF_ANALOG_PARAM_AD2,value.toDouble());
+                                    jValue.insert(CONF_ANALOG_PARAM_AD2,value.toInt());
                                 }
 
-                                jNewFacs.remove(curFac);
+                                writeloglocal("jNewFacs");
+
+                                if(jNewFacs.contains(curFac))
+                                    jNewFacs.remove(curFac);
                                 jNewFacs.insert(curFac,jValue);
 
                             }
                         }
                     }
+                    writeloglocal("jNewFacs:1");
+//                    QMessageBox::about(NULL, "提示", strx);
 
                 }
+                writeloglocal("jNewFacs:2");
 
                  qDebug() << "jNewFacs==>>"<<jNewFacs<<endl;
 
-                jObjx.remove("factors");
+                 if(jObjx.contains("factors"))
+                     jObjx.remove("factors");
                 jObjx.insert("factors",jNewFacs);
             }
+
 
 
             QJsonDocument jNewDoc;
@@ -528,99 +587,130 @@ void DevEdit::on_pushButton_Cancel_clicked()
 QString DevEdit::builddevparams()
 {
     QString resStr;
-    if(ui->tabWidget_params->currentWidget() == ui->tab_text)
-    {
-        QString str = ui->textEdit_devParams->toPlainText();
+//    if(ui->tabWidget_params->currentWidget() == ui->tab_text)
+//    {
+//        QString str = ui->textEdit_devParams->toPlainText();
 
-        resStr = str;
+//        resStr = str;
+//    }
+//    else
+//    {
+
+    if(namemap.key(ui->comboBox_devProto->currentText()) == "lc-modbus")
+    {
+        QString tmpStr1;
+        tmpStr1 += "start="+ui->paramtable->item(0,1)->text()+",";
+        tmpStr1 += "quantity="+ui->paramtable->item(1,1)->text()+",";
+        QComboBox *box1 = (QComboBox *)ui->paramtable->cellWidget(2,1);
+        QComboBox *box2 = (QComboBox *)ui->paramtable->cellWidget(3,1);
+        tmpStr1 += "functionCode="+box1->currentText()+",";
+        tmpStr1 += "vtype="+box2->currentText();
+
+        resStr = tmpStr1;
     }
-    else
+    else if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
     {
-
-        if(namemap.key(ui->comboBox_devProto->currentText()) == "lc-modbus")
+        QString tmpStr2;
+        httpclinet h;
+        QJsonObject jDevObj;
+        int num=0;
+        if(h.get(DCM_DEVICE_FACTOR,jDevObj))
         {
-            QString tmpStr1;
-            tmpStr1 += "start="+ui->paramtable->item(0,1)->text()+",";
-            tmpStr1 += "quantity="+ui->paramtable->item(1,1)->text()+",";
-            QComboBox *box1 = (QComboBox *)ui->paramtable->cellWidget(2,1);
-            QComboBox *box2 = (QComboBox *)ui->paramtable->cellWidget(3,1);
-            tmpStr1 += "functionCode="+box1->currentText()+",";
-            tmpStr1 += "vtype="+box2->currentText();
-
-            resStr = tmpStr1;
-        }
-        else if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
-        {
-            QString tmpStr2;
-            httpclinet h;
-            QJsonObject jDevObj;
-            int num=0;
-            if(h.get(DCM_DEVICE_FACTOR,jDevObj))
+            QJsonObject::iterator it = jDevObj.begin();
+            while(it != jDevObj.end())
             {
-                QJsonObject::iterator it = jDevObj.begin();
-                while(it != jDevObj.end())
+                if(it.key().contains(ui->lineEdit_id->text()))
                 {
-                    if(it.key().contains(ui->lineEdit_id->text()))
-                    {
-                        num++;
-                    }
-                    it++;
+                    num++;
                 }
+                it++;
+            }
+        }
+
+        qDebug()<<__LINE__<<num<<endl;
+        for(int i = 0;i<num;++i)
+        {
+
+            tmpStr2 += "analog_max_"+QString::number(i+1)+"="+ui->paramtable->item(4*i,1)->text()+",";
+            tmpStr2 += "analog_min_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+1,1)->text()+",";
+            tmpStr2 += "upper_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+2,1)->text()+",";
+            tmpStr2 += "lower_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+3,1)->text();
+            if(i!=num-1)
+            {
+                tmpStr2 += ",";
             }
 
-            qDebug()<<__LINE__<<num<<endl;
-            for(int i = 0;i<num;++i)
-            {
-
-                tmpStr2 += "analog_max_"+QString::number(i+1)+"="+ui->paramtable->item(4*i,1)->text()+",";
-                tmpStr2 += "analog_min_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+1,1)->text()+",";
-                tmpStr2 += "upper_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+2,1)->text()+",";
-                tmpStr2 += "lower_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+3,1)->text();
-                if(i!=num-1)
-                {
-                    tmpStr2 += ",";
-                }
-
-            }
-
-            resStr = tmpStr2;
         }
-        qDebug()<<__LINE__<<resStr<<endl;
 
-        //write in device_factor
-        if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
+        resStr = tmpStr2;
+    }
+    qDebug()<<__LINE__<<resStr<<endl;
+
+    //write in device_factor
+    if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
+    {
+        QStringList paramlist = resStr.split(",");
+        httpclinet h;
+        QJsonObject jObj;
+        if(h.get(DCM_DEVICE_FACTOR,jObj))
         {
-            QStringList paramlist = resStr.split(",");
-            httpclinet h;
-            QJsonObject jObj;
-            if(h.get(DCM_DEVICE_FACTOR,jObj))
+            for(int i =0;i<jObj.count();++i)
             {
-                for(int i =0;i<jObj.count();++i)
+                if(ui->lineEdit_id->text()==jObj.keys()[i].split("-")[0])
                 {
-                    if(ui->lineEdit_id->text()==jObj.keys()[i].split("-")[0])
+                    QString keyName = jObj.keys()[i];
+                    QJsonObject jSubObj = jObj.value(jObj.keys()[i]).toObject();
+                    QString seq = jSubObj.value("factor_alias").toString();
+                    for(int j=0;j<paramlist.count();++j)
                     {
-                        QString keyName = jObj.keys()[i];
-                        QJsonObject jSubObj = jObj.value(jObj.keys()[i]).toObject();
-                        QString seq = jSubObj.value("factor_alias").toString();
-                        for(int j=0;j<paramlist.count();++j)
+                        QString paramitem = paramlist[j];
+                        if(paramitem.split("=").count()==2)
                         {
-                            QString paramitem = paramlist[j];
-                            if(paramitem.split("=").count()==2)
+                            QString paraName = paramitem.split("=")[0];
+                            QString paramValue = paramitem.split("=")[1];
+                            if(paraName.split("_").count()==3)
                             {
-                                QString paraName = paramitem.split("=")[0];
-                                QString paramValue = paramitem.split("=")[1];
-                                if(paraName.split("_").count()==3)
+                                qDebug()<<__LINE__<<paraName<<endl;
+                                QString refseq = paraName.split("_")[2];
+                                qDebug()<<__LINE__<<seq<<"vs"<<refseq<<endl;
+                                if(seq == refseq)
                                 {
-                                    qDebug()<<__LINE__<<paraName<<endl;
-                                    QString refseq = paraName.split("_")[2];
-                                    qDebug()<<__LINE__<<seq<<"vs"<<refseq<<endl;
-                                    if(seq == refseq)
+
+                                    if(!jSubObj.contains(CONF_IS_ANALOG_PARAM))
+                                    {
+                                        jSubObj.insert(CONF_IS_ANALOG_PARAM,true);
+
+                                        if(paraName == "analog_max_"+seq)
+                                        {
+                                            if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
+                                                jSubObj.remove(CONF_ANALOG_PARAM_AU1);
+                                            jSubObj.insert(CONF_ANALOG_PARAM_AU1,paramValue.toDouble());
+                                        }
+                                        else if(paraName == "analog_min_"+seq)
+                                        {
+                                            if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
+                                                jSubObj.remove(CONF_ANALOG_PARAM_AD1);
+                                            jSubObj.insert(CONF_ANALOG_PARAM_AD1,paramValue.toDouble());
+                                        }
+                                        else if(paraName == "upper_limit_"+seq)
+                                        {
+                                            if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
+                                                jSubObj.remove(CONF_ANALOG_PARAM_AU2);
+                                            jSubObj.insert(CONF_ANALOG_PARAM_AU2,paramValue.toDouble());
+                                        }
+                                        else if(paraName == "lower_limit_"+seq)
+                                        {
+                                            if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
+                                                jSubObj.remove(CONF_ANALOG_PARAM_AD2);
+                                            jSubObj.insert(CONF_ANALOG_PARAM_AD2,paramValue.toDouble());
+                                        }
+                                    }
+                                    else
                                     {
 
-                                        if(!jSubObj.contains(CONF_IS_ANALOG_PARAM))
-                                        {
-                                            jSubObj.insert(CONF_IS_ANALOG_PARAM,true);
 
+                                        if(jSubObj.value(CONF_IS_ANALOG_PARAM).toBool())
+                                        {
                                             if(paraName == "analog_max_"+seq)
                                             {
                                                 if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
@@ -645,89 +735,58 @@ QString DevEdit::builddevparams()
                                                     jSubObj.remove(CONF_ANALOG_PARAM_AD2);
                                                 jSubObj.insert(CONF_ANALOG_PARAM_AD2,paramValue.toDouble());
                                             }
+
                                         }
                                         else
                                         {
-
-
-                                            if(jSubObj.value(CONF_IS_ANALOG_PARAM).toBool())
+                                            if(paraName == "analog_max_"+seq)
                                             {
-                                                if(paraName == "analog_max_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU1);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU1,paramValue.toDouble());
-                                                }
-                                                else if(paraName == "analog_min_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD1);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD1,paramValue.toDouble());
-                                                }
-                                                else if(paraName == "upper_limit_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU2);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU2,paramValue.toDouble());
-                                                }
-                                                else if(paraName == "lower_limit_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD2);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD2,paramValue.toDouble());
-                                                }
-
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AU1);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AU1,QString::number(0.00,'f',2));
                                             }
-                                            else
+                                            else if(paraName == "analog_min_"+seq)
                                             {
-                                                if(paraName == "analog_max_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU1))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU1);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU1,QString::number(0.00,'f',2));
-                                                }
-                                                else if(paraName == "analog_min_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD1);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD1,QString::number(0.00,'f',2));
-                                                }
-                                                else if(paraName == "upper_limit_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AU2);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AU2,QString::number(5));
-                                                }
-                                                else if(paraName == "lower_limit_"+seq)
-                                                {
-                                                    if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
-                                                        jSubObj.remove(CONF_ANALOG_PARAM_AD2);
-                                                    jSubObj.insert(CONF_ANALOG_PARAM_AD2,QString::number(1));
-                                                }
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AD1))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AD1);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AD1,QString::number(0.00,'f',2));
+                                            }
+                                            else if(paraName == "upper_limit_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AU2))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AU2);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AU2,QString::number(5));
+                                            }
+                                            else if(paraName == "lower_limit_"+seq)
+                                            {
+                                                if(jSubObj.contains(CONF_ANALOG_PARAM_AD2))
+                                                    jSubObj.remove(CONF_ANALOG_PARAM_AD2);
+                                                jSubObj.insert(CONF_ANALOG_PARAM_AD2,QString::number(1));
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        jObj.remove(keyName);
-                        jObj.insert(keyName,jSubObj);
-                        qDebug()<<__LINE__<<jSubObj<<endl;
-
-
-
                     }
+                    jObj.remove(keyName);
+                    jObj.insert(keyName,jSubObj);
+                    qDebug()<<__LINE__<<jSubObj<<endl;
+
+
+
                 }
-
-                qDebug()<<__LINE__<<jObj<<endl;
-
-                h.put(DCM_DEVICE_FACTOR,jObj);
-
             }
 
+            qDebug()<<__LINE__<<jObj<<endl;
+
+            h.put(DCM_DEVICE_FACTOR,jObj);
 
         }
 
-        return resStr;
+
     }
+
+    return resStr;
+//    }
 }

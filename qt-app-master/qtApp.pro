@@ -1,4 +1,4 @@
-QT       += core gui network sql
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    comboboxselectdlg.cpp \
     devadd.cpp \
     devedit.cpp \
     dialogdevprop.cpp \
@@ -34,8 +35,11 @@ SOURCES += \
     uartThread/qextserialbase.cpp \
     uartThread/uartthread.cpp \
     devicecmdctrldlg.cpp \
+    serial.cpp \
+    serialport.cpp
 
 HEADERS += \
+    comboboxselectdlg.h \
     common.h \
     devadd.h \
     devedit.h \
@@ -54,8 +58,11 @@ HEADERS += \
     uartThread/qextserialbase.h \
     uartThread/uartthread.h \
     devicecmdctrldlg.h \
+    serial.h \
+    serialport.h
 
 FORMS += \
+    comboboxselectdlg.ui \
     devadd.ui \
     devedit.ui \
     dialogdevprop.ui \

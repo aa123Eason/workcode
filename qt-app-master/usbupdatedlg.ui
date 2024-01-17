@@ -87,90 +87,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="styleSheet">
-      <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	
-	background-color: rgb(211, 215, 207);
-	opacity: 1;
-	border-radius: 0px;
-	combobox-popup: 0;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-	font: 57 15pt &quot;Ubuntu&quot;;
-	font-weight:140;
-	
-	
-}
-
-/* 下拉后，整个下拉窗体每项的样式 */
-QComboBox QAbstractItemView::item {
-    height: 50px;   /* 项的高度（设置pComboBox-&gt;setView(new QListView());后，该项才起作用） */
-	font: 57 15pt &quot;Ubuntu&quot;;
-	font-weight:140;
-}
-
-/* 下拉框样式 */
-QComboBox::drop-down {
-    subcontrol-origin: padding;   /* 子控件在父元素中的原点矩形。如果未指定此属性，则默认为padding。 */
-    subcontrol-position: top right;   /* 下拉框的位置（右上） */
-    width: 50px;   /* 下拉框的宽度 */
-
-    border-left-width: 1px;   /* 下拉框的左边界线宽度 */
-    border-left-color: darkgray;   /* 下拉框的左边界线颜色 */
-    border-left-style: solid;   /* 下拉框的左边界线为实线 */
-    border-top-right-radius: 3px;   /* 下拉框的右上边界线的圆角半径（应和整个QComboBox右上边界线的圆角半径一致） */
-    border-bottom-right-radius: 3px;   /* 同上 */
-
-	image: url(:/images/dropdown.png);
-
-	padding: 2px 2px 2px 2px;
-}
-
-QScrollBar:vertical {
-      border: 2px solid grey;
-      width: 50px;
-	   background-color: #d0d2d4;   /* 空白区域的背景色*/
-}//加宽滑动条按钮
-
-QComboBox::drop-down:hover 
-{　　　
-background: yellow;　
-}
-/* 下拉箭头样式 */ 
-QComboBox::down-arrow
- {　　
-width: 20px; /* 下拉箭头的宽度（建议与下拉框drop-down的宽度一致） */ 　　
-background: transparent; /* 下拉箭头的的背景色 */ 　　padding: 0px 0px 0px 0px; /* 上内边距、右内边距、下内边距、左内边距 */　
-image: url(:/images/dropdown.png);　
-} /* 点击下拉箭头 */ 
-
-QComboBox::down-arrow:on 
-{ 　　
-image: url(:/images/dropdown.png);
-/* 显示上拉箭头 */
- } 
-
-
-
-QComboBox QAbstractScrollArea QScrollBar::handle:vertical {
-    border-radius: 5px;   /* 圆角 */
-    background: rgb(160,160,160);   /* 小方块的背景色深灰lightblue */
-}
-
-QComboBox QAbstractScrollArea QScrollBar::handle:vertical:hover {
-    background: rgb(90, 91, 93);   /* 越过小方块的背景色yellow */
-}
-
- 
-
- 
-</string>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
      </property>
     </widget>
    </item>

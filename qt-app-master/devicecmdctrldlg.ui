@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>598</height>
+    <height>780</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,7 +22,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(186, 189, 182);</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,3,2,3,1,7">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,2,2,3,1,5">
    <property name="spacing">
     <number>2</number>
    </property>
@@ -39,7 +39,7 @@
     <number>2</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="3,12,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="3,12,0,1">
      <item>
       <widget class="QLabel" name="label_3">
        <property name="font">
@@ -71,6 +71,49 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="test_sendintime">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	background-color: rgb(100, 85, 0);
+	border-radius:5px;
+	color: rgb(255, 255, 255);
+	font: 75 16pt &quot;微软雅黑&quot;;
+}
+
+QPushButton::hover
+{
+	
+	
+	background-color: rgb(110, 65, 0);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>测试定时发送</string>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -142,13 +185,23 @@ QPushButton::hover
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>14</pointsize>
+         <weight>9</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">QComboBox{
-  color:#666666;
-  font: 75 18pt &quot;微软雅黑&quot;;
+  color:#000000;
+  font: 75 14pt &quot;微软雅黑&quot;;
   padding: 1px 15px 1px 3px;
   border:1px solid rgba(228,228,228,1);
   border-radius:5px 5px 0px 0px;
+	background-color: rgb(255, 255, 255);
 } 
 
   QComboBox::drop-down {
@@ -186,6 +239,9 @@ QComboBox QAbstractItemView::item:selected{
   background-color:#409CE1;
   color:#ffffff;
 }</string>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertAtTop</enum>
        </property>
       </widget>
      </item>
@@ -211,13 +267,23 @@ QComboBox QAbstractItemView::item:selected{
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>14</pointsize>
+         <weight>9</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">QComboBox{
-  color:#666666;
-  font: 75 18pt &quot;微软雅黑&quot;;
+  color:#000000;
+  font: 75 14pt &quot;微软雅黑&quot;;
   padding: 1px 15px 1px 3px;
   border:1px solid rgba(228,228,228,1);
   border-radius:5px 5px 0px 0px;
+	background-color: rgb(255, 255, 255);
 } 
 
   QComboBox::drop-down {
@@ -255,6 +321,9 @@ QComboBox QAbstractItemView::item:selected{
   background-color:#409CE1;
   color:#ffffff;
 }</string>
+       </property>
+       <property name="insertPolicy">
+        <enum>QComboBox::InsertAtTop</enum>
        </property>
        <item>
         <property name="text">
@@ -364,7 +433,9 @@ QComboBox QAbstractItemView::item:selected{
     <widget class="QLabel" name="cominfo">
      <property name="font">
       <font>
-       <pointsize>18</pointsize>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
       </font>
      </property>
      <property name="text">
@@ -518,7 +589,8 @@ QPushButton::hover
 {
 	
 	
-	background-color: rgb(0, 85, 0);
+	
+	background-color: rgb(245, 121, 0);
 	border-radius:5px;
 	color: rgb(255, 255, 255);
 	font: 75 14pt &quot;微软雅黑&quot;;
@@ -528,7 +600,8 @@ QPushButton::hover
 {
 	
 	
-	background-color: rgb(0, 170, 0);
+	
+	background-color: rgb(206, 92, 0);
 }
 </string>
        </property>
@@ -550,7 +623,8 @@ QPushButton::hover
 {
 	
 	
-	background-color: rgb(0, 85, 0);
+	
+	background-color: rgb(52, 101, 164);
 	border-radius:5px;
 	color: rgb(255, 255, 255);
 	font: 75 14pt &quot;微软雅黑&quot;;
@@ -560,7 +634,8 @@ QPushButton::hover
 {
 	
 	
-	background-color: rgb(0, 170, 0);
+	
+	background-color: rgb(32, 74, 135);
 }
 </string>
        </property>
@@ -735,10 +810,58 @@ QPushButton::hover
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QCheckBox" name="loopread">
-         <property name="text">
-          <string>循环读取</string>
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
          </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <widget class="QPushButton" name="keyboard">
+          <property name="geometry">
+           <rect>
+            <x>150</x>
+            <y>10</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/images/keyboard-off.png</normaloff>:/images/keyboard-off.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="loopread">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>91</width>
+            <height>29</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>循环读取</string>
+          </property>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -747,6 +870,8 @@ QPushButton::hover
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

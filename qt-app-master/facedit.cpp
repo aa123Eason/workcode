@@ -16,6 +16,21 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
 //    connect(ui->pushButton_Saved,&QPushButton::clicked,this,&FacEdit::on_pushButton_Saved_clicked);
     connect(ui->pushButton_cancel,&QPushButton::clicked,this,&FacEdit::on_pushButton_cancel_clicked);
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
+
+    ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_fcode->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+
 }
 
 FacEdit::~FacEdit()

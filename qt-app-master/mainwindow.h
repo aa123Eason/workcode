@@ -103,6 +103,7 @@ public:
     QJsonObject loadlocalJson(int gettype,QString dev_id);
     void usbUpdateEvent();
     bool checkUSBDevice();
+    void showModifiedTime();
 
 
 private slots:

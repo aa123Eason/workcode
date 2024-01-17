@@ -19,13 +19,15 @@
 #include <QColumnView>
 #include <QTimer>
 #include <QMessageBox>
+#include <QEvent>
 
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
 #include "util.h"
-#include "uartThread/uartthread.h"
-#endif
+//#include "uartThread/uartthread.h"
+//#endif
 #include <unistd.h>
 #include "httpclinet.h"
+#include "serialport.h"
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
@@ -43,6 +45,7 @@ public:
     void loadFactorAndPort();
     void connectevent();
     void timeCheckInit();
+    void writeloglocal(QString);
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
@@ -51,18 +54,20 @@ signals:
     void sendReback(bool);
     void sendCMD(QString cmd);
     void sendIsSendBytime(bool issendbytime);
+    void sendloopread(bool);
 
 public slots:
-    #ifdef Q_OS_LINUX
+//    #ifdef Q_OS_LINUX
     void onReceiveCMD(QString cmd);
-    #endif
+//    #endif
     void onReceivecurDT(QDateTime &);
+    void onTimeout();
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
-#ifdef Q_OS_LINUX
-    UartThread *muartThread=nullptr;//串口线程对象
-#endif
+//#ifdef Q_OS_LINUX
+//    UartThread *muartThread=nullptr;//串口线程对象
+//#endif
     QString str;
     QString comstr;
     Util util;
@@ -73,6 +78,9 @@ private:
     QDateTime curDT;
     bool isSendBytime = false;
     QTimer timer;
+    bool isLoopOn = false;
+    SerialPort *serialPort = nullptr;
+
 
 };
 

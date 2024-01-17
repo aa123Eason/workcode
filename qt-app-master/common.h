@@ -16,16 +16,20 @@
 #include <QJsonArray>
 #include <QTime>
 #include <QFile>
+#include <QProcess>
+#include <QThread>
+#include <QAbstractItemView>
+#include <QScrollBar>
 
 #include "util.h"
 
 #define CONF "./QDesktop.json"
 #define QTAPP_VER "QDesktopV1.0.230307"
 #define SCHEME "http"
-#define SERVER_IP "172.20.0.69"
+//#define SERVER_IP "172.20.0.69"
 //#define SERVER_IP "172.20.0.218"
 //#define SERVER_IP "172.20.0.238"
-//#define SERVER_IP "localhost"
+#define SERVER_IP "localhost"
 #define SERVER_PORT "8888"
 #define REALTIME_FLUSH_PERIOD 5 // 实时数据刷新周期
 #define USERNAME "admin"

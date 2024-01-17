@@ -167,7 +167,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>12</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -2774,37 +2774,9 @@ p, li { white-space: pre-wrap; }
          <property name="font">
           <font>
            <family>Source Han Sans CN</family>
-           <pointsize>-1</pointsize>
            <weight>50</weight>
            <bold>false</bold>
           </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 20px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
          </property>
         </widget>
        </item>
@@ -2906,37 +2878,12 @@ padding-top:1px;
       <property name="font">
        <font>
         <family>Source Han Sans CN</family>
-        <pointsize>-1</pointsize>
         <weight>50</weight>
         <bold>false</bold>
        </font>
       </property>
-      <property name="styleSheet">
-       <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 20px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
+      <property name="insertPolicy">
+       <enum>QComboBox::InsertAtTop</enum>
       </property>
       <item>
        <property name="text">
@@ -5202,7 +5149,7 @@ QPushButton:hover
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1,70,1,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="1,1,0,70,1,1">
      <property name="spacing">
       <number>2</number>
      </property>
@@ -5271,6 +5218,13 @@ QPushButton:hover
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="systemupdatedt">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -5318,10 +5272,14 @@ QPushButton:hover
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">image: url(:/images/No_Upan.png);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/images/usb.png</normaloff>:/images/usb.png</iconset>
        </property>
        <property name="iconSize">
         <size>

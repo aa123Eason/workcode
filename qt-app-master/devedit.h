@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTableWidgetItem>
 #include <QTableWidget>
+#include <QDateTime>
 
 namespace Ui {
 class DevEdit;
@@ -31,6 +32,7 @@ public:
     void loadParamtable(QString dev_params);
     QString builddevparams();
     void writeinfile(QString filepath,QJsonObject &obj);
+    void writeloglocal(QString);
 
 private slots:
     void typeRadioBtnClicked();
@@ -39,6 +41,7 @@ private slots:
     void onComboBoxProtoCurrentChanged(const QString &text);
     void on_pushButton_Cancel_clicked();
 
+
 private:
     Ui::DevEdit *ui;
     Util util;
@@ -46,6 +49,7 @@ private:
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
     QFont font;
+    QString strx;
 };
 
 #endif // DEVEDIT_H

@@ -12,6 +12,8 @@
 #include <QString>
 #include <QDebug>
 #include <QFileInfoList>
+#include <QScrollBar>
+#include <QAbstractItemView>
 
 namespace Ui {
 class FactorAdd;

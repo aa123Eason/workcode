@@ -112,15 +112,23 @@ void USBUpdateDlg::on_confirm_update()
         return;
     }
 
-    QProcess process;
-    QString cmd1 = "rm -rf /etc/opt/lchj212/demo";
-    QString cmd2 = "unzip "+curFile+" -d /etc/opt/lchj212/";
-    process.start(cmd1);
-    process.start(cmd2);
+    QProcess process1;
+
+//    QString cmd = "rm -f /etc/opt/lchj212/demo";
+    QString cmd1 = "unzip "+curFile+" -d /home/rpdzkj/Downloads";
+
+//    process.start(cmd);
+////    process.waitForFinished(3000);
+//    process.close();
+
+    process1.start(cmd1);
+//    process.waitForFinished(3000);
+    process1.close();
 
     QFileInfo fi("/etc/opt/lchj212/demo");
     if(fi.exists())
     {
+
         //提示，更新完成，是否重启
         QString str0 = "更新完成!\r\n";
         str0 += "文件名:"+fi.fileName()+"\r\n";
@@ -130,12 +138,36 @@ void USBUpdateDlg::on_confirm_update()
         str0 += "是否重启?(Y/N)";
         if(QMessageBox::Yes == QMessageBox::information(this,"提示",str0,QMessageBox::Yes))
         {
-            process.start("reboot");
+            recordVersioninfo(fi.lastModified().toString("yyyy-MM-dd hh:mm"));
+//            QProcess::execute("reboot");
+//            process.startDetached("sudo reboot");
 
         }
 
 
     }
+    else
+    {
+        QMessageBox::warning(this,"提示","更新失败，文件不存在");
+    }
 
-    process.close();
+
+}
+
+void USBUpdateDlg::recordVersioninfo(QString txt)
+{
+    QString filepath = "/home/rpdzkj/demo_version.json";
+    QFile file(filepath);
+    QJsonObject obj;
+
+    obj.insert("modify",txt);
+
+    QJsonDocument jDoc;
+    jDoc.setObject(obj);
+
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    file.write(jDoc.toJson());
+    file.close();
+
+
 }

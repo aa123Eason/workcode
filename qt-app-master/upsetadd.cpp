@@ -12,10 +12,17 @@ UpsetAdd::UpsetAdd(QWidget *parent) :
 
     ui->comboBox->setEditable(true);
 
-    ui->checkBox->setStyleSheet("QCheckBox{spacing: 8px;}QCheckBox::indicator{width: 60px;height: 30px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
-    ui->checkBox_2->setStyleSheet("QCheckBox{spacing: 8px;}QCheckBox::indicator{width: 60px;height: 30px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
+
 
     UpAdd_filled();
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
 }
 
 UpsetAdd::~UpsetAdd()
@@ -36,6 +43,11 @@ void UpsetAdd::UpAdd_filled()
             ui->comboBox->addItem(icon[QLatin1String("mn")].toString());
         }
     }
+
+
+
+
+    setdefaultvalue();
 }
 
 void UpsetAdd::on_pushButton_confirm_clicked()
@@ -111,4 +123,39 @@ void UpsetAdd::on_pushButton_confirm_clicked()
 void UpsetAdd::on_pushButton_cancel_clicked()
 {
     this->close();
+}
+
+void UpsetAdd::setdefaultvalue()
+{
+    ui->comboBox->setCurrentIndex(0);
+    ui->comboBox_2->setCurrentIndex(0);
+
+    ui->lineEdit_upload_intval->setText("600");
+    ui->lineEdit_min->setText("10");
+    ui->lineEdit_To->setText("10");
+    ui->lineEdit_retry->setText("3");
+    ui->lineEdit_hi->setText("100");
+    ui->checkBox->setChecked(Qt::Checked);
+    ui->checkBox_2->setChecked(Qt::Checked);
+
+    httpclinet h;
+    QJsonArray pJsonArray;
+    if(h.get(DCM_MNINFO,pJsonArray))
+    {
+        if(pJsonArray.count()>0)
+        {
+            QJsonObject devObj = pJsonArray[0].toObject();
+            ui->lineEdit_addr->setText(devObj.value("ip_addr_port").toString());
+        }
+        else
+        {
+            ui->lineEdit_addr->setText("124.71.156.219:61121");
+        }
+
+    }
+    else
+    {
+        ui->lineEdit_addr->setText("124.71.156.219:61121");
+    }
+
 }

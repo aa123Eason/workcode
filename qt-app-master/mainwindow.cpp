@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnBottomHint);
     setWindowTitle(QTAPP_VER);
 
-    setMaximumSize(1280,800);
-    setMinimumSize(1280,800);
+    setMaximumSize(1280,780);
+    setMinimumSize(1280,780);
 
     m_SignalMapper = new QSignalMapper(this);
     m_SignalMapper_Te = new QSignalMapper(this);
@@ -46,17 +46,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_pDateTimer, SIGNAL(timeout()), this, SLOT(handleDateTimeout()));
     m_pDateTimer->start();
 
-//    QJsonObject pJsonObj;
-//    httpclinet hCLient;
-//    if(hCLient.get(DCM_REALTIME_DATA,pJsonObj))
-//    {
-//        handleResults("realtime_data",pJsonObj);
-//    }
+    QJsonObject pJsonObj;
+    httpclinet hCLient;
+    if(hCLient.get(DCM_REALTIME_DATA,pJsonObj))
+    {
+        handleResults("realtime_data",pJsonObj);
+    }
 
-//    if(hCLient.get(DCM_COONECT_STAT,pJsonObj))
-//    {
-//        handleResults("connect_stat",pJsonObj);
-//    }
+    if(hCLient.get(DCM_COONECT_STAT,pJsonObj))
+    {
+        handleResults("connect_stat",pJsonObj);
+    }
 
     // 1.新建串口处理子线程
     m_httpWorker = new CHttpWork();
@@ -200,8 +200,37 @@ void MainWindow::ConfNode_Init()
     }
 }
 
+void MainWindow::showModifiedTime()
+{
+    QFile file("/home/rpdzkj/demo_version.json");
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+    file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    QJsonObject jObj = jDoc.object();
+
+    QString txt;
+    if(jObj.contains("modify"))
+    {
+        txt = "软件更新时间:"+jObj.value("modify").toString();
+    }
+    ui->systemupdatedt->setText(txt);
+    QFont font;
+    font.setBold(true);
+    font.setPointSize(18);
+    ui->systemupdatedt->setFont(font);
+}
+
 void MainWindow::Widget_Init()
 {
+    showModifiedTime();
     ui->comboBox->setView(new QListView(this));
     ui->comboBox->setView(new QListView(this));
 
@@ -260,10 +289,42 @@ void MainWindow::Widget_Init()
     {
         QProcess process;
         process.startDetached("pkill florence");
-        QThread::sleep(3);
+        QThread::sleep(1);
         process.startDetached("florence");
         process.close();
     });
+
+    ui->comboBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_2->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_3->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->comboBox_7->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->factorBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->com->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->ctrl->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->baudrate->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->baudBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    connect(ui->usb,&QPushButton::clicked,this,[=]()
+    {
+        if(!m_LoginStatus)
+        {
+            QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+            ui->stackedWidget->setCurrentIndex(2);
+            return;
+        }
+
+
+
+        if(usbdlg==nullptr)
+        {
+            usbdlg = new USBUpdateDlg();
+
+        }
+
+            usbdlg->show();
+
+    });
+
 
 
 
@@ -658,6 +719,7 @@ void MainWindow::on_main_clicked()
     if(!m_LoginStatus)
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+        ui->stackedWidget->setCurrentIndex(2);
         return;
     }
 
@@ -1205,42 +1267,20 @@ bool MainWindow::checkUSBDevice()
 
 void MainWindow::usbUpdateEvent()
 {
-    connect(this,&MainWindow::sendUSBState,this,[=](bool state)
-    {
-        isUsbOn = state;
-        if(!state)
-        {
-            ui->usb->setStyleSheet("image: url(:/images/No_Upan.png);");
-        }
-        else
-        {
-            ui->usb->setStyleSheet("image: url(:/images/usb.png);");
-        }
 
-    });
 
     if(checkUSBDevice())
     {
         qDebug()<<__LINE__<<"USB OK"<<endl;
-        emit sendUSBState(true);
+//        emit sendUSBState(true);
     }
     else
     {
         qDebug()<<__LINE__<<"USB NO"<<endl;
-        emit sendUSBState(false);
+//        emit sendUSBState(false);
     }
 
-    connect(ui->usb,&QPushButton::clicked,this,[=]()
-    {
-       if(isUsbOn)
-       {
-           if(usbdlg==nullptr)
-           {
-               usbdlg = new USBUpdateDlg();
-               usbdlg->show();
-           }
-       }
-    });
+
 }
 
 
@@ -1345,7 +1385,7 @@ void MainWindow::handleResults(QString item,const QJsonObject & results)
     }
     else if(item == "usb_stat")
     {
-        usbUpdateEvent();
+//        usbUpdateEvent();
     }
 }
 
@@ -1522,10 +1562,11 @@ void CHttpWork::doWork1() {
             emit resultReady("realtime_data",pJsonObj);
         }
 
-        if(pClient.get(DCM_COONECT_STAT,pJsonObj))
-        {
-            emit resultReady("connect_stat",pJsonObj);
-        }
+//        if(pClient.get(DCM_COONECT_STAT,pJsonObj))
+//        {
+//            emit resultReady("connect_stat",pJsonObj);
+//            QThread::sleep(3);
+//        }
 
 
     }
@@ -2987,6 +3028,7 @@ void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
 void MainWindow::on_pushButton_AddDev_clicked()
 {
     DevAdd *pDevAdd = new DevAdd();
+    pDevAdd->setWindowModality(Qt::WindowModal);
     pDevAdd->show();
     return;
 }
@@ -3172,7 +3214,7 @@ QJsonObject MainWindow::loadlocalJson(int gettype,QString dev_id)
 void MainWindow::on_pushButton_Addf_clicked()
 {
     FactorAdd *pFactorAdd = new FactorAdd(g_Device_ID,g_Device_Type);
-
+    pFactorAdd->setWindowModality(Qt::WindowModal);
     connect(pFactorAdd, SIGNAL(addSuccess()),this, SLOT(refresh_AnalogDevParam()));
     pFactorAdd->show();
     return;
@@ -3202,6 +3244,7 @@ void MainWindow::on_pushButton_AddFresh_clicked()
 void MainWindow::on_pushButton_AddT_clicked()
 {
     TeshuzhiAdd *pTeshuzhiAdd = new TeshuzhiAdd();
+    pTeshuzhiAdd->setWindowModality(Qt::WindowModal);
     connect(pTeshuzhiAdd,&TeshuzhiAdd::addSuccess,this,&MainWindow::refresh_SpecialsDevParam);
     pTeshuzhiAdd->show();
     return;

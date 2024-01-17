@@ -67,6 +67,15 @@ void TeshuzhiAdd::connectevent()
             ui->lineEdit_Name->setText(dataStr);
         }
     });
+
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
 }
 
 void TeshuzhiAdd::on_buttonBox_accepted()

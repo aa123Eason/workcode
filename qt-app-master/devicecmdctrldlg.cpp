@@ -13,20 +13,21 @@ DeviceCMDCtrlDlg::DeviceCMDCtrlDlg(QWidget *parent) :
     init();
     connectevent();
 }
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
 DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 {
     ui->loopread->setChecked(false);
 
-    if(muartThread->isRunning())
-    {
-        muartThread->quit();
-    }
-    muartThread->deleteLater();
+//    if(muartThread->isRunning())
+//    {
+//        muartThread->quit();
+//    }
+//    muartThread->deleteLater();
+    serialPort->deleteLater();
 
     delete ui;
 }
-#endif
+//#endif
 
 void DeviceCMDCtrlDlg::init()
 {
@@ -38,6 +39,7 @@ void DeviceCMDCtrlDlg::init()
     ui->sendEdit->clear();
     ui->receiveEdit->clear();
     ui->sendEdit->installEventFilter(this);
+    ui->loopread->hide();
 
     QFile file(":/images/checkboxstyle.qss");
     if(file.open(QIODevice::ReadOnly|QIODevice::Text))
@@ -48,7 +50,7 @@ void DeviceCMDCtrlDlg::init()
         file.close();
     }
     ui->loopread->setChecked(false);
-    ui->loopread->setCheckable(false);
+//    ui->loopread->setCheckable(false);
     map = util.Uart_devicetype();
     namemap = util.Uart_facnameMatch();
 
@@ -61,7 +63,9 @@ void DeviceCMDCtrlDlg::init()
         box->setCheckable(true);
     }
 
+    serialPort = new SerialPort(this);
 
+    ui->sendEdit->installEventFilter(this);
 
 }
 
@@ -78,6 +82,8 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
             {
                 qDebug()<<"open keyboard"<<endl;
                 QProcess process;
+                process.startDetached("pkill florence");
+                QThread::sleep(1);
                 process.startDetached("florence");
                 process.close();
             }
@@ -160,6 +166,15 @@ void DeviceCMDCtrlDlg::connectevent()
         this->close();
     });
 
+    connect(ui->keyboard,&QPushButton::clicked,this,[=]()
+    {
+        QProcess process;
+        process.startDetached("pkill florence");
+        QThread::sleep(1);
+        process.startDetached("florence");
+        process.close();
+    });
+
     connect(ui->curPort,&QComboBox::currentTextChanged,this,[=](const QString &)
     {
         ui->loopread->setChecked(false);
@@ -169,11 +184,13 @@ void DeviceCMDCtrlDlg::connectevent()
     connect(ui->deleteSend,&QPushButton::clicked,[=]()
     {
         ui->sendEdit->clear();
+        ui->cominfo->clear();
     });
 
     connect(ui->deleteReceive,&QPushButton::clicked,[=]()
     {
         ui->receiveEdit->clear();
+        ui->cominfo->clear();
     });
 
     connect(ui->btnJZ,&QPushButton::clicked,this,[=]()
@@ -203,7 +220,7 @@ void DeviceCMDCtrlDlg::connectevent()
         emit sendCMD(ui->sendEdit->text());
     });
 
-    #ifdef Q_OS_LINUX
+//    #ifdef Q_OS_LINUX
     connect(this,&DeviceCMDCtrlDlg::sendCMD,this,&DeviceCMDCtrlDlg::onReceiveCMD);
     connect(this,&DeviceCMDCtrlDlg::sendCMD,this,[=](QString text)
     {
@@ -214,7 +231,7 @@ void DeviceCMDCtrlDlg::connectevent()
         ui->receiveEdit->setPlainText(str);
     });
 
-    #endif
+//    #endif
     connect(ui->sendEdit,&QLineEdit::textChanged,[=](const QString &text)
     {
         QStringList list;
@@ -236,36 +253,40 @@ void DeviceCMDCtrlDlg::connectevent()
 
 
 
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
     connect(ui->loopread,&QCheckBox::stateChanged,this,[=](int state)
     {
-        if(state == Qt::Checked)
-        {
-            if(muartThread!=nullptr)
-            {
-                muartThread->runControl(true);
-                connect(muartThread,&UartThread::sendResData,this,[=](QByteArray arrData)
-                {
-                    qDebug()<<__LINE__<<"RECEIVE2:"<<arrData.toHex(' ')<<endl;
+
+        qDebug()<<__LINE__<<"loopsend"<<endl;
+        isLoopOn = state;
+        emit sendloopread(isLoopOn);
+//        if(state == Qt::Checked)
+//        {
+////            if(muartThread!=nullptr)
+////            {
+////                muartThread->runControl(true);
+////                connect(muartThread,&UartThread::sendResData,this,[=](QByteArray arrData)
+////                {
+////                    qDebug()<<__LINE__<<"RECEIVE2:"<<arrData.toHex(' ')<<endl;
 
 
-                    str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ui->curPort->currentText()+"[R]:"+arrData.toHex(' ')+"\r\n";
+////                    str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+ui->curPort->currentText()+"[R]:"+arrData.toHex(' ')+"\r\n";
 
 
-                    ui->receiveEdit->setPlainText(str);
-                });
-            }
-        }
-        else
-        {
-            if(muartThread!=nullptr)
-            {
-                muartThread->runControl(false);
+////                    ui->receiveEdit->setPlainText(str);
+////                });
+////            }
+//        }
+//        else
+//        {
+////            if(muartThread!=nullptr)
+////            {
+////                muartThread->runControl(false);
 
-            }
-        }
+////            }
+//        }
     });
-#endif
+//#endif
 
     for(QCheckBox *box:timecks)
     {
@@ -294,7 +315,7 @@ void DeviceCMDCtrlDlg::connectevent()
             ui->btn_sendbytime->setStyleSheet("QPushButton\n{\n	\n	background-color: rgb(30, 120, 0);\n	border-radius:5px;\ncolor: rgb(255, 255, 255);\n	font: 75 18pt '微软雅黑';\n}\n\nQPushButton::hover\n{\n	\n	background-color: rgb(129, 194, 0);\n}\n");
             if(QMessageBox::Ok == QMessageBox::information(this,"提示","停止定时发送"))
             {
-                ui->btn_sendbytime->setText("停止定时发送");
+                ui->btn_sendbytime->setText("启动定时发送");
             }
             isSendBytime = false;
         }
@@ -304,7 +325,7 @@ void DeviceCMDCtrlDlg::connectevent()
             ui->btn_sendbytime->setStyleSheet("QPushButton\n{\n	\n	background-color: rgb(120, 30, 0);\n	border-radius:5px;\ncolor: rgb(255, 255, 255);\n	font: 75 18pt '微软雅黑';\n}\n\nQPushButton::hover\n{\n	\n	background-color: rgb(194, 129, 0);\n}\n");
             if(QMessageBox::Ok == QMessageBox::information(this,"提示","启动定时发送"))
             {
-                 ui->btn_sendbytime->setText("启动定时发送");
+                 ui->btn_sendbytime->setText("停止定时发送");
             }
             isSendBytime = true;
         }
@@ -342,9 +363,10 @@ void DeviceCMDCtrlDlg::connectevent()
 
     connect(&timer,&QTimer::timeout,this,[=]()
     {
-        int hour = curDT.time().hour();
+        QDateTime dtx = QDateTime::fromString(ui->timertk->text(),"yyyy-MM-dd HH:mm:ss");
+        int hour = dtx.time().hour();
         qDebug()<<__LINE__<<hour<<endl;
-        if(curDT.time().msec()==0&&curDT.time().second()==0&&curDT.time().minute()==0)
+        if(dtx.time().msec()==0&&dtx.time().second()==0&&dtx.time().minute()==0)
         {
 
             if(isSendBytime)
@@ -352,6 +374,7 @@ void DeviceCMDCtrlDlg::connectevent()
                 if(ontimecks.contains(QString::number(hour)))
                 {
 
+                    ui->receiveEdit->toPlainText()+"\r\n"+curDT.toString("yyyy-MM-dd HH:mm:ss.zzz ")+"启动定时发送";
 
                     emit sendCMD(ui->sendEdit->text());
                 }
@@ -359,24 +382,101 @@ void DeviceCMDCtrlDlg::connectevent()
         }
     });
 
+    connect(this,&DeviceCMDCtrlDlg::sendloopread,this,[=](bool state)
+    {
+//        qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
+        QString curPortName = ui->curPort->currentText();
+        QString originName = util.Uart_Revert(curPortName);
+
+
+
+
+        if(!serialPort->openPort(originName,BAUD9600,DATA_8,PAR_NONE,STOP_1,FLOW_OFF,60))
+        {
+            comstr += curPortName +"未接通!";
+            ui->loopread->setCheckable(false);
+            ui->cominfo->setText(comstr);
+            qDebug()<<__LINE__<<comstr<<endl;
+            return;
+        }
+
+
+        comstr == curPortName +"已接通!";
+        comstr += "串口名:"+curPortName+"\r\n";
+        comstr += "波特率:9600\r\n";
+        comstr += "数据位:8\r\n";
+        comstr += "停止位:1\r\n";
+        comstr += "校验位:none\r\n";
+        comstr += "数据进制:16\r\n";
+        comstr += "通信超时:1min\r\n";
+
+
+        qDebug()<<__LINE__<<comstr<<endl;
+        ui->cominfo->setText(comstr);
+
+        while(state)
+        {
+
+            QByteArray resByt = serialPort->read();
+
+
+            qDebug()<<__LINE__<<"RECEIVE2:"<<resByt<<endl;
+            str += ui->receiveEdit->toPlainText()+"\r\n";
+            str += QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[R]:"+resByt+"\r\n";
+            ui->receiveEdit->setPlainText(str);
+        }
+
+
+
+        serialPort->close();
+
+
+    });
 
 }
 
-#ifdef Q_OS_LINUX
+void DeviceCMDCtrlDlg::writeloglocal(QString text)
+{
+    QString path = "/home/rpdzkj/log.txt";
+    QFile file(path);
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+
+    QString str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm")+text+"\r\n";
+    file.write(str.toUtf8());
+    file.flush();
+    file.close();
+}
+
+//#ifdef Q_OS_LINUX
 void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 {
     qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
     QString curPortName = ui->curPort->currentText();
-    QString originName = util.Uart_Revert(curPortName);
-    muartThread = new UartThread;
-    if(!muartThread->initUart(originName,BAUD9600,3,5))
-    {
-        comstr = curPortName +"未接通!";
-//        ui->loopread->setChecked(false);
-        ui->loopread->setCheckable(false);
+    QString originName = util.Uart_Convert(curPortName);
 
+
+
+
+
+    if(!serialPort->openPort(originName,BAUD9600,DATA_8,PAR_NONE,STOP_1,FLOW_OFF,60))
+    {
+        comstr = curPortName+"("+originName+")" +"未接通!";
+        ui->loopread->setCheckable(false);
+        ui->cominfo->setText(comstr);
+        qDebug()<<__LINE__<<comstr<<endl;
         return;
     }
+
+//    muartThread = new UartThread;
+//    if(!muartThread->initUart(originName,BAUD9600,3,5))
+//    {
+//        comstr = curPortName +"未接通!";
+////        ui->loopread->setChecked(false);
+//        ui->loopread->setCheckable(false);
+//        ui->cominfo->setText(comstr);
+//        qDebug()<<__LINE__<<comstr<<endl;
+//        return;
+//    }
 
     ui->loopread->setCheckable(true);
 
@@ -384,7 +484,8 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 
 //    ui->btn_sendcmd->setText("执行");
     //串口已接通，波特率，数据位，停止位，校验位，数据进制，通信超时
-    comstr = curPortName +"已接通!";
+    comstr = curPortName +"("+originName+")" +"已接通!";
+    comstr += "串口名:"+curPortName+"\r\n";
     comstr += "波特率:9600\r\n";
     comstr += "数据位:8\r\n";
     comstr += "停止位:1\r\n";
@@ -392,18 +493,26 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
     comstr += "数据进制:16\r\n";
     comstr += "通信超时:1min\r\n";
 
+    qDebug()<<__LINE__<<comstr<<endl;
     ui->cominfo->setText(comstr);
 
     if(!cmd.isEmpty())
     {
-        QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper()).toHex(' ');
+        QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper());
+        int length = cmd.length();
 
-        muartThread->writeUart(QString2Hex(cmd));
-//        str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr+"\r\n";
+        serialPort->write(QString2Hex(cmd));
+//        muartThread->writeUart(QString2Hex(cmd));
+        str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss.zzz")+curPortName+"[S]:"+bytArr.toHex(' ')+"\r\n";
 
     }
 
-    QByteArray resByt = muartThread->readUart();
+
+
+
+
+    QByteArray resByt = serialPort->read();
+
     qDebug()<<__LINE__<<"RECEIVE1:"<<resByt<<endl;
 
     str = ui->receiveEdit->toPlainText();
@@ -414,11 +523,13 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
 
 
 
+    serialPort->close();
+
 
 
 }
 
-#endif
+//#endif
 
 //将单个字符串转换为hex
 //0-F -> 0-15
@@ -541,10 +652,26 @@ void DeviceCMDCtrlDlg::onReceivecurDT(QDateTime &dt)
 {
     curDT = dt;
 //    qDebug()<<__LINE__<<__FUNCTION__<<dt.toString("yyyy-MM-dd HH:mm:ss")<<endl;
-    ui->timertk->setText(dt.toString("yyyy-MM-dd HH:mm:ss"));
+    if(!ui->test_sendintime->isChecked())
+        ui->timertk->setText(dt.toString("yyyy-MM-dd HH:mm:ss"));
+    else
+    {
 
+        ui->timertk->setText("2024-01-17 14:58:00");
+        QTimer timer0;
+        timer0.setInterval(1000);
+        timer0.start();
+//        timer0.setSingleShot(true);
+        connect(&timer0,&QTimer::timeout,this,&DeviceCMDCtrlDlg::onTimeout);
+
+    }
 
 
 }
 
-
+void DeviceCMDCtrlDlg::onTimeout()
+{
+    QDateTime dt = QDateTime::fromString(ui->timertk->text(),"yyyy-MM-dd HH:mm:ss");
+    QDateTime dt1 = dt.addSecs(1);
+    ui->timertk->setText(dt1.toString("yyyy-MM-dd HH:mm:ss"));
+}

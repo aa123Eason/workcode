@@ -21,6 +21,7 @@ public:
     ~UpsetAdd();
 
     void UpAdd_filled();
+    void setdefaultvalue();
 
 private slots:
     void on_pushButton_confirm_clicked();
