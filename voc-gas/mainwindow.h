@@ -215,6 +215,7 @@ private:
     QStringList seqlist,nameseqlist;
     QList<FactorInfo *> facseqlist;
     int flag = 0;
+    ParamSet *paramSet = nullptr;
 
 
 };

@@ -59,4 +59,4 @@ DISTFILES += \
 include(src/xlsx/qtxlsx.pri)
 include(QsLog/QsLog.pri)
 
-
+RC_ICONS = icon.ico

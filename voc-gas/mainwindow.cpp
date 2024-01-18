@@ -2191,16 +2191,15 @@ ui->tableWidget->setColumnCount(cnt);
 ui->tableWidget->setHorizontalHeaderLabels(headerText);
 // ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
-
 ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
 ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget->horizontalHeader()->font();
 font.setBold(true);
 ui->tableWidget->horizontalHeader()->setFont(font);
+ui->tableWidget->setWordWrap(true);
+//ui->tableWidget->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
 
-ui->tableWidget->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
-
-int widths[] = {130, 100, 100, 85};
+int widths[] = {120, 100, 80, 55};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget->setColumnWidth(i, widths[i]);
 }
@@ -2454,7 +2453,8 @@ void MainWindow::on_pushButton_Set_clicked()
         }
     }
 
-    ParamSet *paramSet = new ParamSet();
+    if(paramSet==nullptr)
+        paramSet = new ParamSet();
     paramSet->setWindowModality(Qt::WindowModal);
     connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
     {
@@ -2531,6 +2531,7 @@ void MainWindow::on_pushButton_Set_clicked()
 
 
     emit sendlogmsg("打开参数设置");
+    paramSet->setWindowModality(Qt::ApplicationModal);
     paramSet->show();
 }
 

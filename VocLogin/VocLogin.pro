@@ -28,4 +28,4 @@ RESOURCES += \
 
 DISTFILES += \
 
-
+RC_ICONS = icon.ico

@@ -67,30 +67,75 @@ void Dialog::on_pushButton_3_clicked()
     this->close();
 }
 
+QJsonArray Dialog::getUserInfo()
+{
+    QJsonArray array;
+    QString path = QApplication::applicationDirPath()+USERINFO;
+    QFile file(path);
+    if(file.open(QIODevice::ReadOnly))
+    {
+        QByteArray byt;
+        byt.append(file.readAll());
+        file.flush();
+        file.close();
+        QJsonDocument jDoc = QJsonDocument::fromBinaryData(byt);
+        byt.clear();
+        array = jDoc.array();
+
+    }
+
+    qDebug()<<__LINE__<<array<<endl;
+//    QJsonDocument jDoc1;
+//    jDoc1.setArray(array);
+//    QString path1 = QApplication::applicationDirPath()+"/docu/user.dat";
+//    QFile file1(path1);
+//    file1.open(QIODevice::WriteOnly|QIODevice::Truncate);
+//    file1.write(jDoc1.toBinaryData());
+//    file1.flush();
+//    file1.close();
+
+    return array;
+
+}
+
 void Dialog::on_pushButton_clicked()
 {
 
-   if(ui->comboBox->currentText() == "超级管理员" && ui->lineEdit_2->text() == "888888")
-   {
+    for(int i=0;i<usersArray.count();++i)
+    {
+        QJsonValue value = usersArray.at(i);
+        QString username = value.toObject().keys()[0];
+        QString pwd = value.toObject().value(username).toString();
+
+        qDebug()<<"info:"<<username<<":"<<pwd<<endl;
+        if(ui->comboBox->currentText() == username && ui->lineEdit_2->text() == pwd)
+        {
+            qDebug()<<__LINE__<<ui->comboBox->currentText()<<":"<<ui->lineEdit_2->text()<<endl;
+            if(!ui->comboBox->currentText().isEmpty())
+            {
+                if(writeindb(db,ui->comboBox->currentText()))
+                {
+                    this->close();
+                    qDebug()<<__LINE__<<QApplication::applicationDirPath() + "/VocGas.exe"<<endl;
+                    my_Process->startDetached(QApplication::applicationDirPath() + "/VocGas.exe");
+                    break;
+                }
+            }
 
 
-       if(!ui->comboBox->currentText().isEmpty())
-       {
-           if(writeindb(db,ui->comboBox->currentText()))
-           {
-               this->close();
-               qDebug()<<__LINE__<<QApplication::applicationDirPath() + "/VocGas.exe"<<endl;
-               my_Process->startDetached(QApplication::applicationDirPath() + "/VocGas.exe");
-           }
-       }
+
+        }
+//        else
+//        {
+
+//            QMessageBox::about(NULL, "提示", "<font color='black'>用戶名或密码输入错误！</font>");
+
+//        }
+
+    }
 
 
 
-   }
-   else
-   {
-       QMessageBox::about(NULL, "提示", "<font color='black'>登录密码错误！</font>");
-   }
 }
 
 void Dialog::showState(QProcess::ProcessState state)
@@ -126,6 +171,7 @@ void Dialog::showFinished(int exitCode,QProcess::ExitStatus exit_stattus)
 void Dialog::init()
 {
     datebaseinit();
+    usersArray = getUserInfo();
 
     ui->lineEdit_2->installEventFilter(this);
 }
@@ -134,6 +180,7 @@ bool Dialog::datebaseinit()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(QApplication::applicationDirPath()+"/VocGas.db");
+    qDebug()<<__LINE__<<db.databaseName()<<endl;
     if(db.open())
     {
         qDebug()<<__LINE__<<"数据库打开成功"<<endl;
@@ -156,7 +203,7 @@ bool Dialog::writeindb(QSqlDatabase &db,QString name)
     sqlStr += "\');";
 
     QString sqlStr1 = "select UserName from T_User_Logining;";
-    QString sqlStr2 = "delete * from T_User_Logining;";
+    QString sqlStr2 = "delete from T_User_Logining;";
 
     qDebug()<<__LINE__<<sqlStr<<endl;
     qDebug()<<__LINE__<<sqlStr1<<endl;
@@ -164,19 +211,8 @@ bool Dialog::writeindb(QSqlDatabase &db,QString name)
 
     QSqlQuery q(db),q1(db),q2(db);
 
-    q1.exec(sqlStr1);
-
-
-    while(q1.next())
-    {
-        if(name == q1.value("UserName").toString())
-        {
-            q2.exec(sqlStr2);
-            break;
-
-        }
-    }
-
+    q1.exec(sqlStr1);  
+    q2.exec(sqlStr2);
     q.exec(sqlStr);
 
     return true;

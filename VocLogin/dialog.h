@@ -13,8 +13,17 @@
 #include <windows.h>
 #include <QDateEdit>
 #include <QMessageBox>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QByteArray>
+#include <QFile>
+#include <QIODevice>
 
 #pragma comment(lib, "user32.lib")
+
+#define USERINFO "/docu/user.dat"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -31,6 +40,8 @@ public:
     void init();
     bool datebaseinit();
     bool writeindb(QSqlDatabase &db,QString name);
+    QJsonArray getUserInfo();
+
 
 protected:
     bool eventFilter(QObject *obj = nullptr, QEvent * = nullptr);
@@ -47,5 +58,6 @@ private:
     Ui::Dialog *ui;
     QProcess *my_Process = nullptr;
     QSqlDatabase db;
+    QJsonArray usersArray;
 };
 #endif // DIALOG_H
