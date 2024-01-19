@@ -29,6 +29,7 @@
 #include <QFileInfoList>
 #include <QDir>
 #include "usbupdatedlg.h"
+#include <QHBoxLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -211,6 +212,8 @@ private:
     QList<QLabel *> ADDR_list;
     QList<QLabel *> STATE_list;
 
+    QList<QLineEdit *> lineEditList;
+    QList<QTextEdit *> textEditList;
     QList<QLabel *> labelList;
     QList<std::function<void()>> funcList;
     DeviceCMDCtrlDlg* devicecmddlg = nullptr;

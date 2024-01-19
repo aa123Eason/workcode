@@ -11,7 +11,7 @@ DeviceCMDCtrlDlg::DeviceCMDCtrlDlg(QWidget *parent) :
 {
     ui->setupUi(this);
     init();
-    connectevent();
+
 }
 //#ifdef Q_OS_LINUX
 DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
@@ -32,7 +32,25 @@ DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 void DeviceCMDCtrlDlg::init()
 {
 //    this->setWindowFlags(Qt::FramelessWindowHint);
-    timeCheckInit();
+    typecks.clear();
+    typecks.append(ui->tmck1);
+    typecks.append(ui->tmck2);
+    typecks.append(ui->tmck3);
+    typecks.append(ui->tmck4);
+    list.clear();
+    list<<"01 06 00 00 00 0B C8 0D";
+    list<<"01 06 00 00 00 01 48 0A";
+    list<<"01 06 00 00 00 1E 09 C2";
+    list<<"01 06 00 00 00 02 08 0B";
+
+    timeCheckInit(l1,ui->timeset1);
+    timeCheckInit(l2,ui->timeset2);
+    timeCheckInit(l3,ui->timeset3);
+    timeCheckInit(l4,ui->timeset4);
+
+    loadtmcksState();
+
+
     move(this->parentWidget()->x(),this->parentWidget()->y());
     setMaximumSize(1280,718);
     setMinimumSize(1280,718);
@@ -57,7 +75,7 @@ void DeviceCMDCtrlDlg::init()
     loadFactorAndPort();
 
 
-    ontimecks.clear();
+//    ontimecks.clear();
     for(QCheckBox *box:timecks)
     {
         box->setCheckable(true);
@@ -67,6 +85,84 @@ void DeviceCMDCtrlDlg::init()
 
     ui->sendEdit->installEventFilter(this);
 
+    connectevent();
+
+    ui->tmck1->setChecked(Qt::Checked);
+
+    td1 = startTimer(180000);
+
+}
+
+void DeviceCMDCtrlDlg::timerEvent(QTimerEvent *e)
+{
+    if(e->timerId() == td1)
+    {
+        ui->receiveEdit->clear();
+    }
+}
+
+void DeviceCMDCtrlDlg::loadtmcksState()
+{
+    QFile file(QApplication::applicationDirPath()+DEVICE_CMD_INFO);
+    if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+        return;
+    QByteArray byt;
+    byt.append(file.readAll());
+    file.flush();
+    file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    byt.clear();
+    QJsonObject jObj = jDoc.object();
+
+    QJsonObject::iterator it = jObj.begin();
+    while(it != jObj.end())
+    {
+        qDebug()<<__LINE__<<it.key()<<it.value()<<endl;
+        QString cmdName = it.key();
+        QJsonObject valueObj = it.value().toObject();
+        QString seltms = valueObj.value("select_times").toString();
+        qDebug()<<__LINE__<<it.key()<<seltms<<endl;
+        QStringList tmlist;
+        int index;
+        for(QCheckBox *box:typecks)
+        {
+            if(box)
+            {
+
+                if(box->text() == cmdName)
+                {
+
+                    index = typecks.indexOf(box);
+                    qDebug()<<__LINE__<<index<<box->text()<<cmdName<<endl;
+
+                }
+            }
+        }
+
+        if(seltms.split(",").count()>0)
+        {
+            tmlist = seltms.split(",");
+        }
+
+        QWidget *w = ui->timesetframe->widget(index);
+        if(w)
+        {
+            for(int k = 0;k < w->layout()->count();++k)
+            {
+                QLayoutItem *item = w->layout()->itemAt(k);
+                if(item->widget())
+                {
+                    QCheckBox *box = (QCheckBox *)item->widget();
+                    qDebug()<<__LINE__<<box->text()<<endl;
+                    box->setChecked(tmlist.contains(box->text()));
+
+                }
+            }
+        }
+
+        it++;
+    }
 }
 
 bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
@@ -93,8 +189,9 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
     return QDialog::eventFilter(obj,e);
 }
 
-void DeviceCMDCtrlDlg::timeCheckInit()
+void DeviceCMDCtrlDlg::timeCheckInit(QGridLayout &timeset,QWidget *w)
 {
+
     QString stylesheet = ":/images/checkboxstyle.qss";
     QFile file(stylesheet);
     QByteArray bytArr;
@@ -128,15 +225,20 @@ void DeviceCMDCtrlDlg::timeCheckInit()
 
     }
 
+
     int row = 0,col = 0;
+
+
     for(int i = 0;i<timecks.count();++i)
     {
         QCheckBox *box = (QCheckBox *)timecks.at(i);
         if(box!=nullptr)
         {
-            qDebug()<<__LINE__<<box->text()<<endl;
-            ui->timeset->addWidget(box,row,col,Qt::AlignCenter);
-            if(col==6)
+            qDebug()<<__LINE__<<row<<col<<box->text()<<endl;
+            timeset.addWidget(box,row,col,Qt::AlignCenter);
+            timeset.setRowStretch(row,1);
+            timeset.setColumnStretch(col,1);
+            if(col==5)
             {
                 col = 0;
                 row++;
@@ -150,12 +252,19 @@ void DeviceCMDCtrlDlg::timeCheckInit()
 
     }
 
+    timeset.setSpacing(4);
 
 
+    w->setLayout(&timeset);
 
 
 
     bytArr.clear();
+
+
+
+
+
 }
 
 void DeviceCMDCtrlDlg::connectevent()
@@ -234,11 +343,8 @@ void DeviceCMDCtrlDlg::connectevent()
 //    #endif
     connect(ui->sendEdit,&QLineEdit::textChanged,[=](const QString &text)
     {
-        QStringList list;
-        list<<"01 06 00 00 00 0B C8 0D";
-        list<<"01 06 00 00 00 01 48 0A";
-        list<<"01 06 00 00 00 1E 09 C2";
-        list<<"01 06 00 00 00 02 08 0B";
+//        QStringList list;
+
         //执行，发送
         if(list.contains(text))
         {
@@ -288,23 +394,23 @@ void DeviceCMDCtrlDlg::connectevent()
     });
 //#endif
 
-    for(QCheckBox *box:timecks)
-    {
-        if(box!=nullptr)
-        {
-            connect(box,&QCheckBox::stateChanged,this,[=](int state)
-            {
-                if(state)
-                {
-                    if(ontimecks.contains(box->text().split("点")[0]))
-                        ontimecks.removeOne(box->text().split("点")[0]);
-                    ontimecks.append(box->text().split("点")[0]);
-                }
+//    for(QCheckBox *box:timecks)
+//    {
+//        if(box!=nullptr)
+//        {
+//            connect(box,&QCheckBox::stateChanged,this,[=](int state)
+//            {
+//                if(state)
+//                {
+//                    if(ontimecks.contains(box->text().split("点")[0]))
+//                        ontimecks.removeOne(box->text().split("点")[0]);
+//                    ontimecks.append(box->text().split("点")[0]);
+//                }
 
-                qDebug()<<__LINE__<<ontimecks<<endl;
-            });
-        }
-    }
+//                qDebug()<<__LINE__<<ontimecks<<endl;
+//            });
+//        }
+//    }
 
     connect(ui->btn_sendbytime,&QPushButton::clicked,this,[=]()
     {
@@ -361,26 +467,7 @@ void DeviceCMDCtrlDlg::connectevent()
 
     });
 
-    connect(&timer,&QTimer::timeout,this,[=]()
-    {
-        QDateTime dtx = QDateTime::fromString(ui->timertk->text(),"yyyy-MM-dd HH:mm:ss");
-        int hour = dtx.time().hour();
-        qDebug()<<__LINE__<<hour<<endl;
-        if(dtx.time().msec()==0&&dtx.time().second()==0&&dtx.time().minute()==0)
-        {
-
-            if(isSendBytime)
-            {
-                if(ontimecks.contains(QString::number(hour)))
-                {
-
-                    ui->receiveEdit->toPlainText()+"\r\n"+curDT.toString("yyyy-MM-dd HH:mm:ss.zzz ")+"启动定时发送";
-
-                    emit sendCMD(ui->sendEdit->text());
-                }
-            }
-        }
-    });
+    connect(&timer,&QTimer::timeout,this,&DeviceCMDCtrlDlg::onSendByTime);
 
     connect(this,&DeviceCMDCtrlDlg::sendloopread,this,[=](bool state)
     {
@@ -433,6 +520,249 @@ void DeviceCMDCtrlDlg::connectevent()
 
     });
 
+    for(QCheckBox *ck:typecks)
+    {
+        connect(ck,&QCheckBox::stateChanged,this,[=](int state)
+        {
+            if(state)
+            {
+                if(ck==ui->tmck1)
+                {
+                    ui->timesetframe->setCurrentWidget(ui->timeset1);
+                }
+                else if(ck==ui->tmck2)
+                {
+                    ui->timesetframe->setCurrentWidget(ui->timeset2);
+                }
+                else if(ck==ui->tmck3)
+                {
+                    ui->timesetframe->setCurrentWidget(ui->timeset3);
+                }
+                else if(ck==ui->tmck4)
+                {
+                    ui->timesetframe->setCurrentWidget(ui->timeset4);
+                }
+            }
+        });
+    }
+
+    connect(ui->timesetframe,&QStackedWidget::currentChanged,this,&DeviceCMDCtrlDlg::onStackedCurrentChanged);
+
+    connect(ui->saveset,&QPushButton::clicked,this,&DeviceCMDCtrlDlg::onSaveTimeset);
+
+    connect(ui->resetset,&QPushButton::clicked,this,&DeviceCMDCtrlDlg::onResetTimeset);
+
+    connect(ui->selAll,&QCheckBox::stateChanged,this,[=](int state)
+    {
+        if(state)
+        {
+            QWidget *w = ui->timesetframe->currentWidget();
+            if(w==nullptr)
+            {
+                return;
+            }
+            qDebug()<<__LINE__<<w->objectName()<<endl;
+        //    QGridLayout *layout = (QGridLayout *)w->layout();
+            qDebug()<<__LINE__<<w->layout()->count()<<endl;
+            for(int k = 0;k < w->layout()->count();++k)
+            {
+                QLayoutItem *item = w->layout()->itemAt(k);
+                if(item->widget())
+                {
+                    QCheckBox *box = (QCheckBox *)item->widget();
+        //            qDebug()<<__LINE__<<box->text()<<endl;
+
+                    box->setChecked(Qt::Checked);
+
+                }
+            }
+        }
+        else
+        {
+            loadtmcksState();
+        }
+    });
+
+}
+
+void DeviceCMDCtrlDlg::onSendByTime()
+{
+    QString infoStr;
+
+    QDateTime dtx = QDateTime::fromString(ui->timertk->text(),"yyyy-MM-dd HH:mm:ss");
+    int hour = dtx.time().hour();
+    qDebug()<<__LINE__<<hour<<endl;
+    if(dtx.time().msec()==0&&dtx.time().second()==0&&dtx.time().minute()==0)
+    {
+
+        if(isSendBytime)
+        {
+            QFile file(QApplication::applicationDirPath()+DEVICE_CMD_INFO);
+            if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                return ;
+            }
+            QByteArray byt;
+            byt.append(file.readAll());
+            file.flush();
+            file.close();
+
+            QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+            byt.clear();
+            QJsonObject jObj = jDoc.object();
+            QJsonObject::iterator it = jObj.begin();
+            while(it != jObj.end())
+            {
+                QString cmdKey = it.key();
+                QJsonObject jSubObj = it.value().toObject();
+                QString cmd = jSubObj.value("cmd").toString();
+                QString seltms = jSubObj.value("select_times").toString();
+                QStringList tmlist;
+                if(seltms.split(",").count()>0)
+                {
+                    for(QString tm:seltms.split(","))
+                    {
+                        QString tm_num = tm.remove("点");
+                        tmlist<<tm;
+                    }
+
+                }
+                if(tmlist.contains(QString::number(hour)))
+                {
+                    infoStr = curDT.toString("yyyy-MM-dd HH:mm:ss.zzz ")+"启动定时发送\r\n";
+                    infoStr += QString::number(hour)+"点--"+cmdKey+":"+cmd+"\r\n";
+                    emit sendCMD(cmd);
+                }
+
+                it++;
+            }
+
+
+        }
+    }
+
+    QString oldStr = ui->receiveEdit->toPlainText()+"\r\n";
+    ui->receiveEdit->setPlainText(oldStr+infoStr);
+    writeloglocal(ui->receiveEdit->toPlainText());
+
+    ui->receiveEdit->verticalScrollBar()->setValue(ui->receiveEdit->verticalScrollBar()->maximum());
+
+}
+
+void DeviceCMDCtrlDlg::onStackedCurrentChanged(int index)
+{
+    QWidget *widget = ui->timesetframe->currentWidget();
+    if(widget==nullptr)
+    {
+        return;
+    }
+//    timeCheckInit(widget);
+    ui->selAll->setChecked(false);
+    qDebug()<<__LINE__<<"CURRENT PAGE:"<<ui->timesetframe->currentWidget()->objectName()<<endl;
+
+}
+
+void DeviceCMDCtrlDlg::onSaveTimeset()
+{
+    QJsonObject mainobj;
+
+    for(int i=0;i<ui->timesetframe->count();++i)
+    {
+        QWidget *w = ui->timesetframe->widget(i);
+
+        QString seltms;
+        QStringList tmplist;
+        QJsonObject subObj;
+        if(w)
+        {
+            qDebug()<<__LINE__<<w->objectName()<<endl;
+            qDebug()<<__LINE__<<w->layout()->count()<<endl;
+            for(int k = 0;k < w->layout()->count();++k)
+            {
+                QLayoutItem *item = w->layout()->itemAt(k);
+                if(item->widget())
+                {
+                    QCheckBox *box = (QCheckBox *)item->widget();
+                    //            qDebug()<<__LINE__<<box->text()<<endl;
+                    if(box->isChecked())
+                    {
+                        qDebug()<<__LINE__<<box->text()<<endl;
+                        tmplist<<box->text();
+
+                    }
+                }
+            }
+
+            qDebug()<<__LINE__<<tmplist<<endl;
+
+            for(int p =0;p<tmplist.count();++p)
+            {
+                seltms += tmplist[p];
+                if(p<tmplist.count()-1)
+                {
+                    seltms += ",";
+                }
+            }
+
+            QCheckBox *typeBox = typecks.at(i);
+            if(typeBox)
+            {
+                QString seltype = typeBox->text();
+                subObj.insert("cmd",list.at(i));
+                subObj.insert("select_times",seltms);
+                mainobj.insert(seltype,subObj);
+            }
+        }
+    }
+
+    QJsonDocument jDoc;
+    jDoc.setObject(mainobj);
+
+    QString filestr = QApplication::applicationDirPath()+DEVICE_CMD_INFO;
+
+    QFile file(filestr);
+    QDir dir;
+    if(!file.exists())
+    {
+       QDir dir;
+       dir.mkdir(QApplication::applicationDirPath()+"/docu");
+    }
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+    if(file.write(jDoc.toJson()))
+    {
+        QMessageBox::information(this,"提示","定时时间设置已保存:\r\n"+filestr);
+
+        file.flush();
+        file.close();
+    }
+
+}
+
+void DeviceCMDCtrlDlg::onResetTimeset()
+{
+
+    QWidget *w = ui->timesetframe->currentWidget();
+    if(w==nullptr)
+    {
+        return;
+    }
+    qDebug()<<__LINE__<<w->objectName()<<endl;
+//    QGridLayout *layout = (QGridLayout *)w->layout();
+    qDebug()<<__LINE__<<w->layout()->count()<<endl;
+    for(int k = 0;k < w->layout()->count();++k)
+    {
+        QLayoutItem *item = w->layout()->itemAt(k);
+        if(item->widget())
+        {
+            QCheckBox *box = (QCheckBox *)item->widget();
+//            qDebug()<<__LINE__<<box->text()<<endl;
+            if(box->isChecked())
+            {
+                qDebug()<<__LINE__<<box->text()<<endl;
+                box->setChecked(Qt::Unchecked);
+            }
+        }
+    }
 }
 
 void DeviceCMDCtrlDlg::writeloglocal(QString text)

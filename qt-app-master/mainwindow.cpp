@@ -282,7 +282,10 @@ void MainWindow::Widget_Init()
 
     connect(ui->closewindow,&QPushButton::clicked,this,[=]()
     {
-        this->close();
+       if(QMessageBox::Yes == QMessageBox::question(this,"提示","是否关闭软件（Y/N)？",QMessageBox::Yes,QMessageBox::No))
+       {
+           this->close();
+       }
     });
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
@@ -410,6 +413,27 @@ void MainWindow::installEvents() {
     labelList.append(ui->label_36);
     funcList.append(std::bind(&MainWindow::openModbus, this));
 
+    lineEditList.append(ui->Username);
+    lineEditList.append(ui->Password);
+    lineEditList.append(ui->lineEditIP);
+    lineEditList.append(ui->lineEditNM);
+    lineEditList.append(ui->lineEditGW);
+    lineEditList.append(ui->address);
+
+    for(int i = 0; i < lineEditList.size(); ++ i) {
+        lineEditList.at(i)->installEventFilter(this);
+    }
+
+
+    textEditList.append(ui->payload);
+    textEditList.append(ui->response);
+    textEditList.append(ui->textEditToPage);
+    textEditList.append(ui->textEditAllPage);
+    textEditList.append(ui->textEditCurPage);
+
+    for(int i = 0; i < textEditList.size(); ++ i) {
+        textEditList.at(i)->installEventFilter(this);
+    }
 
     for(int i = 0; i < labelList.size(); ++ i) {
         labelList.at(i)->installEventFilter(this);
@@ -430,6 +454,49 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     std::function<void()> fun = funcList.at(i / 2);
                     fun();
                     return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    for(int i = 0; i < textEditList.size(); ++ i) {
+        if(obj == textEditList.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                   qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
+                   QProcess pro;
+                   pro.startDetached("pkill florence");
+                   if(pro.waitForFinished())
+                   {
+
+                       pro.startDetached("florence");
+                   }
+
+                   pro.close();
+                   return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    for(int i = 0; i < lineEditList.size(); ++ i) {
+        if(obj == lineEditList.at(i)) {
+            if (event->type() == QEvent::MouseButtonPress) {
+                QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+                if(mouseEvent->button() == Qt::LeftButton) {
+                   qDebug()<<__LINE__<<lineEditList.at(i)->objectName()<<endl;
+                   QProcess pro;
+                   pro.startDetached("pkill florence");
+                   if(pro.waitForFinished())
+                   {
+                       pro.startDetached("florence");
+                   }
+
+                   pro.close();
+                   return true;
                 }
             }
             return false;
@@ -1699,39 +1766,42 @@ void MainWindow::setTableUpHeader()
 {
     QString qssTV = QLatin1String("QTableWidget::item:selected{background-color:#1B89A1}"
                                   "QHeaderView::section,QTableCornerButton:section{ \
-                                  padding:3px; margin:0px; color:#DCDCDC;  border:1px solid #242424; \
+                                  padding:3px; margin:0px; color:#000000;  border:1px solid #eeeefc; \
     border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
-background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
+background:qlineargradient(spread:pad,x1:0,y1:0,x2:0.5,y2:1,stop:0 #bbbbbb,stop:1 #ffffff); }"
 "QTableWidget{background-color:white;border:none;}");
 //设置表头
 QStringList headerText;
-headerText << QStringLiteral("ID") << QStringLiteral("MN") << QStringLiteral("平台地址") << QStringLiteral("上传周期/秒")
+headerText << QStringLiteral("MN") << QStringLiteral("平台地址") << QStringLiteral("上传周期/秒")
            << QStringLiteral("分钟数据上传周期/分钟") << QStringLiteral("是否开启心跳") << QStringLiteral("心跳周期/秒") << QStringLiteral("密码")
-           << QStringLiteral("是否上报数据") << QStringLiteral("发送超时/秒") << QStringLiteral("发送失败重试次数") << QStringLiteral("协议版本")<< QStringLiteral("操作");
+           << QStringLiteral("是否上报数据") << QStringLiteral("发送超时/秒") << QStringLiteral("发送失败重试次数") << QStringLiteral("协议版本")
+           << QStringLiteral("操作");
 int cnt = headerText.count();
 ui->tableWidget_Upload->setColumnCount(cnt);
 ui->tableWidget_Upload->setHorizontalHeaderLabels(headerText);
 // ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
+ui->tableWidget_Upload->verticalHeader()->hide();
 ui->tableWidget_Upload->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
-
-ui->tableWidget_Upload->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
+ui->tableWidget_Upload->setWordWrap(true);
+//ui->tableWidget_Upload->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
 ui->tableWidget_Upload->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget_Upload->horizontalHeader()->font();
 font.setBold(true);
+font.setPointSize(16);
 ui->tableWidget_Upload->horizontalHeader()->setFont(font);
 
-ui->tableWidget_Upload->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
+//ui->tableWidget_Upload->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
 
-int widths[] = {130, 150, 200, 100, 170, 110, 100, 80, 110, 100, 150, 130, 130};
+int widths[] = {150, 250, 150, 230, 150, 200,120,150, 150, 180, 150, 130};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Upload->setColumnWidth(i, widths[i]);
 }
-
+//ui->tableWidget_Upload->resizeColumnsToContents();
 ui->tableWidget_Upload->setStyleSheet(qssTV);
 ui->tableWidget_Upload->horizontalHeader()->setVisible(true);
 ui->tableWidget_Upload->verticalHeader()->setDefaultSectionSize(45);
 ui->tableWidget_Upload->setFrameShape(QFrame::NoFrame);
-
+ui->tableWidget_Upload->setTextElideMode(Qt::ElideNone);
 }
 
 bool MainWindow::DevGui_Init()
@@ -3304,10 +3374,10 @@ bool MainWindow::UploadGui_Init()
 
     ui->tableWidget_Upload->clear();
     setTableUpHeader();
-    QTableWidgetItem *pItemID,*pItemMN,*pItemAddr,*pItemIR,*pItemIMDR,*pItemIH,*pItemPW,*pItemOT,*pItemRT;
-    QCheckBox *pHeart,*pUpload;
-    QPushButton *pOperSaved,*pOperDele;
-    QComboBox *pVersion;
+    QTableWidgetItem *pItemID = nullptr,*pItemMN = nullptr,*pItemAddr = nullptr,*pItemIR = nullptr,*pItemIMDR = nullptr,*pItemIH = nullptr,*pItemPW = nullptr,*pItemOT = nullptr,*pItemRT = nullptr;
+    QCheckBox *pHeart = nullptr,*pUpload = nullptr;
+    QPushButton *pOperSaved = nullptr,*pOperDele = nullptr;
+    QComboBox *pVersion = nullptr;
 
     httpclinet pClient;
     if(pClient.get(DCM_MNINFO,m_JsonArray))
@@ -3320,67 +3390,102 @@ bool MainWindow::UploadGui_Init()
             // table mn
             QJsonValue iconArray = m_JsonArray.at(i);
             QJsonObject icon = iconArray.toObject();
+            QFont font;
+            font.setBold(true);
+            font.setPointSize(18);
+            ui->tableWidget_Upload->setRowHeight(i,65);
 
-            pItemID = new QTableWidgetItem(icon[QLatin1String("id")].toString());
-            pItemID->setTextAlignment(Qt::AlignCenter);
-            pItemID->setFlags(Qt::ItemIsEditable);
-            ui->tableWidget_Upload->setItem(i, 0, pItemID);
+//            pItemID = new QTableWidgetItem(icon[QLatin1String("id")].toString());
+//            pItemID->setTextAlignment(Qt::AlignCenter);
+//            pItemID->setFlags(Qt::ItemIsEditable);
+//            ui->tableWidget_Upload->setItem(i, 0, pItemID);
 
             pItemMN = new QTableWidgetItem(icon[QLatin1String("mn")].toString());
+            pItemMN->setFont(font);
             pItemMN->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 1, pItemMN);
+            ui->tableWidget_Upload->setItem(i, 0, pItemMN);
 
             pItemAddr = new QTableWidgetItem(icon[QLatin1String("ip_addr_port")].toString());
+            pItemAddr->setFont(font);
             pItemAddr->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 2, pItemAddr);
+            ui->tableWidget_Upload->setItem(i, 1, pItemAddr);
 
             pItemIR = new QTableWidgetItem(QString::number(icon[QLatin1String("interval_upload")].toInt()));
+            pItemIR->setFont(font);
             pItemIR->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 3, pItemIR);
+            ui->tableWidget_Upload->setItem(i, 2, pItemIR);
 
             pItemIMDR = new QTableWidgetItem(QString::number(icon[QLatin1String("interval_minute_data_upload")].toInt()));
+            pItemIMDR->setFont(font);
             pItemIMDR->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 4, pItemIMDR);
+            ui->tableWidget_Upload->setItem(i, 3, pItemIMDR);
 
             pHeart = new QCheckBox();
             if(icon[QLatin1String("is_open_heartbeat")].toInt()) pHeart->setCheckState(Qt::Checked);
             else pHeart->setCheckState(Qt::Unchecked);
-            pHeart->setStyleSheet("QCheckBox{spacing: 8px;}QCheckBox::indicator{width: 60px;height: 30px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
-            ui->tableWidget_Upload->setCellWidget(i, 5, pHeart);
+            pHeart->setStyleSheet("QCheckBox::indicator{width: 120px;height: 44px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
+            pHeart->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+            QHBoxLayout layout;
+            layout.addWidget(pHeart);
+            layout.setSpacing(2);
+            layout.setStretch(0,1);
+            layout.setAlignment(Qt::AlignCenter);
+            QWidget *w = new QWidget();
+            w->setLayout(&layout);
+            ui->tableWidget_Upload->setCellWidget(i, 4, w);
 
             pItemIH = new QTableWidgetItem(QString::number(icon[QLatin1String("interval_heartbeat")].toInt()));
+            pItemIH->setFont(font);
             pItemIH->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 6, pItemIH);
+            ui->tableWidget_Upload->setItem(i, 5, pItemIH);
 
             pItemPW = new QTableWidgetItem(icon[QLatin1String("pw")].toString());
+            pItemPW->setFont(font);
             pItemPW->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 7, pItemPW);
+            ui->tableWidget_Upload->setItem(i, 6, pItemPW);
 
             pUpload = new QCheckBox();
             if(icon[QLatin1String("is_open_heartbeat")].toInt()) pUpload->setCheckState(Qt::Checked);
             else pUpload->setCheckState(Qt::Unchecked);
-            pUpload->setStyleSheet("QCheckBox{spacing: 8px;}QCheckBox::indicator{width: 60px;height: 30px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
-            ui->tableWidget_Upload->setCellWidget(i, 8, pUpload);
+            pUpload->setStyleSheet("QCheckBox::indicator{width: 120px;height: 44px;} QCheckBox::indicator:unchecked {image: url(:/images/Off.png);} QCheckBox::indicator:checked {image: url(:/images/On.png);}");
+            QHBoxLayout layout1;
+            layout1.addWidget(pUpload);
+            layout1.setSpacing(2);
+            layout1.setStretch(0,1);
+            layout1.setAlignment(Qt::AlignCenter);
+            QWidget *w1 = new QWidget();
+            w1->setLayout(&layout1);
+            ui->tableWidget_Upload->setCellWidget(i, 7, w1);
 
             pItemOT = new QTableWidgetItem(QString::number(icon[QLatin1String("over_time")].toInt()));
+            pItemOT->setFont(font);
             pItemOT->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 9, pItemOT);
+            ui->tableWidget_Upload->setItem(i, 8, pItemOT);
 
             pItemRT = new QTableWidgetItem(QString::number(icon[QLatin1String("resend_times")].toInt()));
+            pItemRT->setFont(font);
             pItemRT->setTextAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setItem(i, 10, pItemRT);
+            ui->tableWidget_Upload->setItem(i, 9, pItemRT);
 
             pVersion = new QComboBox();
+            pVersion->setFont(font);
             pVersion->addItem("HJ212-2017");
             pVersion->addItem("HJ212-2005");
             pVersion->setCurrentText(icon[QLatin1String("protocol_version")].toString());
-            ui->tableWidget_Upload->setCellWidget(i, 11, pVersion);
+            ui->tableWidget_Upload->setCellWidget(i, 10, pVersion);
 
             pOperSaved = new QPushButton();
+            pOperSaved->setFont(font);
+            pOperSaved->resize(80,48);
+            pOperSaved->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
             pOperSaved->setText("保存");
 
             pOperDele = new QPushButton();
+            pOperDele->setFont(font);
+            pOperDele->resize(80,48);
+            pOperDele->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
             pOperDele->setText("删除");
+
 
             connect(pOperSaved,SIGNAL(clicked()),m_SignalMapper_Up,SLOT(map()));
             m_SignalMapper_Up->setMapping(pOperSaved,icon[QLatin1String("ip_addr_port")].toString());
@@ -3389,11 +3494,12 @@ bool MainWindow::UploadGui_Init()
 
             QWidget *btnWidget = new QWidget(this);
             QHBoxLayout *btnLayout = new QHBoxLayout(btnWidget);    // FTIXME：内存是否会随着清空tablewidget而释放
-            btnLayout->addWidget(pOperSaved);
-            btnLayout->addWidget(pOperDele);
+            btnLayout->addWidget(pOperSaved,1);
+            btnLayout->addWidget(pOperDele,1);
+            btnLayout->setSpacing(6);
             btnLayout->setMargin(5);
             btnLayout->setAlignment(Qt::AlignCenter);
-            ui->tableWidget_Upload->setCellWidget(i, 12, btnWidget);
+            ui->tableWidget_Upload->setCellWidget(i, 11, btnWidget);
         }
 
         connect(m_SignalMapper_Up,SIGNAL(mapped(QString)),this,SLOT(onButtonUpSaved(QString)));

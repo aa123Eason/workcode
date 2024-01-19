@@ -26,8 +26,8 @@
 #define CONF "./QDesktop.json"
 #define QTAPP_VER "QDesktopV1.0.230307"
 #define SCHEME "http"
-//#define SERVER_IP "172.20.0.69"
-//#define SERVER_IP "172.20.0.218"
+#define SERVER_IP "172.20.0.69"
+#define SERVER_IP "172.20.0.218"
 //#define SERVER_IP "172.20.0.238"
 #define SERVER_IP "localhost"
 #define SERVER_PORT "8888"
@@ -36,6 +36,7 @@
 #define PASSWORD "lcdcm"
 #define TOKEN "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5NTY1MjgwMDAsImlhdCI6MX0.0uQ36MB7Mt6i-tRzV9v1TnsftSoFpm6bJ_J8bQpUH4U"
 #define PAGE_SIZE 10
+#define DEVICE_CMD_INFO "/docu/cmdinfo.json"
 
 //
 #define TESHUZHI "teshuzhi"

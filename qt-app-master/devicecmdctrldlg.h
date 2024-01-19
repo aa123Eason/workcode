@@ -20,6 +20,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QEvent>
+#include <QGridLayout>
 
 //#ifdef Q_OS_LINUX
 #include "util.h"
@@ -28,10 +29,18 @@
 #include <unistd.h>
 #include "httpclinet.h"
 #include "serialport.h"
+#include <QStackedWidget>
+#include "common.h"
+#include <QFile>
+#include <QDir>
+#include <QTimerEvent>
+
+
 
 namespace Ui {
 class DeviceCMDCtrlDlg;
 }
+
 
 class DeviceCMDCtrlDlg : public QDialog
 {
@@ -44,11 +53,13 @@ public:
     void init();
     void loadFactorAndPort();
     void connectevent();
-    void timeCheckInit();
+    void timeCheckInit(QGridLayout &timeset,QWidget *w = nullptr);
     void writeloglocal(QString);
+    void loadtmcksState();
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
+    void timerEvent(QTimerEvent *e=nullptr) override;
 
 signals:
     void sendReback(bool);
@@ -62,6 +73,10 @@ public slots:
 //    #endif
     void onReceivecurDT(QDateTime &);
     void onTimeout();
+    void onStackedCurrentChanged(int index);
+    void onSaveTimeset();
+    void onResetTimeset();
+    void onSendByTime();
 
 private:
     Ui::DeviceCMDCtrlDlg *ui;
@@ -74,12 +89,16 @@ private:
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
     QList<QCheckBox *> timecks;
+    QList<QCheckBox *> typecks;
     QStringList ontimecks;
     QDateTime curDT;
     bool isSendBytime = false;
     QTimer timer;
     bool isLoopOn = false;
     SerialPort *serialPort = nullptr;
+    QGridLayout l1,l2,l3,l4;
+    QStringList list;
+    int td1;
 
 
 };

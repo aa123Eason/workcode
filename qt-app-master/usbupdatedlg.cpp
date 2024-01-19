@@ -21,6 +21,7 @@ USBUpdateDlg::~USBUpdateDlg()
      connectevent();
      loadUSBUpdateDemo();
 
+
      ui->filesCB->setCurrentIndex(0);
  }
 
@@ -37,7 +38,7 @@ void USBUpdateDlg::loadUSBUpdateDemo()
     }
 
     QStringList filters;
-    filters<<QString("*.zip");
+    filters<<QString("*");
 
     QDirIterator dir_iterator(dirpath,filters,QDir::AllEntries|QDir::NoSymLinks|QDir::NoDotAndDotDot
                               ,QDirIterator::Subdirectories);
@@ -59,7 +60,7 @@ void USBUpdateDlg::loadUSBUpdateDemo()
     ui->filesCB->clear();
     for(int k = 0;k<filelist.count();++k)
     {
-        if(filelist[k].contains("demo.zip"))
+        if(filelist[k].contains("demo"))
         {
             ui->filesCB->addItem(filelist[k]);
         }
@@ -79,6 +80,9 @@ void USBUpdateDlg::connectevent()
     connect(ui->btn_reset,&QPushButton::clicked,this,&USBUpdateDlg::loadUSBUpdateDemo);
     connect(ui->filesCB,&QComboBox::currentTextChanged,this,&USBUpdateDlg::on_comboBox_currentitem_changed);
     connect(ui->btn_update,&QPushButton::clicked,this,&USBUpdateDlg::on_confirm_update);
+
+
+
 }
 
 void USBUpdateDlg::on_comboBox_currentitem_changed(const QString &text)
@@ -112,18 +116,13 @@ void USBUpdateDlg::on_confirm_update()
         return;
     }
 
-    QProcess process1;
+    QProcess process0;
+    process0.startDetached("rm -f /etc/opt/lchj212/demo");
+    process0.close();
 
-//    QString cmd = "rm -f /etc/opt/lchj212/demo";
-    QString cmd1 = "unzip "+curFile+" -d /home/rpdzkj/Downloads";
-
-//    process.start(cmd);
-////    process.waitForFinished(3000);
-//    process.close();
-
-    process1.start(cmd1);
-//    process.waitForFinished(3000);
-    process1.close();
+    QProcess process;
+    process.startDetached("cp "+curFile+" /etc/opt/lchj212/demo");
+    process.close();
 
     QFileInfo fi("/etc/opt/lchj212/demo");
     if(fi.exists())
@@ -135,12 +134,15 @@ void USBUpdateDlg::on_confirm_update()
         str0 += "文件大小:"+QString::number(fi.size())+"\r\n";
         str0 += "文件路径:"+fi.absoluteFilePath()+"\r\n";
         str0 += "修改时间:"+fi.lastModified().toString("yyyy-MM-dd hh:mm:ss");
-        str0 += "是否重启?(Y/N)";
+//        str0 += "是否重启?(Y/N)";
         if(QMessageBox::Yes == QMessageBox::information(this,"提示",str0,QMessageBox::Yes))
         {
             recordVersioninfo(fi.lastModified().toString("yyyy-MM-dd hh:mm"));
-//            QProcess::execute("reboot");
-//            process.startDetached("sudo reboot");
+//            QProcess pro0;
+//            pro0.startDetached("echo \'rpdzkj\' | sudo chmod 777 /etc/opt/lchj212/demo");
+//            pro0.close();
+//            system("sudo reboot");
+
 
         }
 
@@ -150,6 +152,8 @@ void USBUpdateDlg::on_confirm_update()
     {
         QMessageBox::warning(this,"提示","更新失败，文件不存在");
     }
+
+
 
 
 }

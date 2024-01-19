@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>新增/编辑上位机</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -536,7 +536,7 @@ QCheckBox::indicator:checked {
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>260</x>
