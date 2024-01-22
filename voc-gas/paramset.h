@@ -50,6 +50,8 @@ public:
 
     void loadfactorsInfo();
 
+    void switchtopage(int pagenum);
+
 signals:
     void sendUpLoadType(int);
     void sendChangeFactors(bool);

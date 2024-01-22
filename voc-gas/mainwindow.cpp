@@ -137,6 +137,12 @@ MainWindow::~MainWindow()
 //        m_pSerialCom4 = nullptr;
     }
 
+    if(paramSet)
+    {
+        paramSet->close();
+        paramSet->deleteLater();
+    }
+
 
      db.close();
 //     QString progress = "taskkill /F /IM VocGas.exe /T";
@@ -244,7 +250,7 @@ void MainWindow::chartinit()
 
     QChartView *chartView = new QChartView(chart,ui->widget);
     chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setFixedSize(500,400);
+    chartView->setFixedSize(600,360);
     chartView->setRubberBand(QChartView::VerticalRubberBand);
     chartView->setAlignment(Qt::AlignCenter);
 }
@@ -430,7 +436,52 @@ void MainWindow::connectevent()
         process.close();
     });
 
+    ui->mainmenu->installEventFilter(this);
 
+    connect(ui->pushButton_User,&QPushButton::clicked,this,[=]()
+    {
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
+
+//        if(paramSet == nullptr)
+//            paramSet = new ParamSet();
+
+        if(paramSet)
+        {
+            if(!paramSet->isVisible())
+                paramSet->show();
+            paramSet->switchtopage(4);
+        }
+    });
+
+    connect(ui->log,&QPushButton::clicked,this,[=]()
+    {
+        if(!isLogin)
+        {
+            if(QMessageBox::warning(this,"提示","未登录") == QMessageBox::StandardButton::Ok)
+            {
+                on_pushButton_4_clicked();
+                return;
+            }
+        }
+
+//        if(paramSet == nullptr)
+//            paramSet = new ParamSet();
+
+
+        if(paramSet)
+        {
+            if(!paramSet->isVisible())
+                paramSet->show();
+            paramSet->switchtopage(5);
+        }
+    });
 
 }
 
@@ -983,6 +1034,7 @@ void SerialWorker::VocsHandler() {
         setFacState("氧气含量","C");
         setFacState("硫化氢","C");
         setFacState("标况流量","C");
+        setFacState("工况流量","C");
         setFacState("烟尘干值","C");
         setFacState("烟尘排放量","C");
         setFacState("氧气含量干值","C");
@@ -1068,6 +1120,7 @@ void SerialWorker::VocsHandler() {
                     setFacState("氧气含量","N");
                     setFacState("硫化氢","N");
                     setFacState("标况流量","N");
+                    setFacState("工况流量","N");
                     setFacState("烟尘干值","N");
                     setFacState("烟尘排放量","N");
                     setFacState("氧气含量干值","N");
@@ -1209,6 +1262,7 @@ void SerialWorker::VocsHandler() {
                     setFacState("氧气含量","D");
                     setFacState("硫化氢","D");
                     setFacState("标况流量","D");
+                    setFacState("工况流量","D");
                     setFacState("烟尘干值","D");
                     setFacState("烟尘排放量","D");
                     setFacState("氧气含量干值","D");
@@ -1227,6 +1281,7 @@ void SerialWorker::VocsHandler() {
                 setFacState("氧气含量","D");
                 setFacState("硫化氢","D");
                 setFacState("标况流量","D");
+                setFacState("工况流量","D");
                 setFacState("烟尘干值","D");
                 setFacState("烟尘排放量","D");
                 setFacState("氧气含量干值","D");
@@ -1244,6 +1299,7 @@ void SerialWorker::VocsHandler() {
             setFacState("氧气含量","D");
             setFacState("硫化氢","D");
             setFacState("标况流量","D");
+            setFacState("工况流量","D");
             setFacState("烟尘干值","D");
             setFacState("烟尘排放量","D");
             setFacState("氧气含量干值","D");
@@ -1264,6 +1320,7 @@ void SerialWorker::VocsHandler() {
         setFacState("氧气含量","T");
         setFacState("硫化氢","T");
         setFacState("标况流量","T");
+        setFacState("工况流量","T");
         setFacState("烟尘干值","T");
         setFacState("烟尘排放量","T");
         setFacState("氧气含量干值","T");
@@ -2086,6 +2143,12 @@ void MainWindow::Widget_Init()
 
     connect(ui->pushButton_3,&QPushButton::clicked,this,&MainWindow::on_pushButton_3_clicked);
     g_valueseq = "CDAB";
+    ui->mainFrame->hide();
+
+    ui->mainFrame->installEventFilter(this);
+
+    if(!paramSet)
+        paramSet = new ParamSet();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -2170,6 +2233,41 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             return true;
         }
     }
+
+    if(obj == ui->mainFrame)
+    {
+        if(event->type() == QEvent::HoverLeave)
+        {
+            if(ui->mainFrame->isVisible())
+                ui->mainFrame->hide();
+            return true;
+        }
+    }
+
+
+
+
+    if(event->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *me = (QMouseEvent *)event;
+        if(me->button() == Qt::LeftButton)
+        {
+            if(obj == ui->mainmenu)
+            {
+                if(ui->mainFrame->isVisible())
+                {
+                    ui->mainFrame->hide();
+                }
+                else
+                {
+                    ui->mainFrame->show();
+                }
+            }
+
+        }
+    }
+
+
 
     return QWidget::eventFilter(obj, event);
 }
@@ -2453,86 +2551,93 @@ void MainWindow::on_pushButton_Set_clicked()
         }
     }
 
-    if(paramSet==nullptr)
+
+    if(paramSet == nullptr)
         paramSet = new ParamSet();
-    paramSet->setWindowModality(Qt::WindowModal);
-    connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
+    if(paramSet)
     {
-        QJsonObject pJsonFactors;
-        QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
-        QFile file(dir_file);
-
-        if(file.exists())
+        paramSet->switchtopage(0);
+        paramSet->setWindowModality(Qt::WindowModal);
+        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
         {
-            file.open(QIODevice::ReadOnly | QIODevice::Text);
-            QString value = file.readAll();
-            file.close();
-            QJsonParseError parseJsonErr;
-            QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
-            if(!(parseJsonErr.error == QJsonParseError::NoError))
+            QJsonObject pJsonFactors;
+            QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
+            QFile file(dir_file);
+
+            if(file.exists())
             {
-                QLOG_ERROR() << "配置文件格式错误！";
+                file.open(QIODevice::ReadOnly | QIODevice::Text);
+                QString value = file.readAll();
+                file.close();
+                QJsonParseError parseJsonErr;
+                QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
+                if(!(parseJsonErr.error == QJsonParseError::NoError))
+                {
+                    QLOG_ERROR() << "配置文件格式错误！";
+                }
+                QJsonObject jsonObject= document.object();
+                if(jsonObject.contains(FACTORS))
+                {
+                    pJsonFactors = jsonObject.value(FACTORS).toObject();
+                }
             }
-            QJsonObject jsonObject= document.object();
-            if(jsonObject.contains(FACTORS))
+
+            //map_Factors 20
+            // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
+
+            int pCnt = g_FactorsNameList.size();
+            for(int i=0;i<pCnt;i++)
             {
-                pJsonFactors = jsonObject.value(FACTORS).toObject();
+                QString pItemName = g_FactorsNameList.at(i);
+
+                // 是否上传 因子编码
+                // 量程上限 量程下限 差值 输入通道
+
+                QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
+
+                bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
+                bool pUpload = pJsonfactor.value(UPLOAD).toBool();
+                uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
+                float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
+                float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
+                QString pUnit = pJsonfactor.value(UNIT).toString();
+                float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
+                bool pUsed = pJsonfactor.value("Used").toBool();
+
+                FactorInfo *pItemInfo = new FactorInfo();
+                pItemInfo->m_name = pItemName;
+                pItemInfo->m_value = "0.00";
+                //        pItemInfo->m_state = "D";
+                pItemInfo->m_unit = pUnit;
+                pItemInfo->m_used = pUsed;
+                pItemInfo->m_display = pDisplay;
+                pItemInfo->m_upload = pUpload;
+                pItemInfo->m_Chan = pChan;
+                pItemInfo->m_RangeUpper = pRangeUpper;
+                pItemInfo->m_RangeLower = pRangeLower;
+                pItemInfo->m_LC = pRangeUpper - pRangeLower;
+                pItemInfo->m_AlarmUpper = pAlarmUpper;
+                pItemInfo->m_Alias = QString::number(i);
+
+                if(pItemInfo->m_display)
+                {
+                    map_Factors.insert(pItemName,pItemInfo);
+                    seqlist.append(pItemInfo->m_Alias);
+                    nameseqlist.append(pItemName);
+                    facseqlist.append(pItemInfo);
+                }
             }
-        }
-
-        //map_Factors 20
-        // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
-
-        int pCnt = g_FactorsNameList.size();
-        for(int i=0;i<pCnt;i++)
-        {
-            QString pItemName = g_FactorsNameList.at(i);
-
-            // 是否上传 因子编码
-            // 量程上限 量程下限 差值 输入通道
-
-            QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
-
-            bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
-            bool pUpload = pJsonfactor.value(UPLOAD).toBool();
-            uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
-            float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
-            float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
-            QString pUnit = pJsonfactor.value(UNIT).toString();
-            float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
-            bool pUsed = pJsonfactor.value("Used").toBool();
-
-            FactorInfo *pItemInfo = new FactorInfo();
-            pItemInfo->m_name = pItemName;
-            pItemInfo->m_value = "0.00";
-    //        pItemInfo->m_state = "D";
-            pItemInfo->m_unit = pUnit;
-            pItemInfo->m_used = pUsed;
-            pItemInfo->m_display = pDisplay;
-            pItemInfo->m_upload = pUpload;
-            pItemInfo->m_Chan = pChan;
-            pItemInfo->m_RangeUpper = pRangeUpper;
-            pItemInfo->m_RangeLower = pRangeLower;
-            pItemInfo->m_LC = pRangeUpper - pRangeLower;
-            pItemInfo->m_AlarmUpper = pAlarmUpper;
-            pItemInfo->m_Alias = QString::number(i);
-
-            if(pItemInfo->m_display)
-            {
-                map_Factors.insert(pItemName,pItemInfo);
-                seqlist.append(pItemInfo->m_Alias);
-                nameseqlist.append(pItemName);
-                facseqlist.append(pItemInfo);
-            }
-        }
-    });
-    connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
-    connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
+        });
+        connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
+        connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
 
 
-    emit sendlogmsg("打开参数设置");
-    paramSet->setWindowModality(Qt::ApplicationModal);
-    paramSet->show();
+        emit sendlogmsg("打开参数设置");
+        //    paramSet->setWindowModality(Qt::ApplicationModal);
+        if(!paramSet->isVisible())
+            paramSet->show();
+
+    }
 }
 
 bool MainWindow::datebaseinit()

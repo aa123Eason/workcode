@@ -11,7 +11,7 @@ ParamSet::ParamSet(QWidget *parent) :
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-
+    this->setWindowFlags(Qt::WindowStaysOnTopHint);
     ui->tabWidget->setStyleSheet("QTabWidget#tabWidget{background-color:rgb(255,0,0);}\
                                  QTabBar::tab{background-color:rgb(220,200,180);width:100;height:40;color:rgb(0,0,0);font:10pt '新宋体'}\
                                  QTabBar::tab::selected{background-color:rgb(0,100,200);width:100;height:40;color:rgb(255,0,0);font:12pt '新宋体'}");
@@ -122,6 +122,11 @@ void ParamSet::System_Display()
             }
         }
     }
+}
+
+void ParamSet::switchtopage(int pagenum)
+{
+    ui->tabWidget->setCurrentIndex(pagenum);
 }
 
 void ParamSet::Fanchui_Display()
