@@ -52,11 +52,18 @@ DevAdd::DevAdd(QWidget *parent) :
     ui->comboBox_databit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_parity->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
+    kb = new localKeyboard();
+
 }
 
 DevAdd::~DevAdd()
 {
     if(interGroup) interGroup->deleteLater();
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
     delete ui;
 }
 
@@ -215,11 +222,10 @@ void DevAdd::connectevent()
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 
 

@@ -16,6 +16,11 @@ TeshuzhiAdd::TeshuzhiAdd(QWidget *parent) :
 
 TeshuzhiAdd::~TeshuzhiAdd()
 {
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
     delete ui;
 }
 
@@ -70,11 +75,10 @@ void TeshuzhiAdd::connectevent()
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 }
 

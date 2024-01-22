@@ -57,14 +57,13 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fcode->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
+    kb = new localKeyboard();
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 
     ui->label_dec->setVisible(false);
@@ -81,6 +80,12 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
 FactorAdd::~FactorAdd()
 {
     if(GroupF1) GroupF1->deleteLater();
+
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
 
     delete ui;
 }

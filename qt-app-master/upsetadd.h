@@ -29,6 +29,7 @@ private slots:
 
 private:
     Ui::UpsetAdd *ui;
+    localKeyboard *kb = nullptr;
 };
 
 #endif // UPSETADD_H

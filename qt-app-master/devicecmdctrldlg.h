@@ -33,7 +33,6 @@
 #include "common.h"
 #include <QFile>
 #include <QDir>
-#include <QTimerEvent>
 
 
 
@@ -59,7 +58,6 @@ public:
 
 protected:
     bool eventFilter(QObject *obj = nullptr,QEvent *e = nullptr);
-    void timerEvent(QTimerEvent *e=nullptr) override;
 
 signals:
     void sendReback(bool);
@@ -98,7 +96,7 @@ private:
     SerialPort *serialPort = nullptr;
     QGridLayout l1,l2,l3,l4;
     QStringList list;
-    int td1;
+    localKeyboard *kb = nullptr;
 
 
 };

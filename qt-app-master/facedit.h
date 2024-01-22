@@ -41,6 +41,7 @@ private:
 
     QString m_FcodeID;
     QString m_Fcode;
+    localKeyboard *kb = nullptr;
 
 };
 

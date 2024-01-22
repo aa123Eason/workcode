@@ -46,6 +46,7 @@ private:
     QMap<QString,QStringList> map;
     QMap<QString,QString> namemap;
     ComBoBoxSelectDlg *dlgbox = nullptr;
+    localKeyboard *kb = nullptr;
 };
 
 #endif // DEVADD_H

@@ -17,17 +17,17 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
 
     font.setBold(true);
     font.setPointSize(20);
+    kb = new localKeyboard();
 
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->comboBox_devProto,&QComboBox::currentTextChanged,this,&DevEdit::onComboBoxProtoCurrentChanged);
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 
     ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);

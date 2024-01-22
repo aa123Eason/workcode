@@ -24,6 +24,7 @@ SOURCES += \
     facedit.cpp \
     factoradd.cpp \
     httpclinet.cpp \
+    localkeyboard.cpp \
     main.cpp \
     mainwindow.cpp \
     teshuzhiadd.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     facedit.h \
     factoradd.h \
     httpclinet.h \
+    localkeyboard.h \
     mainwindow.h \
     teshuzhiadd.h \
     teshuzhidele.h \
@@ -69,6 +71,7 @@ FORMS += \
     dialogproto.ui \
     facedit.ui \
     factoradd.ui \
+    localkeyboard.ui \
     mainwindow.ui \
     teshuzhiadd.ui \
     teshuzhidele.ui \

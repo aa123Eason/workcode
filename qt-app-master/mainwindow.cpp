@@ -109,6 +109,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
     /* 打断线程再退出 */
     m_httpWorker->stopWork();
     m_thread.quit();
@@ -231,6 +236,7 @@ void MainWindow::showModifiedTime()
 void MainWindow::Widget_Init()
 {
     showModifiedTime();
+    kb = new localKeyboard();
     ui->comboBox->setView(new QListView(this));
     ui->comboBox->setView(new QListView(this));
 
@@ -284,17 +290,22 @@ void MainWindow::Widget_Init()
     {
        if(QMessageBox::Yes == QMessageBox::question(this,"提示","是否关闭软件（Y/N)？",QMessageBox::Yes,QMessageBox::No))
        {
+           if(kb)
+           {
+               kb->close();
+               kb->deleteLater();
+           }
            this->close();
        }
     });
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
+
     });
 
     ui->comboBox->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -466,15 +477,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
-                   QProcess pro;
-                   pro.startDetached("pkill florence");
-                   if(pro.waitForFinished())
-                   {
+                   if(!kb->isVisible())
+                       kb->show();
 
-                       pro.startDetached("florence");
-                   }
-
-                   pro.close();
                    return true;
                 }
             }
@@ -488,14 +493,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<lineEditList.at(i)->objectName()<<endl;
-                   QProcess pro;
-                   pro.startDetached("pkill florence");
-                   if(pro.waitForFinished())
-                   {
-                       pro.startDetached("florence");
-                   }
+                   if(!kb->isVisible())
+                       kb->show();
 
-                   pro.close();
                    return true;
                 }
             }

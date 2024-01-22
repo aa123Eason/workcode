@@ -11,17 +11,14 @@ UpsetAdd::UpsetAdd(QWidget *parent) :
     setWindowTitle(QStringLiteral(" "));
 
     ui->comboBox->setEditable(true);
-
-
-
+    kb = new localKeyboard();
     UpAdd_filled();
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 }
 

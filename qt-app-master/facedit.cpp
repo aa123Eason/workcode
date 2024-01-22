@@ -9,7 +9,7 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
     ui->setupUi(this) ;
 
     qDebug() << "id=--***********-->>" <<id;
-
+    kb = new localKeyboard();
     m_FcodeID = id.split("-")[0];
     m_Fcode = id.split("-")[1];
     FacEdit_Init(id);
@@ -19,11 +19,10 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 
     ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -35,6 +34,11 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
 FacEdit::~FacEdit()
 {
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
     delete ui;
 }
 

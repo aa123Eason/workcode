@@ -31,6 +31,7 @@
 #include "usbupdatedlg.h"
 #include <QHBoxLayout>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -224,6 +225,7 @@ private:
     QMap<QString,QString> specialsMap;
     bool isUsbOn = false;
     USBUpdateDlg *usbdlg = nullptr;
+    localKeyboard *kb = nullptr;
 
 };
 

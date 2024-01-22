@@ -25,6 +25,12 @@ DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 //    muartThread->deleteLater();
     serialPort->deleteLater();
 
+    if(kb)
+    {
+        kb->close();
+        kb->deleteLater();
+    }
+
     delete ui;
 }
 //#endif
@@ -89,16 +95,8 @@ void DeviceCMDCtrlDlg::init()
 
     ui->tmck1->setChecked(Qt::Checked);
 
-    td1 = startTimer(180000);
+    kb = new localKeyboard();
 
-}
-
-void DeviceCMDCtrlDlg::timerEvent(QTimerEvent *e)
-{
-    if(e->timerId() == td1)
-    {
-        ui->receiveEdit->clear();
-    }
 }
 
 void DeviceCMDCtrlDlg::loadtmcksState()
@@ -176,12 +174,9 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
             QMouseEvent *me = (QMouseEvent *)e;
             if(me->button() == Qt::LeftButton)
             {
-                qDebug()<<"open keyboard"<<endl;
-                QProcess process;
-                process.startDetached("pkill florence");
-                QThread::sleep(1);
-                process.startDetached("florence");
-                process.close();
+                if(!kb->isVisible())
+                    kb->show();
+
             }
         }
     }
@@ -272,16 +267,20 @@ void DeviceCMDCtrlDlg::connectevent()
     connect(ui->btn_quit,&QPushButton::clicked,[=]()
     {
         ui->loopread->setChecked(false);
+        if(kb)
+        {
+            kb->close();
+            kb->deleteLater();
+        }
         this->close();
     });
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        QProcess process;
-        process.startDetached("pkill florence");
-        QThread::sleep(1);
-        process.startDetached("florence");
-        process.close();
+        if(!kb->isVisible())
+            kb->show();
+        else
+            kb->hide();
     });
 
     connect(ui->curPort,&QComboBox::currentTextChanged,this,[=](const QString &)
@@ -587,7 +586,7 @@ void DeviceCMDCtrlDlg::connectevent()
 
 void DeviceCMDCtrlDlg::onSendByTime()
 {
-    QString infoStr;
+    QString infoStr = curDT.toString("yyyy-MM-dd HH:mm:ss.zzz ")+"启动定时发送\r\n";
 
     QDateTime dtx = QDateTime::fromString(ui->timertk->text(),"yyyy-MM-dd HH:mm:ss");
     int hour = dtx.time().hour();
@@ -629,7 +628,6 @@ void DeviceCMDCtrlDlg::onSendByTime()
                 }
                 if(tmlist.contains(QString::number(hour)))
                 {
-                    infoStr = curDT.toString("yyyy-MM-dd HH:mm:ss.zzz ")+"启动定时发送\r\n";
                     infoStr += QString::number(hour)+"点--"+cmdKey+":"+cmd+"\r\n";
                     emit sendCMD(cmd);
                 }
@@ -644,9 +642,6 @@ void DeviceCMDCtrlDlg::onSendByTime()
     QString oldStr = ui->receiveEdit->toPlainText()+"\r\n";
     ui->receiveEdit->setPlainText(oldStr+infoStr);
     writeloglocal(ui->receiveEdit->toPlainText());
-
-    ui->receiveEdit->verticalScrollBar()->setValue(ui->receiveEdit->verticalScrollBar()->maximum());
-
 }
 
 void DeviceCMDCtrlDlg::onStackedCurrentChanged(int index)

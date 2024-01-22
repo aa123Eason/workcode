@@ -45,6 +45,7 @@ private:
     httpclinet h;
     Util util;
     QMap<QString,QString> nameMap,avaFacMap;
+    localKeyboard *kb = nullptr;
 
 };
 
