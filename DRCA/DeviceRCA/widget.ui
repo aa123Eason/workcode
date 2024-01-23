@@ -6,14 +6,1865 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>618</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Widget</string>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,10">
+   <property name="spacing">
+    <number>3</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="titlebar" stretch="0,1,5,0">
+     <item>
+      <widget class="QLabel" name="logo">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="images.qrc">:/images/images/logo.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="title">
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>设备反控助手</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="time">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="close">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton
+{
+	border-radius:10px;
+
+}
+
+QPushButton::hover
+{
+	
+	background-color: rgb(211, 215, 207);
+
+
+}</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="images.qrc">
+         <normaloff>:/images/images/close_hover.png</normaloff>:/images/images/close_hover.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="mainBar" stretch="1,7">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,5">
+       <item>
+        <widget class="QPushButton" name="btn_devSta">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton::checked
+{
+	
+	background-color: rgb(143, 181, 225);
+
+}
+
+QPushButton::unchecked
+{
+	
+	
+	background-color: rgb(255, 255, 255);
+
+}</string>
+         </property>
+         <property name="text">
+          <string>设备状态</string>
+         </property>
+         <property name="icon">
+          <iconset resource="images.qrc">
+           <normaloff>:/images/images/device.png</normaloff>:/images/images/device.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_devLog">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton::checked
+{
+	
+	background-color: rgb(143, 181, 225);
+
+}
+
+QPushButton::unchecked
+{
+	
+	
+	background-color: rgb(255, 255, 255);
+
+}</string>
+         </property>
+         <property name="text">
+          <string>查看日志</string>
+         </property>
+         <property name="icon">
+          <iconset resource="images.qrc">
+           <normaloff>:/images/images/log.png</normaloff>:/images/images/log.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="mainStack">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <widget class="QWidget" name="devicestaus">
+        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,7">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>1</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>1</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="7,0,0">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>设备状态</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>刷新</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>新增</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTableWidget" name="device_table"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="deviceedit">
+        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,5,1">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,0,0,0">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>编辑设备</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="save">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>保存</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reset">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>重置</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="reback">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>返回</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0,1,0,1">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>因子名称</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="editfacBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>因子端口</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="editcomBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,7,1">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QCheckBox" name="editcmd1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>零点校准/量程校准</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="editcmd2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>即时采样/立即测量</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="editcmd3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>启动清洗/反吹</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="editcmd4">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>比对采样</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QStackedWidget" name="edittimeframe">
+             <widget class="QWidget" name="ep1"/>
+             <widget class="QWidget" name="ep2"/>
+             <widget class="QWidget" name="ep3"/>
+             <widget class="QWidget" name="ep4"/>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QCheckBox" name="editcmd">
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>全选</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="editcmdinfo">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="deviceadd">
+        <layout class="QVBoxLayout" name="verticalLayout_9" stretch="1,1,5,1">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="7,0,0,0">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>新增设备</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addok">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>保存</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addreset">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>重置</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addreback">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>返回</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,1,0,1">
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>因子名称</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="addfacBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>因子端口</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="addcomBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,7,1">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QCheckBox" name="addcmd1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>零点校准/量程校准</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="addcmd2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>即时采样/立即测量</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="aacmd3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>启动清洗/反吹</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="addcmd4">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>比对采样</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QStackedWidget" name="addTimeframe">
+             <widget class="QWidget" name="ap1"/>
+             <widget class="QWidget" name="ap2"/>
+             <widget class="QWidget" name="ap3"/>
+             <widget class="QWidget" name="ap4"/>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QCheckBox" name="addallsel">
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+	font 75  18px &quot;Ubuntu&quot;;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 0, 0);
+        font 75  18px &quot;Ubuntu&quot;;
+			
+		background-color: rgb(114, 159, 207);
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+       font 75  18px &quot;Ubuntu&quot;;
+
+}
+QCheckBox:enabled:hover{
+      	font 75  20px &quot;Ubuntu&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+   
+	image: url(:/images/images/Off.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/images/On.png);
+}
+</string>
+               </property>
+               <property name="text">
+                <string>全选</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="addcmdinfo">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="ctrllog">
+        <layout class="QVBoxLayout" name="verticalLayout_10" stretch="1,1,8">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="7,0,0">
+           <property name="spacing">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>查看日志</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>查询</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+background-color: rgb(69, 76, 120);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 2px;
+width:60px;
+
+}
+ 
+QPushButton:hover{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+border: none;
+border-radius: 3px;
+
+}
+ 
+QPushButton:pressed{
+background-color: rgb(0, 0, 152);
+color: rgb(255, 255, 255);
+
+}
+</string>
+             </property>
+             <property name="text">
+              <string>清空</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <widget class="QRadioButton" name="logall">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton::indicator:unchecked {
+    
+		
+	image: url(:/images/images/unchecked.png);
+	width:20px;
+	height:20px;
+
+}
+
+QRadioButton::indicator:checked {
+   		image: url(:/images/images/checked.png);
+		width:20px;
+		height:20px;
+}
+
+QRadioButton::hover
+{
+		
+	color: rgb(32, 74, 135);
+	
+
+}
+
+
+</string>
+             </property>
+             <property name="text">
+              <string>全部</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="logtrace">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton::indicator:unchecked {
+    
+		
+	image: url(:/images/images/unchecked.png);
+	width:20px;
+	height:20px;
+
+}
+
+QRadioButton::indicator:checked {
+   		image: url(:/images/images/checked.png);
+		width:20px;
+		height:20px;
+}
+
+QRadioButton::hover
+{
+		
+	color: rgb(32, 74, 135);
+	
+
+}
+
+
+</string>
+             </property>
+             <property name="text">
+              <string>追踪</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="logdebug">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton::indicator:unchecked {
+    
+		
+	image: url(:/images/images/unchecked.png);
+	width:20px;
+	height:20px;
+
+}
+
+QRadioButton::indicator:checked {
+   		image: url(:/images/images/checked.png);
+		width:20px;
+		height:20px;
+}
+
+QRadioButton::hover
+{
+		
+	color: rgb(32, 74, 135);
+	
+
+}
+
+
+</string>
+             </property>
+             <property name="text">
+              <string>调试</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="logerror">
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QRadioButton::indicator:unchecked {
+    
+		
+	image: url(:/images/images/unchecked.png);
+	width:20px;
+	height:20px;
+
+}
+
+QRadioButton::indicator:checked {
+   		image: url(:/images/images/checked.png);
+		width:20px;
+		height:20px;
+}
+
+QRadioButton::hover
+{
+		
+	color: rgb(32, 74, 135);
+	
+
+}
+
+
+</string>
+             </property>
+             <property name="text">
+              <string>错误</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTextBrowser" name="msginfo">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
+           <property name="lineWidth">
+            <number>2</number>
+           </property>
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:16pt; font-weight:600; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:400;&quot;&gt;123144324&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>
