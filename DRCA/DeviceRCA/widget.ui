@@ -297,7 +297,7 @@ QPushButton::unchecked
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="btn_refresh">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -340,7 +340,7 @@ color: rgb(255, 255, 255);
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="btn_add">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -390,7 +390,7 @@ color: rgb(255, 255, 255);
         </layout>
        </widget>
        <widget class="QWidget" name="deviceedit">
-        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,5,1">
+        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,7,2">
          <property name="spacing">
           <number>1</number>
          </property>
@@ -407,7 +407,7 @@ color: rgb(255, 255, 255);
           <number>0</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,0,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,0,0">
            <item>
             <widget class="QLabel" name="label_2">
              <property name="font">
@@ -462,49 +462,6 @@ color: rgb(255, 255, 255);
              </property>
              <property name="text">
               <string>保存</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="reset">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton{
-background-color: rgb(69, 76, 120);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 2px;
-width:60px;
-
-}
- 
-QPushButton:hover{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 3px;
-
-}
- 
-QPushButton:pressed{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-
-}
-</string>
-             </property>
-             <property name="text">
-              <string>重置</string>
              </property>
             </widget>
            </item>
@@ -632,7 +589,7 @@ color: rgb(255, 255, 255);
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,7,1">
+          <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,7,0">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
@@ -693,6 +650,12 @@ QCheckBox::indicator:checked {
                </property>
                <property name="text">
                 <string>零点校准/量程校准</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -755,6 +718,9 @@ QCheckBox::indicator:checked {
                <property name="text">
                 <string>即时采样/立即测量</string>
                </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -815,6 +781,9 @@ QCheckBox::indicator:checked {
                </property>
                <property name="text">
                 <string>启动清洗/反吹</string>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -877,12 +846,24 @@ QCheckBox::indicator:checked {
                <property name="text">
                 <string>比对采样</string>
                </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
            </item>
            <item>
             <widget class="QStackedWidget" name="edittimeframe">
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="lineWidth">
+              <number>3</number>
+             </property>
              <widget class="QWidget" name="ep1"/>
              <widget class="QWidget" name="ep2"/>
              <widget class="QWidget" name="ep3"/>
@@ -892,7 +873,7 @@ QCheckBox::indicator:checked {
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QCheckBox" name="editcmd">
+              <widget class="QCheckBox" name="editSelAll">
                <property name="font">
                 <font>
                  <pointsize>16</pointsize>
@@ -952,6 +933,19 @@ QCheckBox::indicator:checked {
          </item>
          <item>
           <widget class="QLabel" name="editcmdinfo">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
+           </property>
            <property name="text">
             <string>TextLabel</string>
            </property>
@@ -960,7 +954,7 @@ QCheckBox::indicator:checked {
         </layout>
        </widget>
        <widget class="QWidget" name="deviceadd">
-        <layout class="QVBoxLayout" name="verticalLayout_9" stretch="1,1,5,1">
+        <layout class="QVBoxLayout" name="verticalLayout_9" stretch="1,1,7,2">
          <property name="spacing">
           <number>1</number>
          </property>
@@ -977,7 +971,7 @@ QCheckBox::indicator:checked {
           <number>0</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="7,0,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="7,0,0">
            <item>
             <widget class="QLabel" name="label_3">
              <property name="font">
@@ -1032,49 +1026,6 @@ color: rgb(255, 255, 255);
              </property>
              <property name="text">
               <string>保存</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="addreset">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton{
-background-color: rgb(69, 76, 120);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 2px;
-width:60px;
-
-}
- 
-QPushButton:hover{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 3px;
-
-}
- 
-QPushButton:pressed{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-
-}
-</string>
-             </property>
-             <property name="text">
-              <string>重置</string>
              </property>
             </widget>
            </item>
@@ -1159,6 +1110,9 @@ color: rgb(255, 255, 255);
                <weight>75</weight>
                <bold>true</bold>
               </font>
+             </property>
+             <property name="editable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -1264,6 +1218,12 @@ QCheckBox::indicator:checked {
                <property name="text">
                 <string>零点校准/量程校准</string>
                </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -1325,10 +1285,13 @@ QCheckBox::indicator:checked {
                <property name="text">
                 <string>即时采样/立即测量</string>
                </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="aacmd3">
+              <widget class="QCheckBox" name="addcmd3">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1385,6 +1348,9 @@ QCheckBox::indicator:checked {
                </property>
                <property name="text">
                 <string>启动清洗/反吹</string>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1447,12 +1413,24 @@ QCheckBox::indicator:checked {
                <property name="text">
                 <string>比对采样</string>
                </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
            </item>
            <item>
             <widget class="QStackedWidget" name="addTimeframe">
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="lineWidth">
+              <number>3</number>
+             </property>
              <widget class="QWidget" name="ap1"/>
              <widget class="QWidget" name="ap2"/>
              <widget class="QWidget" name="ap3"/>
@@ -1462,7 +1440,7 @@ QCheckBox::indicator:checked {
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
-              <widget class="QCheckBox" name="addallsel">
+              <widget class="QCheckBox" name="addSelAll">
                <property name="font">
                 <font>
                  <pointsize>16</pointsize>
@@ -1528,6 +1506,12 @@ QCheckBox::indicator:checked {
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Panel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Sunken</enum>
            </property>
            <property name="text">
             <string>TextLabel</string>

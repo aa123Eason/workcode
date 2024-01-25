@@ -34,6 +34,10 @@
 #include <QImage>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QSignalMapper>
+#include <QtCore/QObject>
+#include <QByteArray>
+#include <QDir>
 
 
 #define CMDINFO "/docu/cmdinfo.json"
@@ -64,24 +68,45 @@ public:
     void connectevent();
     void setTableHeader();
     void setTableContent(const QJsonObject &pDevice,const QJsonObject &pFactor);
+    void timeCheckInit(QList<QCheckBox *> &,QGridLayout &timeset,QWidget *w = nullptr);
+    void loadtmcksState(QString porName);
 
 signals:
     void startWork();
+    void sendfacid(QString &);
 
 public slots:
     void handleResults(const QJsonObject &pDevice,const QJsonObject &pFactor);
     void handleDateTimeout();
+    void onSaveTimeset();
+    void onSlotRW(QMap<QString,SerialPort *> &);
+
+
+private slots:
+    void onButtonDele(QString id);
+    void onButtonEdit(QString id);
+
 
 private:
     Ui::Widget *ui;
-    QThread m_thread;
+    QThread m_thread,m_threadRW;
     CHttpWork *m_httpWorker = nullptr;
+    CHttpWork *m_httpWorkerRW = nullptr;
     Util util;
 
+    QStringList portsList;
 
     QMap<QString,QString> facnameMap;
     QTimer timer;
-    QFont itemfont,headerfont;
+    QFont itemfont,headerfont,ckfont;
+    QSignalMapper *m_SignalMapper_Edit = nullptr;   // edit
+    QSignalMapper *m_SignalMapper_Dele = nullptr;   // delete
+    QList<QCheckBox *> edittimecks,addtimecks;
+    QList<QCheckBox *> edittypecks,addtypecks;
+    QGridLayout el1,el2,el3,el4;
+    QGridLayout al1,al2,al3,al4;
+    QStringList ontimecks;
+    QStringList cmdlist;
 };
 
 class CHttpWork : public QObject
@@ -107,10 +132,11 @@ public:
 signals:
     /* 工人工作函数状态的信号 */
     void resultReady(const QJsonObject &pDevice,const QJsonObject &pFactor);
-    void sendSerialPortState(QString portname,bool state);
+    void sendCMD(QMap<QString,SerialPort *> &);
 
 public slots:
     void doWork();
+    void rwWork();
 private:
     /* 互斥锁 */
     QMutex lock;

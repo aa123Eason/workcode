@@ -26,9 +26,9 @@ QCheckBox:!enabled{
 }
  
 QCheckBox::indicator:unchecked {
-    image:url(":/images/Off.png")
+    image:url(":/images/images/Off.png")
 }
 
 QCheckBox::indicator:checked {
-    image:url(":/images/On.png")
+    image:url(":/images/images/On.png")
 }
