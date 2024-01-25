@@ -4,8 +4,15 @@
 QStringList availblePorts;
 QJsonObject portsStateObj;
 QMap<QString,QString> faccommap;
+bool testModeState = false;
+QMap<QString,bool> portExistStateMap;
+QMap<QString,QString> modbusindexmap;
 QMap<QString,SerialPort *> commMap;
 QString g_curFacid;
+
+static char ConvertHexChar(char c);
+
+static QByteArray QString2Hex(QString hexStr);
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -207,13 +214,13 @@ void Widget::page_deviceEditInit()
 
     ui->editcomBox->setEnabled(false);
     ui->editfacBox->setEnabled(false);
-
+    ui->e_modbusindex->setEnabled(false);
 
 }
 
 void Widget::page_deviceAddInit()
 {
-//    ui->btn_add->hide();
+    ui->btn_add->hide();
     ui->addcomBox->clear();
     ui->addcomBox->addItems(portsList);
     ui->addfacBox->clear();
@@ -349,6 +356,20 @@ void Widget::device_init()
     /* 接收到 worker 发送过来的信号 */
     connect(m_httpWorker, &CHttpWork::resultReady,
             this, &Widget::handleResults);
+    connect(m_httpWorker,&CHttpWork::sendisExist,this,[=](QStringList &ports){
+
+            for(int i=0;i<ui->device_table->rowCount();++i)
+            {
+                if(ui->device_table->item(i,2))
+                {
+                    QString refPort = ui->device_table->item(i,2)->text();
+                    portExistStateMap.insert(refPort,ports.contains(refPort));
+
+                }
+
+            }
+
+    });
 
 
     m_httpWorker->sendResultReady();
@@ -461,6 +482,9 @@ void Widget::connectevent()
             fac = facid.split("-")[1]+"-"+facid.split("-")[2];
             ui->editfacBox->setCurrentText(fac);
         }
+        qDebug()<<__LINE__<<modbusindexmap<<endl;
+        ui->e_modbusindex->setText(modbusindexmap[facid]);
+
     });
 
     connect(ui->editfacBox,&QComboBox::currentTextChanged,this,[=](const QString &text)
@@ -486,7 +510,12 @@ void Widget::connectevent()
     });
 
     connect(ui->save,&QPushButton::clicked,this,&Widget::onSaveTimeset);
+    connect(ui->testMode,&QCheckBox::stateChanged,this,[=](int state)
+    {
+        testModeState = state;
+    });
 
+    connect(ui->clearContent,&QPushButton::clicked,ui->msginfo,&QTextBrowser::clear);
 
 
 }
@@ -502,13 +531,13 @@ background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 
 //设置表头
 QStringList headerText;
 //连接状态，因子名称，端口名，操作
-headerText << QStringLiteral("连接状态")  << QStringLiteral("因子名称") << QStringLiteral("端口名")<< QStringLiteral("操作");
+headerText << QStringLiteral("连接状态")  << QStringLiteral("因子名称") << QStringLiteral("端口名")<< QStringLiteral("modbus序号")<<QStringLiteral("操作");
 int cnt = headerText.count();
 ui->device_table->setColumnCount(cnt);
 ui->device_table->setHorizontalHeaderLabels(headerText);
-// ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
+ui->device_table->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->device_table->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
-int widths[] = {120, 200, 200,230};
+int widths[] = {120, 200, 100,150,160};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->device_table->setColumnWidth(i, widths[i]);
 }
@@ -520,6 +549,7 @@ ui->device_table->horizontalHeader()->setVisible(true);
 ui->device_table->verticalHeader()->setVisible(false);
 ui->device_table->setFrameShape(QFrame::NoFrame);
 ui->device_table->setTextElideMode(Qt::ElideNone);
+ui->device_table->setShowGrid(false);
 //ui->device_table->resizeRowsToContents();
 
 }
@@ -528,6 +558,14 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
 {
     qDebug()<<__LINE__<<"Device:"<<pDevice<<endl;
     qDebug()<<__LINE__<<"Factor:"<<pFactor<<endl;
+
+    QString stylesheet = ":/images/images/checkboxstyle.qss";
+    QFile file(stylesheet);
+    QByteArray bytSty;
+    if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        bytSty.append(file.readAll());
+    }
     ui->device_table->setRowCount(0);
     faccommap.clear();
     disconnect(m_SignalMapper_Edit,SIGNAL(mapped(QString)),this,SLOT(onButtonEdit(QString)));
@@ -556,8 +594,9 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
                 QString fac_FullName = fac_code + "-" + fac_name;
                 faccommap.insert(device_id+"-"+fac_FullName,device_com);
 
-//                QString modbus_index = QString::number(fac_info.value("modbus_index").toInt());
-//                qDebug()<<__LINE__<<fac_FullName<<modbus_index<<endl;
+                QString modbus_index = QString::number(fac_info.value("modbus_index").toInt());
+                modbusindexmap.insert(device_id+"-"+fac_FullName,modbus_index);
+                //                qDebug()<<__LINE__<<fac_FullName<<modbus_index<<endl;
                 ui->device_table->insertRow(row);
 
                 //state
@@ -618,12 +657,21 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
                 itemPort->setTextAlignment(Qt::AlignCenter);
                 ui->device_table->setItem(row,2,itemPort);
 
-//                //modbus_index
-//                QTableWidgetItem *itemIndex = new QTableWidgetItem();
-//                itemIndex->setFont(itemfont);
-//                itemIndex->setText(modbus_index);
-//                itemIndex->setTextAlignment(Qt::AlignCenter);
-//                ui->device_table->setItem(row,3,itemIndex);
+                //modbus_index
+                QTableWidgetItem *itemIndex = new QTableWidgetItem();
+                itemIndex->setFont(itemfont);
+                itemIndex->setText(modbus_index);
+                itemIndex->setTextAlignment(Qt::AlignCenter);
+                ui->device_table->setItem(row,3,itemIndex);
+
+//                //test mode
+//                QCheckBox *textMode = new QCheckBox();
+//                textMode->setStyleSheet(bytSty);
+//                ui->device_table->setCellWidget(row,4,textMode);
+//                connect(textMode,&QCheckBox::stateChanged,this,[=](int state)
+//                {
+
+//                });
 
                 //operate
                 QPushButton *pOperEdit = new QPushButton();
@@ -635,11 +683,12 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
                 pOperDele->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Preferred);
                 pOperDele->setFont(itemfont);
                 pOperDele->setText("删除");
+                pOperDele->hide();
 
                 connect(pOperEdit,SIGNAL(clicked()),m_SignalMapper_Edit,SLOT(map()));
                 m_SignalMapper_Edit->setMapping(pOperEdit,device_id+"-"+fac_FullName);
                 connect(pOperDele,SIGNAL(clicked()),m_SignalMapper_Dele,SLOT(map()));
-                m_SignalMapper_Dele->setMapping(pOperDele,device_id+"-"+fac_FullName);
+                m_SignalMapper_Dele->setMapping(pOperDele,device_com);
 
                 QWidget *btnWidget = new QWidget();
                 QHBoxLayout *btnLayout = new QHBoxLayout(btnWidget);    // FTIXME：内存是否会随着清空tablewidget而释放
@@ -647,7 +696,7 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
                 btnLayout->addWidget(pOperDele,1);
                 btnLayout->setMargin(2);
                 btnLayout->setAlignment(Qt::AlignCenter);
-                ui->device_table->setCellWidget(row, 3, btnWidget);
+                ui->device_table->setCellWidget(row, 4, btnWidget);
 
                 ui->device_table->setRowHeight(row,64);
             }
@@ -660,7 +709,7 @@ void Widget::setTableContent(const QJsonObject &pDevice,const QJsonObject &pFact
 
         itDevice++;
     }
-
+    bytSty.clear();
     connect(m_SignalMapper_Edit,SIGNAL(mapped(QString)),this,SLOT(onButtonEdit(QString)));
     connect(m_SignalMapper_Dele,SIGNAL(mapped(QString)),this,SLOT(onButtonDele(QString)));
 }
@@ -680,7 +729,7 @@ void Widget::timeCheckInit(QList<QCheckBox *> &timecks,QGridLayout &timeset,QWid
 
     for(int i=0;i<24;++i)
     {
-        QString timeNote = QString::number(i)+"点";
+        QString timeNote = QString::number(i);
         QCheckBox *box = new QCheckBox(timeNote);
         box->setCheckable(true);
         box->setStyleSheet(bytArr);
@@ -807,6 +856,60 @@ void Widget::loadtmcksState(QString porName)
 }
 
 
+//将单个字符串转换为hex
+//0-F -> 0-15
+char ConvertHexChar(char c)
+{
+    if((c >= '0') && (c <= '9'))
+        return c - 0x30;
+    else if((c >= 'A') && (c <= 'F'))
+        return c - 'A' + 10;//'A' = 65;
+    else if((c >= 'a') && (c <= 'f'))
+        return c - 'a' + 10;
+    else
+        return -1;
+}
+
+QByteArray QString2Hex(QString hexStr)
+{
+    QByteArray senddata;
+    int hexdata, lowhexdata;
+    int hexdatalen = 0;
+    int len = hexStr.length();
+    senddata.resize(len/2);
+    char lstr, hstr;
+    for(int i = 0; i < len; )
+    {
+        //将第一个不为' '的字符赋给hstr;
+        hstr = hexStr[i].toLatin1();
+        if(hstr == ' ')
+        {
+            i++;
+            continue;
+        }
+        i++;
+        //当i >= len时，跳出循环
+        if(i >= len)
+            break;
+        //当i < len时，将下一个字符赋值给lstr;
+        lstr = hexStr[i].toLatin1();
+        //将hstr和lstr转换为0-15的对应数值
+        hexdata = ConvertHexChar(hstr);
+        lowhexdata = ConvertHexChar(lstr);
+        //
+        if((hexdata == 16) || (lowhexdata == 16))
+            break;
+        else
+            hexdata = hexdata * 16 + lowhexdata;
+        i++;
+        senddata[hexdatalen] = (char)hexdata;
+        hexdatalen++;
+    }
+    senddata.resize(hexdatalen);
+    return senddata;
+}
+
+
 
 //slot function
 void Widget::handleResults(const QJsonObject &pDevice,const QJsonObject &pFactor)
@@ -927,8 +1030,9 @@ void Widget::onSaveTimeset()
 }
 
 
-void Widget::onSlotRW(QMap<QString,SerialPort *> &mapcom)
+void Widget::onSlotRW(PORT_STYLE style,QMap<QString,SerialPort *> &mapcom)
 {
+    QString infoStr = ui->time->text();
     QFile file(QApplication::applicationDirPath()+CMDINFO);
     if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
@@ -938,21 +1042,124 @@ void Widget::onSlotRW(QMap<QString,SerialPort *> &mapcom)
     QByteArray bytArr;
     bytArr.append(file.readAll());
     file.flush();
+    QJsonDocument jDoc = QJsonDocument::fromJson(bytArr);
     bytArr.clear();
+    QJsonObject jObj = jDoc.object();
 
     QMap<QString,SerialPort *>::iterator it = mapcom.begin();
     while(it != mapcom.end())
     {
+        QString curPortName = it.key();
+        QString originName = util.Uart_Convert(curPortName);
+        QJsonObject jPort = jObj.value(curPortName).toObject();
+        SerialPort *curPort = it.value();
+
+        logStr = curPortName +"("+originName+")" +"已接通!";
+        logStr += "波特率:9600,";
+        logStr += "数据位:8,";
+        logStr += "停止位:1,";
+        logStr += "校验位:none,";
+        logStr += "数据进制:16,";
+        logStr += "通信超时:1min;";
+#pragma region SENDCMD{
+            if(style == PORT_WRITE)
+            {
 
 
-        it++;
-    }
+                QDateTime dtx = QDateTime::fromString(infoStr,"yyyy-MM-dd HH:mm:ss");
+                int hour = dtx.time().hour();
+                int min = dtx.time().minute();
+                int sec = dtx.time().second();
+                int msec = dtx.time().msec();
+
+                bool testConf1,testConf2;
+                if(!testModeState)
+                {
+                    testConf1 = (msec==0)&&(sec==0)&&(min==0);
+                    testConf2 = hour;
+                }
+                else
+                {
+                    testConf1 = (msec==0)&&(sec==0);
+                    testConf2 = min;
+                }
+
+                if(testConf1)
+                {
+                    QJsonObject::iterator it_port = jPort.begin();
+                    while(it_port != jPort.end())
+                    {
+                        QString cmdKey = it_port.key();
+                        QJsonObject jSubObj = it_port.value().toObject();
+                        QString cmd = jSubObj.value("cmd").toString();
+                        QString seltms = jSubObj.value("select_times").toString();
+                        QStringList tmlist;
+                        if(seltms.split(",").count()>0)
+                        {
+                            for(QString tm:seltms.split(","))
+                            {
+//                                QString tm_num = tm.remove("点");
+                                tmlist<<tm;
+                            }
+
+                        }
+                        if(tmlist.contains(QString::number(testConf2)))
+                        {
+
+                            if(!cmd.isEmpty())
+                            {
+                                QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper());
+                                int length = cmd.length();
+                                curPort->write(QString2Hex(cmd));
+                                logStr += infoStr+"[S]"+curPortName+":"+cmdKey+"-"+cmd+"\r\n";
+                            }
+
+                        }
+
+                        it_port++;
+                    }
+                }
+
+            }
+#pragma endregion SENDCMD}
+
+#pragma region RECEICMD{
+            if(style == PORT_READ)
+            {
+                connect(curPort,&SerialPort::hasdata,this,[=](QByteArray &bytR)
+                {
+                    QString recStr = QString(bytR);
+                    logStr += infoStr+"[R]"+curPortName+":"+recStr+"\r\n";
+                });
+
+            }
+#pragma endregion RECEICMD}
+
+            it++;
+        }
+
+        ui->msginfo->setText(logStr);
+        ui->msginfo->setFont(itemfont);
+
+
 }
 
 void Widget::onButtonDele(QString id)
 {
     qDebug()<<__LINE__<<__FUNCTION__<<id<<endl;
-    g_curFacid = id;
+
+    for(int i=0;i<ui->device_table->rowCount();++i)
+    {
+        if(ui->device_table->item(i,2))
+        {
+            if(id == ui->device_table->item(i,2)->text())
+            {
+                ui->device_table->removeRow(i);
+            }
+        }
+    }
+
+
 }
 
 void Widget::onButtonEdit(QString id)
@@ -999,6 +1206,7 @@ void CHttpWork::sendResultReady()
     }
 
     availblePorts = getAvailblePorts(pDevice);
+    checkPortExistInTable(availblePorts);
     portsStateObj = checkPortState(availblePorts);
 
 
@@ -1040,6 +1248,30 @@ QJsonObject CHttpWork::checkPortState(QStringList ports)
 
 }
 
+void CHttpWork::checkPortExistInTable(QStringList &ports)
+{
+    emit sendisExist(ports);
+
+    QMap<QString,bool>::iterator it = portExistStateMap.begin();
+    while(it != portExistStateMap.end())
+    {
+        QString refport = it.key();
+        bool isExit = it.value();
+        if(ports.contains(refport))
+        {
+            int index = ports.indexOf(refport);
+            if(!isExit)
+            {
+                ports.removeAt(index);
+            }
+        }
+        it++;
+    }
+
+}
+
+
+
 
 void CHttpWork::doWork() {
 
@@ -1080,7 +1312,7 @@ void CHttpWork::doWork() {
 
 
         availblePorts = getAvailblePorts(pDevice);
-
+        checkPortExistInTable(availblePorts);
         portsStateObj = checkPortState(availblePorts);
 
 
@@ -1115,9 +1347,12 @@ void CHttpWork::rwWork()
             }
         }
 
-        emit sendCMD(commMap);
+        emit sendCMD(PORT_WRITE,commMap);
+        emit sendCMD(PORT_READ,commMap);
         /* 使用QThread里的延时函数，当作一个普通延时 */
         QThread::sleep(1);
+
+
 
     }
 }

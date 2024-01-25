@@ -281,7 +281,7 @@ QPushButton::unchecked
           <number>1</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="7,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="7,0,0,0">
            <item>
             <widget class="QLabel" name="label">
              <property name="font">
@@ -293,6 +293,63 @@ QPushButton::unchecked
              </property>
              <property name="text">
               <string>设备状态</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="testMode">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QCheckBox{
+	border: none;/*最外层边框*/
+}
+QCheckBox::indicator{/*选择框尺寸*/
+    background-color: rgba(0, 0, 0, 0);
+	color:black;
+    border: 0px solid #b1b1b1;
+        width: 38px;
+        height: 32px;
+}
+QCheckBox:enabled:checked{
+        color: rgb(0, 60, 0);
+        font 14px &quot;黑体&quot;;
+}
+QCheckBox:enabled:!checked{
+        color: rgb(50, 50, 50);
+        font 14px &quot;黑体&quot;;
+
+}
+QCheckBox:enabled:hover{
+        font 14px &quot;黑体&quot;;
+        color: rgb(0, 20, 155);
+}
+QCheckBox:!enabled{
+	color: rgb(80, 80, 80);
+}
+ 
+QCheckBox::indicator:unchecked {
+    image:url(&quot;:/images/images/Off.png&quot;)
+}
+
+QCheckBox::indicator:checked {
+    image:url(&quot;:/images/images/On.png&quot;)
+}
+</string>
+             </property>
+             <property name="text">
+              <string>测试模式</string>
              </property>
             </widget>
            </item>
@@ -407,7 +464,7 @@ color: rgb(255, 255, 255);
           <number>0</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="7,0,0,0,0">
            <item>
             <widget class="QLabel" name="label_2">
              <property name="font">
@@ -419,6 +476,55 @@ color: rgb(255, 255, 255);
              </property>
              <property name="text">
               <string>编辑设备</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>modbus序号</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="e_modbusindex">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -971,7 +1077,7 @@ QCheckBox::indicator:checked {
           <number>0</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="7,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="7,0,0,0,0">
            <item>
             <widget class="QLabel" name="label_3">
              <property name="font">
@@ -983,6 +1089,55 @@ QCheckBox::indicator:checked {
              </property>
              <property name="text">
               <string>新增设备</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="font">
+              <font>
+               <pointsize>18</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>modbus序号</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="a_modbusindex">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>20</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -1521,7 +1676,7 @@ QCheckBox::indicator:checked {
         </layout>
        </widget>
        <widget class="QWidget" name="ctrllog">
-        <layout class="QVBoxLayout" name="verticalLayout_10" stretch="1,1,8">
+        <layout class="QVBoxLayout" name="verticalLayout_10" stretch="1,8">
          <property name="spacing">
           <number>2</number>
          </property>
@@ -1538,7 +1693,7 @@ QCheckBox::indicator:checked {
           <number>2</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="7,0,0">
+          <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="7,0">
            <property name="spacing">
             <number>3</number>
            </property>
@@ -1557,50 +1712,7 @@ QCheckBox::indicator:checked {
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_5">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QPushButton{
-background-color: rgb(69, 76, 120);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 2px;
-width:60px;
-
-}
- 
-QPushButton:hover{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-border: none;
-border-radius: 3px;
-
-}
- 
-QPushButton:pressed{
-background-color: rgb(0, 0, 152);
-color: rgb(255, 255, 255);
-
-}
-</string>
-             </property>
-             <property name="text">
-              <string>查询</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="clearContent">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -1645,177 +1757,6 @@ color: rgb(255, 255, 255);
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
-            <widget class="QRadioButton" name="logall">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QRadioButton::indicator:unchecked {
-    
-		
-	image: url(:/images/images/unchecked.png);
-	width:20px;
-	height:20px;
-
-}
-
-QRadioButton::indicator:checked {
-   		image: url(:/images/images/checked.png);
-		width:20px;
-		height:20px;
-}
-
-QRadioButton::hover
-{
-		
-	color: rgb(32, 74, 135);
-	
-
-}
-
-
-</string>
-             </property>
-             <property name="text">
-              <string>全部</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="logtrace">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QRadioButton::indicator:unchecked {
-    
-		
-	image: url(:/images/images/unchecked.png);
-	width:20px;
-	height:20px;
-
-}
-
-QRadioButton::indicator:checked {
-   		image: url(:/images/images/checked.png);
-		width:20px;
-		height:20px;
-}
-
-QRadioButton::hover
-{
-		
-	color: rgb(32, 74, 135);
-	
-
-}
-
-
-</string>
-             </property>
-             <property name="text">
-              <string>追踪</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="logdebug">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QRadioButton::indicator:unchecked {
-    
-		
-	image: url(:/images/images/unchecked.png);
-	width:20px;
-	height:20px;
-
-}
-
-QRadioButton::indicator:checked {
-   		image: url(:/images/images/checked.png);
-		width:20px;
-		height:20px;
-}
-
-QRadioButton::hover
-{
-		
-	color: rgb(32, 74, 135);
-	
-
-}
-
-
-</string>
-             </property>
-             <property name="text">
-              <string>调试</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="logerror">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QRadioButton::indicator:unchecked {
-    
-		
-	image: url(:/images/images/unchecked.png);
-	width:20px;
-	height:20px;
-
-}
-
-QRadioButton::indicator:checked {
-   		image: url(:/images/images/checked.png);
-		width:20px;
-		height:20px;
-}
-
-QRadioButton::hover
-{
-		
-	color: rgb(32, 74, 135);
-	
-
-}
-
-
-</string>
-             </property>
-             <property name="text">
-              <string>错误</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
           <widget class="QTextBrowser" name="msginfo">
            <property name="font">
             <font>
@@ -1835,7 +1776,7 @@ QRadioButton::hover
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Ubuntu'; font-size:16pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:400;&quot;&gt;123144324&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>

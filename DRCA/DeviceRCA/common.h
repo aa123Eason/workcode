@@ -37,7 +37,7 @@
 #define PASSWORD "lcdcm"
 #define TOKEN "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5NTY1MjgwMDAsImlhdCI6MX0.0uQ36MB7Mt6i-tRzV9v1TnsftSoFpm6bJ_J8bQpUH4U"
 #define PAGE_SIZE 10
-#define DEVICE_CMD_INFO "/docu/cmdinfo.json"
+
 
 //
 #define TESHUZHI "teshuzhi"
@@ -91,6 +91,13 @@ extern QJsonObject g_ConfObjDevParam;
 extern QString g_Device_ID;
 extern QString g_Device_Type;
 extern bool g_IsAnalogDevOperated;
+
+enum PORT_STYLE
+{
+    PORT_WRITE = 0,
+    PORT_READ
+
+};
 
 
 #endif // COMMON_H

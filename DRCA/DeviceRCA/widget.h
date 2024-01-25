@@ -40,7 +40,7 @@
 #include <QDir>
 
 
-#define CMDINFO "/docu/cmdinfo.json"
+#define CMDINFO "/docu/devicecmdinfo.json"
 #define STATE_ON ":/images/images/checked.png"
 #define STATE_OFF ":/images/images/unchecked.png"
 
@@ -79,7 +79,7 @@ public slots:
     void handleResults(const QJsonObject &pDevice,const QJsonObject &pFactor);
     void handleDateTimeout();
     void onSaveTimeset();
-    void onSlotRW(QMap<QString,SerialPort *> &);
+    void onSlotRW(PORT_STYLE style,QMap<QString,SerialPort *> &);
 
 
 private slots:
@@ -95,6 +95,7 @@ private:
     Util util;
 
     QStringList portsList;
+    QString logStr;
 
     QMap<QString,QString> facnameMap;
     QTimer timer;
@@ -128,11 +129,13 @@ public:
     void sendResultReady();
     QStringList getAvailblePorts(const QJsonObject &pDevice);
     QJsonObject checkPortState(QStringList ports);
+    void checkPortExistInTable(QStringList &ports);
 
 signals:
     /* 工人工作函数状态的信号 */
     void resultReady(const QJsonObject &pDevice,const QJsonObject &pFactor);
-    void sendCMD(QMap<QString,SerialPort *> &);
+    void sendCMD(PORT_STYLE style, QMap<QString,SerialPort *> &);
+    void sendisExist(QStringList &);
 
 public slots:
     void doWork();

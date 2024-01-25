@@ -85,7 +85,7 @@ private:
     int m_fd;
     termios new_serialArry;
     QSocketNotifier *m_notifier;
-    QByteArray  *rev_buf;
+    QByteArray  *rev_buf=nullptr;
     QMutex mutex_r;
 
 public :  
@@ -105,7 +105,7 @@ public :
 
 
 signals:
-    void hasdata();
+    void hasdata(QByteArray &);
 
 private slots:
     void remoteDateInComing();

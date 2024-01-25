@@ -199,7 +199,7 @@ void SerialPort::remoteDateInComing()
 
     }
     mutex_r.unlock();
-    emit hasdata();
+    emit hasdata(*rev_buf);
 
 
 }
@@ -228,7 +228,7 @@ QByteArray SerialPort::read()
     QByteArray retByteArray;
     if(rev_buf->isEmpty())
     {
-        retByteArray.append("aaa");
+        retByteArray.append("NULL");
         retByteArray.clear();
     }else
     {
