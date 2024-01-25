@@ -167,7 +167,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>13</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -271,8 +271,8 @@ background-color:#55ff00;</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>954</width>
-            <height>68</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -308,7 +308,7 @@ background-color:#55ff00;</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1205</width>
+         <width>98</width>
          <height>650</height>
         </rect>
        </property>
@@ -930,7 +930,7 @@ border:1px  solid #000;</string>
      </widget>
     </widget>
     <widget class="QWidget" name="page">
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -4604,7 +4604,7 @@ QCheckBox::indicator:checked {
         <height>394</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,5,0">
+      <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,5">
        <item>
         <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,1,1,1,1,1" columnstretch="0,1">
          <property name="sizeConstraint">
@@ -5031,20 +5031,6 @@ QComboBox QAbstractItemView::item {
            <pointsize>18</pointsize>
           </font>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTabWidget" name="tabWidget">
-         <widget class="QWidget" name="tab">
-          <attribute name="title">
-           <string>Tab 1</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="tab_2">
-          <attribute name="title">
-           <string>Tab 2</string>
-          </attribute>
-         </widget>
         </widget>
        </item>
       </layout>

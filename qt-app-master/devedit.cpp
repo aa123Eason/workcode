@@ -17,7 +17,7 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
 
     font.setBold(true);
     font.setPointSize(20);
-    kb = new localKeyboard();
+kb = new localKeyboard(this);
 
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
@@ -25,9 +25,7 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
         if(!kb->isVisible())
-            kb->show();
-        else
-            kb->hide();
+             kb->show();
     });
 
     ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);

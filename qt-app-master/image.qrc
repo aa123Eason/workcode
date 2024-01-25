@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/new/images">
+        <file>image/state_off.png</file>
+        <file>image/state_on.png</file>
+        <file>image/logo.png</file>
+        <file>image/close_hover.png</file>
+        <file>image/keyboard-off.png</file>
+        <file>image/keyboard-on.png</file>
+        <file>image/No_Upan.png</file>
+        <file>image/update.png</file>
+        <file>image/usb.png</file>
+        <file>image/xtsj.png</file>
+        <file>image/appdft.png</file>
+        <file>image/down_arrow.png</file>
+        <file>image/restart.png</file>
+        <file>image/checkboxstyle.qss</file>
+        <file>image/Off.png</file>
+        <file>image/On.png</file>
+        <file>image/device.png</file>
+        <file>image/query.png</file>
+        <file>image/swj.png</file>
+    </qresource>
+</RCC>

@@ -76,9 +76,7 @@ void TeshuzhiAdd::connectevent()
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
         if(!kb->isVisible())
-            kb->show();
-        else
-            kb->hide();
+             kb->show();
     });
 }
 

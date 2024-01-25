@@ -57,13 +57,12 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fcode->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    kb = new localKeyboard();
+    kb = new localKeyboard(this);
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
+
         if(!kb->isVisible())
-            kb->show();
-        else
-            kb->hide();
+             kb->show();
     });
 
     ui->label_dec->setVisible(false);

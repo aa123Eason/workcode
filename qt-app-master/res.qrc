@@ -37,5 +37,7 @@
         <file>images/usb.png</file>
         <file>images/state_off.png</file>
         <file>images/state_on.png</file>
+        <file>images/checked.png</file>
+        <file>images/unchecked.png</file>
     </qresource>
 </RCC>

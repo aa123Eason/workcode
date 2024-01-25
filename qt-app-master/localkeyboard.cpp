@@ -1,11 +1,12 @@
 #include "localkeyboard.h"
 #include "ui_localkeyboard.h"
 
-localKeyboard::localKeyboard(QWidget *parent) :
+localKeyboard::localKeyboard(QWidget *widget,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::localKeyboard)
 {
     ui->setupUi(this);
+    curWidget = widget;
     init();
 }
 
@@ -33,9 +34,47 @@ void localKeyboard::init()
 
     this->move(this->x() + (screenWidth - width) / 2,this->y()+(screenHeight - height) / 2);
 
-    this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
+    this->setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_DeleteOnClose);
+    this->setWindowModality(Qt::WindowModal);
+
+    connect(ui->close,&QPushButton::clicked,this,&localKeyboard::hide);
 }
+
+void localKeyboard::closeEvent(QCloseEvent *event)
+{
+    if(this->isVisible())
+        this->hide();
+}
+
+void localKeyboard::mousePressEvent(QMouseEvent* event)
+{
+    if(event->button() == Qt::LeftButton)
+    {
+        QCursor::pos()=event->pos();
+    }
+}
+
+void localKeyboard::mouseMoveEvent(QMouseEvent* event)
+{
+
+    if(event->buttons() == Qt::LeftButton)
+    {
+        if(localKeyboard::isMaximized() || localKeyboard::isMinimized())
+        {
+            return;
+        }
+        else
+        {
+             if (ui->label->underMouse())	//仅在标题栏触发
+            {
+                QWidget::move(QWidget::mapToGlobal(event->pos()));
+            }
+        }
+    }
+    event->accept();
+}
+
 
 void localKeyboard::keymap()
 {
@@ -143,7 +182,7 @@ void localKeyboard::keymap()
     {
         QString keyName = keyMap.keys()[i];
         QPushButton *btn = keyMap[keyName];
-        btn->installEventFilter(this);
+//        btn->installEventFilter(this);
         btn->setAutoRepeat(true);
         btn->setAutoRepeatDelay(500);
     }
@@ -236,6 +275,7 @@ bool localKeyboard::eventFilter(QObject *o,QEvent *e)
         if(me->button() == Qt::LeftButton)
         {
             QPushButton *btn = (QPushButton *)o;
+
             qDebug()<<__LINE__<<"CURRENT KEY:"<<keyMap.key(btn)<<endl;
         }
     }
@@ -243,91 +283,215 @@ bool localKeyboard::eventFilter(QObject *o,QEvent *e)
 
 void localKeyboard::slotKeyButtonClicked()
 {
+    if(!curWidget)return;
     QPushButton* pbtn = (QPushButton*)sender();
-        QString objectName = pbtn->objectName();
-        if (pbtn->text().contains("Backspace")) {
-            QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
-            QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Backspace, Qt::NoModifier);
-            QApplication::sendEvent(this, &keyPress);
-            QApplication::sendEvent(this, &keyRelease);
-        }
-        else if (pbtn->text().contains("Caps")) {
-            if (pbtn->isChecked()) {
-                for (auto pbtnKey : letterBtns) {
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
+    QString objectName = pbtn->objectName();
+    if (pbtn->text().contains("BackSpace")) {
+        QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
+        QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Backspace, Qt::NoModifier);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if (pbtn->text().contains("Caps")) {
+        if (pbtn->isChecked()) {
+            for (auto pbtnKey : letterBtns) {
 
-                    pbtnKey->setText(pbtnKey->text().split("|")[0].toUpper());
-                }
-            }
-            else {
-                for (auto pbtnKey : letterBtns) {
-                    pbtnKey->setText(pbtnKey->text().split("|")[0].toLower());
-                }
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toUpper());
             }
         }
-        else if(pbtn->text() == "Space") {
-            QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier, " ");
-            QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier, " ");
-            QApplication::sendEvent(this, &keyPress);
-            QApplication::sendEvent(this, &keyRelease);
-        }
-        else if (pbtn->text().contains("Enter")) {
-            QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
-            QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Enter, Qt::NoModifier);
-            QApplication::sendEvent(this, &keyPress);
-            QApplication::sendEvent(this, &keyRelease);
-        }
-        else if (pbtn->text().contains("Ctrl")) {
-            QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Control, Qt::NoModifier);
-            QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Control, Qt::NoModifier);
-            QApplication::sendEvent(this, &keyPress);
-            QApplication::sendEvent(this, &keyRelease);
-        }
-        else if (pbtn->text().contains("Alt")) {
-            QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Alt, Qt::NoModifier);
-            QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Alt, Qt::NoModifier);
-            QApplication::sendEvent(this, &keyPress);
-            QApplication::sendEvent(this, &keyRelease);
-        }
-        else if(pbtn->text().contains("符"))
-        {
-            if (pbtn->isChecked()) {
-                qDebug()<<__LINE__<<"开启符号键转换"<<endl;
-                for (auto pbtnKey : letterBtns) {
-
-                    if(pbtnKey->text().split("|").count()>1)
-                        pbtnKey->setText(pbtnKey->text().split("|")[1]);
-                }
-
-                for (auto pbtnKey : numberBtns) {
-
-                    if(pbtnKey->text().split("|").count()>1)
-                        pbtnKey->setText(pbtnKey->text().split("|")[1]);
-                }
-            }
-            else {
-                qDebug()<<__LINE__<<"关闭符号键转换"<<endl;
-
-                for (auto pbtnKey : letterBtns) {
-                    if(pbtnKey->text().split("|").count()>1)
-                        pbtnKey->setText(pbtnKey->text().split("|")[0].toLower());
-                }
-
-                for (auto pbtnKey : numberBtns) {
-                    if(pbtnKey->text().split("|").count()>1)
-                        pbtnKey->setText(pbtnKey->text().split("|")[0]);
-                }
+        else {
+            for (auto pbtnKey : letterBtns) {
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toLower());
             }
         }
+    }
+    else if(pbtn == ui->Space) {
+        QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier, " ");
+        QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier, " ");
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if (pbtn->text().contains("Enter")) {
+        QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+        QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Enter, Qt::NoModifier);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if (pbtn->text().contains("Ctrl")) {
+        QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Control, Qt::NoModifier);
+        QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Control, Qt::NoModifier);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if (pbtn->text().contains("Alt")) {
+        QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Alt, Qt::NoModifier);
+        QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Alt, Qt::NoModifier);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if(pbtn->text().contains("符"))
+    {
+        if (pbtn->isChecked()) {
+            qDebug()<<__LINE__<<"开启符号键转换"<<endl;
+            for (auto pbtnKey : letterBtns) {
+
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[1]);
+            }
+
+            for (auto pbtnKey : numberBtns) {
+
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[1]);
+            }
+        }
+        else {
+            qDebug()<<__LINE__<<"关闭符号键转换"<<endl;
+
+            for (auto pbtnKey : letterBtns) {
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toLower());
+            }
+
+            for (auto pbtnKey : numberBtns) {
+                if(pbtnKey->whatsThis().split("|").count()>1)
+                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0]);
+            }
+        }
+    }
+
+//    取消组合键按下
+//    if (!pbtn->text().contains("Ctrl") && !pbtn->text().contains("Alt") ) {
+//        if (ui->Caps->isChecked()) {
+//            ui->Caps->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                pbtnKey->setText(pbtnKey->text().toLower());
+//            }
+//        }
+
+//        if (ui->sym->isChecked()) {
+//            ui->sym->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toLower());
+//            }
+
+//            for (auto pbtnKey : numberBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0]);
+//            }
+//        }
+
+
+//        if (ui->lctrl->isChecked())
+//            ui->lctrl->setChecked(false);
+//        if (ui->rctrl->isChecked())
+//            ui->rctrl->setChecked(false);
+//        if (ui->lalt->isChecked())
+//            ui->lalt->setChecked(false);
+//        if (ui->ralt->isChecked())
+//            ui->ralt->setChecked(false);
+//    }
+
 
 
 }
 
 void localKeyboard::slotKeyLetterButtonClicked()
 {
+    if(!curWidget)return;
+    QPushButton* pbtn = (QPushButton*)sender();
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
+    if (pbtn->text() >= 'a' && pbtn->text() <= 'z') {
+        QKeyEvent keyPress(QEvent::KeyPress, int(pbtn->text().at(0).toLatin1()) - 32, Qt::NoModifier, pbtn->text());
+        QKeyEvent keyRelease(QEvent::KeyRelease, int(pbtn->text().at(0).toLatin1()) - 32, Qt::NoModifier, pbtn->text());
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    else if (pbtn->text() >= 'A' && pbtn->text() <= 'Z') {
+        QKeyEvent keyPress(QEvent::KeyPress, int(pbtn->text().at(0).toLatin1()), Qt::NoModifier, pbtn->text());
+        QKeyEvent keyRelease(QEvent::KeyRelease, int(pbtn->text().at(0).toLatin1()), Qt::NoModifier, pbtn->text());
+        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    }
+    //取消组合键按下
+//    if (!pbtn->text().contains("Ctrl") && !pbtn->text().contains("Alt") ) {
+//        if (ui->Caps->isChecked()) {
+//            ui->Caps->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                pbtnKey->setText(pbtnKey->text().toLower());
+//            }
+//        }
+
+//        if (ui->sym->isChecked()) {
+//            ui->sym->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toLower());
+//            }
+
+//            for (auto pbtnKey : numberBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0]);
+//            }
+//        }
+
+
+//        if (ui->lctrl->isChecked())
+//            ui->lctrl->setChecked(false);
+//        if (ui->rctrl->isChecked())
+//            ui->rctrl->setChecked(false);
+//        if (ui->lalt->isChecked())
+//            ui->lalt->setChecked(false);
+//        if (ui->ralt->isChecked())
+//            ui->ralt->setChecked(false);
+//    }
 
 }
 
 void localKeyboard::slotKeyNumberButtonClicked()
 {
+    if(!curWidget)return;
+    QPushButton* pbtn = (QPushButton*)sender();
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
+    QKeyEvent keyPress(QEvent::KeyPress, pbtn->text().toInt() + 48, Qt::NoModifier, pbtn->text());
+    QKeyEvent keyRelease(QEvent::KeyRelease, pbtn->text().toInt() + 48, Qt::NoModifier, pbtn->text());
+    QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
+    QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    //取消组合键按下
+//    if (!pbtn->text().contains("Ctrl") && !pbtn->text().contains("Alt") ) {
+//        if (ui->Caps->isChecked()) {
+//            ui->Caps->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                pbtnKey->setText(pbtnKey->text().toLower());
+//            }
+//        }
+
+//        if (ui->sym->isChecked()) {
+//            ui->sym->setChecked(false);
+//            for (auto pbtnKey : letterBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0].toLower());
+//            }
+
+//            for (auto pbtnKey : numberBtns) {
+//                if(pbtnKey->whatsThis().split("|").count()>1)
+//                    pbtnKey->setText(pbtnKey->whatsThis().split("|")[0]);
+//            }
+//        }
+
+
+//        if (ui->lctrl->isChecked())
+//            ui->lctrl->setChecked(false);
+//        if (ui->rctrl->isChecked())
+//            ui->rctrl->setChecked(false);
+//        if (ui->lalt->isChecked())
+//            ui->lalt->setChecked(false);
+//        if (ui->ralt->isChecked())
+//            ui->ralt->setChecked(false);
+//    }
 
 }

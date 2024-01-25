@@ -95,7 +95,7 @@ void DeviceCMDCtrlDlg::init()
 
     ui->tmck1->setChecked(Qt::Checked);
 
-    kb = new localKeyboard();
+kb = new localKeyboard(this);
 
 }
 
@@ -175,7 +175,7 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
             if(me->button() == Qt::LeftButton)
             {
                 if(!kb->isVisible())
-                    kb->show();
+                     kb->show();
 
             }
         }
@@ -278,9 +278,7 @@ void DeviceCMDCtrlDlg::connectevent()
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
         if(!kb->isVisible())
-            kb->show();
-        else
-            kb->hide();
+             kb->show();
     });
 
     connect(ui->curPort,&QComboBox::currentTextChanged,this,[=](const QString &)
@@ -778,10 +776,6 @@ void DeviceCMDCtrlDlg::onReceiveCMD(QString cmd)
     qDebug()<<__LINE__<<"SEND:"<<cmd<<endl;
     QString curPortName = ui->curPort->currentText();
     QString originName = util.Uart_Convert(curPortName);
-
-
-
-
 
     if(!serialPort->openPort(originName,BAUD9600,DATA_8,PAR_NONE,STOP_1,FLOW_OFF,60))
     {

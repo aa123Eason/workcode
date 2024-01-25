@@ -86,7 +86,7 @@ while(it != end)
 
 ui->tableWidget->setRowCount(pCnt);
 
-QTableWidgetItem *item;
+QTableWidgetItem *item = nullptr;
 QJsonObject::const_iterator itor = pjsonObjList.constBegin();
 QJsonObject::const_iterator endList = pjsonObjList.constEnd();
 int index = 0;

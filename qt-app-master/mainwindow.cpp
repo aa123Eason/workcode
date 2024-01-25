@@ -236,10 +236,10 @@ void MainWindow::showModifiedTime()
 void MainWindow::Widget_Init()
 {
     showModifiedTime();
-    kb = new localKeyboard();
-    ui->comboBox->setView(new QListView(this));
-    ui->comboBox->setView(new QListView(this));
 
+    ui->comboBox->setView(new QListView(this));
+    ui->comboBox->setView(new QListView(this));
+    kb = new localKeyboard(this);
     ui->hexYes->setChecked(true);
     hexGroup = new QButtonGroup(this);
     hexGroup->addButton(ui->hexYes, 0);
@@ -301,10 +301,10 @@ void MainWindow::Widget_Init()
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
+
+
         if(!kb->isVisible())
-            kb->show();
-        else
-            kb->hide();
+             kb->show();
 
     });
 
@@ -477,7 +477,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
-                   if(!kb->isVisible())
+
+                   if(!kb)
+                       kb = new localKeyboard(this);
+                   else
                        kb->show();
 
                    return true;
@@ -493,8 +496,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<lineEditList.at(i)->objectName()<<endl;
+
                    if(!kb->isVisible())
-                       kb->show();
+                        kb->show();
 
                    return true;
                 }
@@ -1629,11 +1633,11 @@ void CHttpWork::doWork1() {
             emit resultReady("realtime_data",pJsonObj);
         }
 
-//        if(pClient.get(DCM_COONECT_STAT,pJsonObj))
-//        {
-//            emit resultReady("connect_stat",pJsonObj);
-//            QThread::sleep(3);
-//        }
+        if(pClient.get(DCM_COONECT_STAT,pJsonObj))
+        {
+            emit resultReady("connect_stat",pJsonObj);
+            QThread::sleep(3);
+        }
 
 
     }
@@ -2577,7 +2581,7 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
     ui->tableWidget->setRowCount(cnt);
 
     QJsonObject json;
-    QTableWidgetItem *item;
+    QTableWidgetItem *item = nullptr;
     for(int i = 0; i < cnt; i++)
     {
         json = history_real_time_data.at(i).toObject();
@@ -3060,7 +3064,7 @@ void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
     }
 
     QJsonObject json;
-    QTableWidgetItem *item;
+    QTableWidgetItem *item = nullptr;
     for(int i = 0; i < cnt; i++)
     {
         json = history_real_time_data.at(i).toObject();
@@ -3912,7 +3916,14 @@ void MainWindow::on_pushButton_ReturnDev_clicked()
 void MainWindow::onReceiveDeviceCMDCtrl()
 {
     qDebug()<<__LINE__<<__FUNCTION__<<endl;
-    devicecmddlg = new DeviceCMDCtrlDlg(this);
-    connect(this,&MainWindow::sendCurDT,devicecmddlg,&DeviceCMDCtrlDlg::onReceivecurDT);
-    devicecmddlg->show();
+    if(QMessageBox::Ok == QMessageBox::information(this,"提示","启动设备反控助手"))
+    {
+        qDebug()<<__LINE__<<__FUNCTION__<<"DRCA"<<endl;
+//        QProcess pro;
+//        pro.startDetached("./DRCA/DRCA");
+//        pro.close();
+    }
+//    devicecmddlg = new DeviceCMDCtrlDlg(this);
+//    connect(this,&MainWindow::sendCurDT,devicecmddlg,&DeviceCMDCtrlDlg::onReceivecurDT);
+//    devicecmddlg->show();
 }
