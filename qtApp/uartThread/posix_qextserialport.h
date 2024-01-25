@@ -11,7 +11,7 @@
 #include <sys/select.h>
 #include "qextserialbase.h"
 
-#ifdef Q_OS_LINUX
+//#ifdef Q_OS_LINUX
 class Posix_QextSerialPort:public QextSerialBase 
 {
 private:
@@ -62,5 +62,5 @@ public:
 
 };
 
-#endif
+//#endif
 #endif

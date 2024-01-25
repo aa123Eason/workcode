@@ -16,54 +16,79 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    appbutton.cpp \
-    dataquery.cpp \
-    devicecmdctrldlg.cpp \
-    deviceset.cpp \
-    facpanel.cpp \
-    httpclient.cpp \
+    comboboxselectdlg.cpp \
+    devadd.cpp \
+    devedit.cpp \
+    dialogdevprop.cpp \
+    dialogproto.cpp \
+    facedit.cpp \
+    factoradd.cpp \
+    httpclinet.cpp \
+    localkeyboard.cpp \
     main.cpp \
     mainwindow.cpp \
-    updeviceset.cpp \
-    usbutility.cpp \
+    teshuzhiadd.cpp \
+    teshuzhidele.cpp \
+    upsetadd.cpp \
+    usbupdatedlg.cpp \
+    util.cpp\
     uartThread/posix_qextserialport.cpp \
     uartThread/qextserialbase.cpp \
-    uartThread/uartthread.cpp
-
+    uartThread/uartthread.cpp \
+    devicecmdctrldlg.cpp \
+    serial.cpp \
+    serialport.cpp
 
 HEADERS += \
-    appbutton.h \
+    comboboxselectdlg.h \
     common.h \
-    dataquery.h \
-    devicecmdctrldlg.h \
-    deviceset.h \
-    facpanel.h \
-    httpclient.h \
+    devadd.h \
+    devedit.h \
+    dialogdevprop.h \
+    dialogproto.h \
+    facedit.h \
+    factoradd.h \
+    httpclinet.h \
+    localkeyboard.h \
     mainwindow.h \
-    updeviceset.h \
-    usbutility.h \
+    teshuzhiadd.h \
+    teshuzhidele.h \
+    upsetadd.h \
+    usbupdatedlg.h \
+    util.h \
     uartThread/posix_qextserialport.h \
     uartThread/qextserialbase.h \
-    uartThread/uartthread.h
-
+    uartThread/uartthread.h \
+    devicecmdctrldlg.h \
+    serial.h \
+    serialport.h
 
 FORMS += \
-    appbutton.ui \
-    dataquery.ui \
-    devicecmdctrldlg.ui \
-    deviceset.ui \
-    facpanel.ui \
+    comboboxselectdlg.ui \
+    devadd.ui \
+    devedit.ui \
+    dialogdevprop.ui \
+    dialogproto.ui \
+    facedit.ui \
+    factoradd.ui \
+    localkeyboard.ui \
     mainwindow.ui \
-    updeviceset.ui
-
-TRANSLATIONS += \
-    qtApp_zh_CN.ts
+    teshuzhiadd.ui \
+    teshuzhidele.ui \
+    upsetadd.ui \
+    devicecmdctrldlg.ui \
+    usbupdatedlg.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-include(src/xlsx/qtxlsx.pri)
 
 RESOURCES += \
-    image.qrc
+    res.qrc
+
+include(src/xlsx/qtxlsx.pri)
+include(QsLog/QsLog.pri)
+
+TRANSLATIONS += \
+    qtApp_zh_CN.ts

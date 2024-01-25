@@ -1,0 +1,1156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DevAdd</class>
+ <widget class="QDialog" name="DevAdd">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>848</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_6" stretch="7,1">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4" stretch="1,1">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="font">
+          <font>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(238, 238, 236);</string>
+         </property>
+         <property name="title">
+          <string>设备基本配置</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_33" stretch="2,5">
+            <item>
+             <widget class="QLabel" name="label_49">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>接口类型：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item>
+               <widget class="QRadioButton" name="radioButton_Com">
+                <property name="font">
+                 <font>
+                  <pointsize>14</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>串口设备</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_Net">
+                <property name="font">
+                 <font>
+                  <pointsize>14</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>网口设备</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_32" stretch="2,5">
+            <item>
+             <widget class="QLabel" name="label_54">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>设备地址：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_devAddr">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Ubuntu</family>
+                <pointsize>18</pointsize>
+                <weight>50</weight>
+                <italic>false</italic>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(211, 215, 207);
+height:44px;
+font: 18pt &quot;Ubuntu&quot;;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="2,5">
+            <item>
+             <widget class="QLabel" name="label_53">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>设备类型：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Source Han Sans CN</family>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="maxVisibleItems">
+               <number>50</number>
+              </property>
+              <property name="insertPolicy">
+               <enum>QComboBox::InsertAtTop</enum>
+              </property>
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_36" stretch="2,5">
+            <item>
+             <widget class="QLabel" name="label_devName">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>设备名称：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_Name">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>210</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>210</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Ubuntu</family>
+                <pointsize>18</pointsize>
+                <weight>50</weight>
+                <italic>false</italic>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(211, 215, 207);
+height:44px;
+font: 18pt &quot;Ubuntu&quot;;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(238, 238, 236,0);</string>
+         </property>
+         <property name="tabPosition">
+          <enum>QTabWidget::North</enum>
+         </property>
+         <property name="tabShape">
+          <enum>QTabWidget::Triangular</enum>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="usesScrollButtons">
+          <bool>true</bool>
+         </property>
+         <property name="documentMode">
+          <bool>false</bool>
+         </property>
+         <property name="tabsClosable">
+          <bool>false</bool>
+         </property>
+         <property name="tabBarAutoHide">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string/>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1,1,1,1">
+           <property name="spacing">
+            <number>3</number>
+           </property>
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="1,3">
+             <item>
+              <widget class="QLabel" name="label_52">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>端口号：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Source Han Sans CN</family>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>COM1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM3</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM4</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM5</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM6</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM7</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM8</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM9</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM10</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM11</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>COM12</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>USB-COM1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>USB-COM2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>USB-COM3</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>USB-COM4</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>XR-COM1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>XR-COM2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>XR-COM3</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>XR-COM4</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="1,3">
+             <item>
+              <widget class="QLabel" name="label_55">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>波特率：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_baud">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Source Han Sans CN</family>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+               </property>
+               <property name="currentIndex">
+                <number>3</number>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>1200</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2400</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>4800</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>9600</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>19200</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>38400</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>115200</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_22" stretch="1,3">
+             <item>
+              <widget class="QLabel" name="label_56">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>停止位：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_stopbit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Source Han Sans CN</family>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_35" stretch="1,3">
+             <item>
+              <widget class="QLabel" name="label_60">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>校验位：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_parity">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Source Han Sans CN</family>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>N</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>E</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>O</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="1,3">
+             <item>
+              <widget class="QLabel" name="label_57">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>数据位：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBox_databit">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Source Han Sans CN</family>
+                 <pointsize>-1</pointsize>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+               </property>
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
+               <property name="insertPolicy">
+                <enum>QComboBox::InsertAtTop</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>7</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>8</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
+           <string/>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_24">
+             <item>
+              <widget class="QLabel" name="label_58">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>服务地址：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEdit_ipAddr">
+               <property name="font">
+                <font>
+                 <pointsize>14</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(211, 215, 207);</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_59">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>注：服务地址为空，则为串口设备，否则为网口设备。</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="font">
+        <font>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(238, 238, 236,0);</string>
+       </property>
+       <property name="title">
+        <string>设备参数</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0">
+        <property name="spacing">
+         <number>1</number>
+        </property>
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
+        <item>
+         <widget class="QTabWidget" name="tabWidget_2">
+          <property name="font">
+           <font>
+            <pointsize>18</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(211, 215, 207);</string>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
+          </property>
+          <widget class="QWidget" name="tab_list">
+           <attribute name="icon">
+            <iconset resource="res.qrc">
+             <normaloff>:/images/realtime.png</normaloff>:/images/realtime.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>列表模式</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QTableWidget" name="paramtable">
+              <property name="styleSheet">
+               <string notr="true">QTableWidget
+{
+	
+	
+	background-color: rgb(238, 238, 236);
+}</string>
+              </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>220</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>参数名</string>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="textAlignment">
+                <set>AlignCenter</set>
+               </property>
+               <property name="background">
+                <color>
+                 <red>136</red>
+                 <green>138</green>
+                 <blue>133</blue>
+                </color>
+               </property>
+               <property name="foreground">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>38</red>
+                  <green>2</green>
+                  <blue>250</blue>
+                 </color>
+                </brush>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>参数值</string>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>16</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="textAlignment">
+                <set>AlignCenter</set>
+               </property>
+               <property name="background">
+                <color>
+                 <red>136</red>
+                 <green>138</green>
+                 <blue>133</blue>
+                </color>
+               </property>
+               <property name="foreground">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>38</red>
+                  <green>2</green>
+                  <blue>250</blue>
+                 </color>
+                </brush>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_text">
+           <attribute name="icon">
+            <iconset resource="res.qrc">
+             <normaloff>:/images/appdft.png</normaloff>:/images/appdft.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>文本模式</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QTextEdit" name="textEdit_devParams">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(211, 215, 207);</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,0,1,1">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="keyboard">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/images/keyboard-off.png</normaloff>:/images/keyboard-off.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(239, 41, 41);</string>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>15</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(239, 41, 41);</string>
+       </property>
+       <property name="text">
+        <string>保存</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
