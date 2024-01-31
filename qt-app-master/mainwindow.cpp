@@ -514,9 +514,13 @@ void MainWindow::addRCPorts()
 //        namex->setAlignment(Qt::AlignCenter);
 //        namex->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed);
 
-        QListWidgetItem *item = new QListWidgetItem(QIcon(pixmap.scaled(12,12)),portName);
-        item->setFont(fontx);
-        ui->comFrame->addItem(item);
+        if(!portName.isEmpty())
+        {
+            QListWidgetItem *item = new QListWidgetItem(QIcon(pixmap.scaled(12,12)),portName);
+            item->setFont(fontx);
+            ui->comFrame->addItem(item);
+        }
+
 
 
 
@@ -1918,7 +1922,7 @@ void MainWindow::onSlotRW(bool isRead)
                     else
                     {
 
-                        testConf2 = sec%10==0;
+                        testConf2 = tmlist.contains(QString::number(sec));
                     }
 
                     if(testConf2)

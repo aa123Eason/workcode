@@ -22,6 +22,8 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QJsonArray>
+#include <QEvent>
+#include <QMouseEvent>
 
 
 
@@ -43,6 +45,8 @@ public:
 signals:
     void sendFinished(bool);
 
+protected:
+    bool eventFilter(QObject *watched=NULL, QEvent *event=NULL);
 
 public slots:
     void onAdd();
@@ -60,6 +64,7 @@ private:
     Util util;
     httpclinet pClient;
     QString cmdinfofile;
+    localKeyboard *kb = nullptr;
 
 };
 

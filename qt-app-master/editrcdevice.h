@@ -23,6 +23,8 @@
 #include <QFile>
 #include <QDir>
 #include <QGridLayout>
+#include <QEvent>
+#include <QMouseEvent>
 
 namespace Ui {
 class EditRCDevice;
@@ -43,6 +45,8 @@ public:
 signals:
     void sendFinished(bool);
 
+protected:
+    bool eventFilter(QObject *watched=NULL, QEvent *event=NULL);
 
 public slots:
     void onSave();
@@ -62,6 +66,7 @@ private:
     Util util;
     httpclinet pClient;
     QString cmdinfofile;
+    localKeyboard *kb = nullptr;
 };
 
 #endif // EDITRCDEVICE_H

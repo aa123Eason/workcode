@@ -173,7 +173,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>14</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -328,9 +328,6 @@ border-color: rgb(238, 238, 236);</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
-         </property>
-         <property name="itemAlignment">
-          <set>Qt::AlignLeading</set>
          </property>
         </widget>
        </item>

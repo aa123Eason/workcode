@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDebug>
 #include <QDateTime>
+#include "common.h"
 
 namespace Ui {
 class RCLogDlg;
@@ -27,6 +28,7 @@ public slots:
 private:
     Ui::RCLogDlg *ui;
     QString curStr;
+    localKeyboard *kb = nullptr;
 };
 
 #endif // RCLOGDLG_H

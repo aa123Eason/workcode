@@ -161,7 +161,32 @@ void EditRCDevice::init()
     }
 
     ui->editfacBox->setEnabled(false);
+    ui->e_modbusindex->installEventFilter(this);
+    kb = new localKeyboard(this);
+}
 
+bool EditRCDevice::eventFilter(QObject *watched, QEvent *event)
+{
+
+    if(watched == ui->e_modbusindex) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+            if(mouseEvent->button() == Qt::LeftButton) {
+//                qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
+
+                if(!kb)
+                    kb = new localKeyboard(this);
+                else
+                    kb->show();
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    return QWidget::eventFilter(watched,event);
 }
 
 void EditRCDevice::addTimeCks(QList<QCheckBox *> &timecks,QGridLayout &timeset,QWidget *w)

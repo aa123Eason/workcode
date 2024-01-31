@@ -187,7 +187,7 @@ void FactorAdd::on_pushButton_clicked()
     obj.insert(QLatin1String("alarm_lower"), ui->lineEdit_alarmLower->text().toInt());
     obj.insert(QLatin1String("alarm_upper"), ui->lineEdit_alarmUpper->text().toInt());
     obj.insert(QLatin1String("tag_id"), ui->lineEdit_tagId->text());
-    obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toInt());
+    obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toDouble());
     obj.insert(QLatin1String("modbus_index"), ui->modbus_add->text().toInt());
 
     if(GroupF1->checkedId() == 0)

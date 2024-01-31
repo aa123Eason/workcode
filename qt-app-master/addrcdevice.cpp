@@ -71,6 +71,32 @@ void AddRCDevice::init()
    addTimeCks(timecks,al2,ui->ap2);
    addTimeCks(timecks,al3,ui->ap3);
    addTimeCks(timecks,al4,ui->ap4);
+
+   ui->a_modbusindex->installEventFilter(this);
+}
+
+bool AddRCDevice::eventFilter(QObject *watched, QEvent *event)
+{
+
+    if(watched == ui->a_modbusindex) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+            if(mouseEvent->button() == Qt::LeftButton) {
+//                qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
+
+                if(!kb)
+                    kb = new localKeyboard(this);
+                else
+                    kb->show();
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    return QWidget::eventFilter(watched,event);
 }
 
 void AddRCDevice::connectevent()

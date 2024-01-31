@@ -137,7 +137,7 @@ void FacEdit::FacEdit_Init(QString id)
                 ui->comboBox_falias->setCurrentText(pJsonFac.value("factor_alias").toString());
                 ui->lineEdit_alarmUpper->setText(QString::number(pJsonFac.value("alarm_upper").toDouble()));
                 ui->lineEdit_alarmLower->setText(QString::number(pJsonFac.value("alarm_lower").toDouble()));
-                ui->lineEdit_coeff->setText(QString::number(pJsonFac.value("coefficient").toInt()));
+                ui->lineEdit_coeff->setText(QString::number(pJsonFac.value("coefficient").toInt(),'f',2));
 
 
 //                m_Fcode = pFcode;
@@ -279,7 +279,7 @@ void FacEdit::on_pushButton_Saved_clicked()
     obj.insert(QLatin1String("alarm_lower"), ui->lineEdit_alarmLower->text().toDouble());
     obj.insert(QLatin1String("alarm_upper"), ui->lineEdit_alarmUpper->text().toDouble());
     obj.insert(QLatin1String("tag_id"), ui->lineEdit_tagId->text());
-    obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toInt());
+    obj.insert(QLatin1String("coefficient"), ui->lineEdit_coeff->text().toDouble());
     obj.insert(QLatin1String("modbus_index"),ui->modbus_add->text().toInt());
     if(ui->radioButton_decN->isChecked())
     {
@@ -662,7 +662,7 @@ void FacEdit::loadinfo(QString path)
         ui->comboBox_falias->setCurrentText(jValueObj.value("factor_alias").toString());
         ui->lineEdit_alarmUpper->setText(QString::number(jValueObj.value("alarm_upper").toDouble()));
         ui->lineEdit_alarmLower->setText(QString::number(jValueObj.value("alarm_lower").toDouble()));
-        ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toInt()));
+        ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toInt(),'f',2));
         ui->modbus_add->setText(QString::number(jValueObj.value("modbus_index").toInt()));
         // read from CONF
 
