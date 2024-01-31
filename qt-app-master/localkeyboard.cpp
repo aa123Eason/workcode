@@ -37,6 +37,7 @@ void localKeyboard::init()
     this->setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowModality(Qt::WindowModal);
+    ui->label->installEventFilter(this);
 
     connect(ui->close,&QPushButton::clicked,this,&localKeyboard::hide);
 }
@@ -45,34 +46,6 @@ void localKeyboard::closeEvent(QCloseEvent *event)
 {
     if(this->isVisible())
         this->hide();
-}
-
-void localKeyboard::mousePressEvent(QMouseEvent* event)
-{
-    if(event->button() == Qt::LeftButton)
-    {
-        QCursor::pos()=event->pos();
-    }
-}
-
-void localKeyboard::mouseMoveEvent(QMouseEvent* event)
-{
-
-    if(event->buttons() == Qt::LeftButton)
-    {
-        if(localKeyboard::isMaximized() || localKeyboard::isMinimized())
-        {
-            return;
-        }
-        else
-        {
-             if (ui->label->underMouse())	//仅在标题栏触发
-            {
-                QWidget::move(QWidget::mapToGlobal(event->pos()));
-            }
-        }
-    }
-    event->accept();
 }
 
 
@@ -267,18 +240,40 @@ void localKeyboard::keymap()
 
 }
 
-bool localKeyboard::eventFilter(QObject *o,QEvent *e)
+bool localKeyboard::eventFilter(QObject *o,QEvent *ev)
 {
-    if(e->type() == QEvent::MouseButtonPress)
+    if(o==ui->label)
     {
-        QMouseEvent *me = (QMouseEvent *)e;
-        if(me->button() == Qt::LeftButton)
+        switch (ev->type()) //这里更具事件的类型来判断，
         {
-            QPushButton *btn = (QPushButton *)o;
+        case QEvent::MouseButtonPress:
+        {
+            QMouseEvent* e=static_cast<QMouseEvent*>(ev);//因为后续要访问鼠标的按键类型和位置，而父类QEvent是没有这些成员的，所以要强转
+            if(e->button()==Qt::LeftButton)
+            {
+                pos=e->pos();//记录此时的鼠标左键点击位置
+            }
+        }
+            break;
+        case QEvent::MouseMove:
+        {
+            QMouseEvent* e=static_cast<QMouseEvent*>(ev);//因为后续要访问鼠标的按键类型和位置，而父类QEvent是没有这些成员的，所以要强转
+            if(e->buttons()==Qt::LeftButton)
+            {
+                int x,y;
+                x=e->pos().x()-pos.x();
+                y=e->pos().y()-pos.y();
+                this->move(this->x()+x,this->y()+y);
+            }
+        }
+            break;
+        default:
+            break;
 
-            qDebug()<<__LINE__<<"CURRENT KEY:"<<keyMap.key(btn)<<endl;
+
         }
     }
+        return QWidget::eventFilter(o,ev);
 }
 
 void localKeyboard::slotKeyButtonClicked()

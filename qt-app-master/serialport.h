@@ -105,9 +105,9 @@ public :
 
 
 signals:
-    void hasdata();
+    void hasdata(QByteArray &);
 
-private slots:
+public slots:
     void remoteDateInComing();
 
 

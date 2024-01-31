@@ -199,7 +199,7 @@ void SerialPort::remoteDateInComing()
 
     }
     mutex_r.unlock();
-    emit hasdata();
+    emit hasdata(*rev_buf);
 
 
 }

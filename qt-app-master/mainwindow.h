@@ -30,6 +30,13 @@
 #include <QDir>
 #include "usbupdatedlg.h"
 #include <QHBoxLayout>
+#include "addrcdevice.h"
+#include "editrcdevice.h"
+#include "serialport.h"
+#include <QMap>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include "rclogdlg.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -50,6 +57,8 @@ class TeshuzhiAdd;
 class TeshuzhiDele;
 class DialogDevProp;
 class DeviceCMDCtrlDlg;
+class AddRCDevice;
+class RCLogDlg;
 
 class MainWindow : public QMainWindow
 {
@@ -64,6 +73,12 @@ public:
         GET_DEVICE = 0,
         GET_FACTORS,
         GET_SPECIALS
+    };
+
+    enum RC_RWSTATE
+    {
+        RC_WRITE = false,
+        RC_READ = true
     };
 
     bool FactorGui_Init(QString pDev_ID);
@@ -106,7 +121,11 @@ public:
     void usbUpdateEvent();
     bool checkUSBDevice();
     void showModifiedTime();
-
+    void setDeviceTableHeader();
+    void setDeviceTableContent();
+    void checkRCCOMSTate(QMap<QString,bool> &,const QJsonObject &);
+    void addRCPorts();
+    void rcReadWrite();
 
 private slots:
 
@@ -121,6 +140,8 @@ private slots:
     void ShowNextPage();
     void ShowNewPage();
     void ShowLastPage();
+    void onButtonDele(QString id);
+    void onButtonEdit(QString id);
 
     void OpenSysInfo();
     void OpenNeworkSetting();
@@ -171,6 +192,11 @@ signals:
     void startWork();
     void sendCurDT(QDateTime &);
     void sendUSBState(bool);
+    void sendRCRW(bool isRead);
+    void sendlog(QString logStr);
+
+public slots:
+    void onSlotRW(bool isRead);
 
 private:
     Ui::MainWindow *ui;
@@ -185,6 +211,9 @@ private:
 
     QSignalMapper *m_SignalMapper_FaEdit = nullptr;
     QSignalMapper *m_SignalMapper_FaDele = nullptr;
+
+    QSignalMapper *m_SignalMapper_Edit = nullptr;   // edit
+    QSignalMapper *m_SignalMapper_Dele = nullptr;   // delete
 
     bool m_LoginStatus = false;
     QTimer *m_pDateTimer = nullptr;
@@ -226,6 +255,19 @@ private:
     bool isUsbOn = false;
     USBUpdateDlg *usbdlg = nullptr;
     localKeyboard *kb = nullptr;
+    AddRCDevice *addRC = nullptr;
+    EditRCDevice *editRC = nullptr;
+    RCLogDlg *logdlg =  nullptr;
+
+
+    QFont itemfont,headerfont,ckfont;
+
+    QList<QCheckBox *> edittimecks,addtimecks;
+    QList<QCheckBox *> edittypecks,addtypecks;
+    QGridLayout el1,el2,el3,el4;
+    QGridLayout al1,al2,al3,al4;
+    QStringList ontimecks;
+    QStringList cmdlist;
 
 };
 

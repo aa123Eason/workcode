@@ -16,17 +16,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    addrcdevice.cpp \
     comboboxselectdlg.cpp \
     devadd.cpp \
     devedit.cpp \
     dialogdevprop.cpp \
     dialogproto.cpp \
+    editrcdevice.cpp \
     facedit.cpp \
     factoradd.cpp \
     httpclinet.cpp \
     localkeyboard.cpp \
     main.cpp \
     mainwindow.cpp \
+    rclogdlg.cpp \
     teshuzhiadd.cpp \
     teshuzhidele.cpp \
     upsetadd.cpp \
@@ -40,17 +43,20 @@ SOURCES += \
     serialport.cpp
 
 HEADERS += \
+    addrcdevice.h \
     comboboxselectdlg.h \
     common.h \
     devadd.h \
     devedit.h \
     dialogdevprop.h \
     dialogproto.h \
+    editrcdevice.h \
     facedit.h \
     factoradd.h \
     httpclinet.h \
     localkeyboard.h \
     mainwindow.h \
+    rclogdlg.h \
     teshuzhiadd.h \
     teshuzhidele.h \
     upsetadd.h \
@@ -64,15 +70,18 @@ HEADERS += \
     serialport.h
 
 FORMS += \
+    addrcdevice.ui \
     comboboxselectdlg.ui \
     devadd.ui \
     devedit.ui \
     dialogdevprop.ui \
     dialogproto.ui \
+    editrcdevice.ui \
     facedit.ui \
     factoradd.ui \
     localkeyboard.ui \
     mainwindow.ui \
+    rclogdlg.ui \
     teshuzhiadd.ui \
     teshuzhidele.ui \
     upsetadd.ui \

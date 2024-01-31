@@ -21,6 +21,7 @@
 #include <QAbstractItemView>
 #include <QScrollBar>
 #include "localkeyboard.h"
+#include <QApplication>
 
 #include "util.h"
 
@@ -83,6 +84,10 @@
 #define DCM_HISTORY "/dcm/history/"
 #define DCM_SUPPORT_DEVICE "/dcm/suport_device"
 
+#define CMDINFO "/docu/devicecmdinfo.json"
+#define STATE_ON ":/images/checked.png"
+#define STATE_OFF ":/images/unchecked.png"
+
 extern bool m_LoginStatus;
 extern QJsonObject g_Dcm_Factor;
 extern QJsonArray g_Dcm_SystemCode;
@@ -91,6 +96,8 @@ extern QJsonObject g_ConfObjDevParam;
 extern QString g_Device_ID;
 extern QString g_Device_Type;
 extern bool g_IsAnalogDevOperated;
+
+
 
 
 #endif // COMMON_H

@@ -16,6 +16,7 @@
 #include <QWindow>
 #include <QVector>
 #include <QCursor>
+#include <QPoint>
 
 namespace Ui {
 class localKeyboard;
@@ -34,11 +35,7 @@ public:
 protected:
     bool eventFilter(QObject *o = nullptr,QEvent *e = nullptr);
     void closeEvent(QCloseEvent *event) override;
-    //鼠标点击事件
-    void mousePressEvent(QMouseEvent* ev)override;
 
-    //鼠标移动事件
-    void mouseMoveEvent(QMouseEvent*ev)override;
 
 
 
@@ -55,6 +52,7 @@ private:
     QVector<QPushButton *> numberBtns;
     QVector<QPushButton *> funcBtns;
     QWidget *curWidget = nullptr;
+    QPoint pos;
 };
 
 #endif // LOCALKEYBOARD_H
