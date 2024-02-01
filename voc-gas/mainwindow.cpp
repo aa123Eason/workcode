@@ -357,6 +357,108 @@ void MainWindow::connectevent()
 
     });
 
+    if(paramSet)
+    {
+//        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
+//        {
+//            QJsonObject pJsonFactors;
+//            QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
+//            QFile file(dir_file);
+
+//            if(file.exists())
+//            {
+//                file.open(QIODevice::ReadOnly | QIODevice::Text);
+//                QString value = file.readAll();
+//                file.close();
+//                QJsonParseError parseJsonErr;
+//                QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
+//                if(!(parseJsonErr.error == QJsonParseError::NoError))
+//                {
+//                    QLOG_ERROR() << "配置文件格式错误！";
+//                }
+//                QJsonObject jsonObject= document.object();
+//                if(jsonObject.contains(FACTORS))
+//                {
+//                    pJsonFactors = jsonObject.value(FACTORS).toObject();
+//                }
+//            }
+
+//            //map_Factors 20
+//            // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
+
+//            int pCnt = g_FactorsNameList.size();
+//            for(int i=0;i<pCnt;i++)
+//            {
+//                QString pItemName = g_FactorsNameList.at(i);
+
+//                // 是否上传 因子编码
+//                // 量程上限 量程下限 差值 输入通道
+
+//                QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
+
+//                bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
+//                bool pUpload = pJsonfactor.value(UPLOAD).toBool();
+//                uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
+//                float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
+//                float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
+//                QString pUnit = pJsonfactor.value(UNIT).toString();
+//                float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
+//                bool pUsed = pJsonfactor.value("Used").toBool();
+
+//                FactorInfo *pItemInfo = new FactorInfo();
+//                pItemInfo->m_name = pItemName;
+//                pItemInfo->m_value = "0.00";
+//                //        pItemInfo->m_state = "D";
+//                pItemInfo->m_unit = pUnit;
+//                pItemInfo->m_used = pUsed;
+//                pItemInfo->m_display = pDisplay;
+//                pItemInfo->m_upload = pUpload;
+//                pItemInfo->m_Chan = pChan;
+//                pItemInfo->m_RangeUpper = pRangeUpper;
+//                pItemInfo->m_RangeLower = pRangeLower;
+//                pItemInfo->m_LC = pRangeUpper - pRangeLower;
+//                pItemInfo->m_AlarmUpper = pAlarmUpper;
+//                pItemInfo->m_Alias = QString::number(i);
+
+//                if(pItemInfo->m_display)
+//                {
+//                    map_Factors.insert(pItemName,pItemInfo);
+//                    seqlist.append(pItemInfo->m_Alias);
+//                    nameseqlist.append(pItemName);
+//                    facseqlist.append(pItemInfo);
+//                }
+//            }
+//        });
+        connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
+        connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
+        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
+        {
+//            QMessageBox::StandardButton result= msgBox::question(QStringLiteral("提示"), "更新成功，需要重启VOC软件，是否继续(Y/N)?");
+//            if(result != QMessageBox::Yes)
+//            {
+            writeLog(ui->label_3->text() + "已退出登录");
+            emit sendlogmsg(ui->label_3->text() + "已退出登录");
+
+            if(db.isOpen())
+            {
+                QSqlQuery q("delete from T_UserName_Logining;");
+                q.exec();
+            }
+
+//                return;
+//            }
+            if(paramSet)
+            {
+                paramSet->close();
+            }
+
+            my_Process.startDetached(QApplication::applicationDirPath()+"/VocLogin.exe");
+            my_Process.close();
+            this->close();
+        });
+
+    }
+
 
 
     connect(this,&MainWindow::sendJSMode,this,[=](bool isOn)
@@ -473,15 +575,17 @@ void MainWindow::connectevent()
 
 //        if(paramSet == nullptr)
 //            paramSet = new ParamSet();
-
+//        qDebug
 
         if(paramSet)
         {
-            if(!paramSet->isVisible())
-                paramSet->show();
+
             paramSet->switchtopage(5);
+            paramSet->show();
         }
     });
+
+
 
 }
 
@@ -706,23 +810,23 @@ void MainWindow::recordrtkdata(QSqlDatabase &db,QString dtType)
 void SerialWorker::skybluework()
 {
 
-    if(isJSModeOn)
-    {
-        setFacState("甲烷","C");
-        setFacState("甲烷干值","C");
-        setFacState("总烃","C");
-        setFacState("总烃干值","C");
-        setFacState("非甲烷总烃","C");
-        setFacState("非甲烷总烃干值","C");
-        setFacState("折算非甲烷总烃","C");
-        setFacState("折算非甲烷总烃干值","C");
-        setFacState("非甲烷总烃排放量","C");
+//    if(isJSModeOn)
+//    {
+//        setFacState("甲烷","C");
+//        setFacState("甲烷干值","C");
+//        setFacState("总烃","C");
+//        setFacState("总烃干值","C");
+//        setFacState("非甲烷总烃","C");
+//        setFacState("非甲烷总烃干值","C");
+//        setFacState("折算非甲烷总烃","C");
+//        setFacState("折算非甲烷总烃干值","C");
+//        setFacState("非甲烷总烃排放量","C");
 
-        emit sendlogmsg("天蓝校准模式开启");
+//        emit sendlogmsg("天蓝校准模式开启");
 
-        return;
-    }
-        emit sendlogmsg("天蓝校准模式关闭");
+
+//    }
+//    emit sendlogmsg("天蓝校准模式关闭");
     if(serial->isOpen())
     {
         QString pAddr = "1"; //01
@@ -777,15 +881,32 @@ void SerialWorker::skybluework()
                 pFunc.append(buf.at(1));
                 if(pFunc.toHex().toInt() == 0x04)
                 {
-                    setFacState("甲烷","N");
-                    setFacState("甲烷干值","N");
-                    setFacState("总烃","N");
-                    setFacState("总烃干值","N");
-                    setFacState("非甲烷总烃","N");
-                    setFacState("非甲烷总烃干值","N");
-                    setFacState("折算非甲烷总烃","N");
-                    setFacState("折算非甲烷总烃干值","N");
-                    setFacState("非甲烷总烃排放量","N");
+                    if(!isJSModeOn)
+                    {
+                        setFacState("甲烷","N");
+                        setFacState("甲烷干值","N");
+                        setFacState("总烃","N");
+                        setFacState("总烃干值","N");
+                        setFacState("非甲烷总烃","N");
+                        setFacState("非甲烷总烃干值","N");
+                        setFacState("折算非甲烷总烃","N");
+                        setFacState("折算非甲烷总烃干值","N");
+                        setFacState("非甲烷总烃排放量","N");
+                    }
+                    else
+                    {
+                        setFacState("甲烷","C");
+                        setFacState("甲烷干值","C");
+                        setFacState("总烃","C");
+                        setFacState("总烃干值","C");
+                        setFacState("非甲烷总烃","C");
+                        setFacState("非甲烷总烃干值","C");
+                        setFacState("折算非甲烷总烃","C");
+                        setFacState("折算非甲烷总烃干值","C");
+                        setFacState("非甲烷总烃排放量","C");
+
+                        emit sendlogmsg("天蓝校准模式开启");
+                    }
 
                     QByteArray arrTH,arrCH4,arrNMTH; //默认 ABCD
                     if(g_valueseq == "ABCD")
@@ -945,6 +1066,38 @@ void SerialWorker::skybluework()
                 }
                 else
                 {
+                    if(!isJSModeOn)
+                    {
+                        setFacState("甲烷","D");
+                        setFacState("甲烷干值","D");
+                        setFacState("总烃","D");
+                        setFacState("总烃干值","D");
+                        setFacState("非甲烷总烃","D");
+                        setFacState("非甲烷总烃干值","D");
+                        setFacState("折算非甲烷总烃","D");
+                        setFacState("折算非甲烷总烃干值","D");
+                        setFacState("非甲烷总烃排放量","D");
+                    }
+                    else
+                    {
+                        setFacState("甲烷","C");
+                        setFacState("甲烷干值","C");
+                        setFacState("总烃","C");
+                        setFacState("总烃干值","C");
+                        setFacState("非甲烷总烃","C");
+                        setFacState("非甲烷总烃干值","C");
+                        setFacState("折算非甲烷总烃","C");
+                        setFacState("折算非甲烷总烃干值","C");
+                        setFacState("非甲烷总烃排放量","C");
+
+                        emit sendlogmsg("天蓝校准模式开启");
+                    }
+                }
+            }
+            else
+            {
+                if(!isJSModeOn)
+                {
                     setFacState("甲烷","D");
                     setFacState("甲烷干值","D");
                     setFacState("总烃","D");
@@ -955,8 +1108,25 @@ void SerialWorker::skybluework()
                     setFacState("折算非甲烷总烃干值","D");
                     setFacState("非甲烷总烃排放量","D");
                 }
+                else
+                {
+                    setFacState("甲烷","C");
+                    setFacState("甲烷干值","C");
+                    setFacState("总烃","C");
+                    setFacState("总烃干值","C");
+                    setFacState("非甲烷总烃","C");
+                    setFacState("非甲烷总烃干值","C");
+                    setFacState("折算非甲烷总烃","C");
+                    setFacState("折算非甲烷总烃干值","C");
+                    setFacState("非甲烷总烃排放量","C");
+
+                    emit sendlogmsg("天蓝校准模式开启");
+                }
             }
-            else
+        }
+        else
+        {
+            if(!isJSModeOn)
             {
                 setFacState("甲烷","D");
                 setFacState("甲烷干值","D");
@@ -968,31 +1138,50 @@ void SerialWorker::skybluework()
                 setFacState("折算非甲烷总烃干值","D");
                 setFacState("非甲烷总烃排放量","D");
             }
-        }
-        else
-        {
-            setFacState("甲烷","D");
-            setFacState("甲烷干值","D");
-            setFacState("总烃","D");
-            setFacState("总烃干值","D");
-            setFacState("非甲烷总烃","D");
-            setFacState("非甲烷总烃干值","D");
-            setFacState("折算非甲烷总烃","D");
-            setFacState("折算非甲烷总烃干值","D");
-            setFacState("非甲烷总烃排放量","D");
+            else
+            {
+                setFacState("甲烷","C");
+                setFacState("甲烷干值","C");
+                setFacState("总烃","C");
+                setFacState("总烃干值","C");
+                setFacState("非甲烷总烃","C");
+                setFacState("非甲烷总烃干值","C");
+                setFacState("折算非甲烷总烃","C");
+                setFacState("折算非甲烷总烃干值","C");
+                setFacState("非甲烷总烃排放量","C");
+
+                emit sendlogmsg("天蓝校准模式开启");
+            }
         }
     }
     else
     {
-        setFacState("甲烷","T");
-        setFacState("甲烷干值","T");
-        setFacState("总烃","T");
-        setFacState("总烃干值","T");
-        setFacState("非甲烷总烃","T");
-        setFacState("非甲烷总烃干值","T");
-        setFacState("折算非甲烷总烃","T");
-        setFacState("折算非甲烷总烃干值","T");
-        setFacState("非甲烷总烃排放量","T");
+        if(!isJSModeOn)
+        {
+            setFacState("甲烷","T");
+            setFacState("甲烷干值","T");
+            setFacState("总烃","T");
+            setFacState("总烃干值","T");
+            setFacState("非甲烷总烃","T");
+            setFacState("非甲烷总烃干值","T");
+            setFacState("折算非甲烷总烃","T");
+            setFacState("折算非甲烷总烃干值","T");
+            setFacState("非甲烷总烃排放量","T");
+        }
+        else
+        {
+            setFacState("甲烷","C");
+            setFacState("甲烷干值","C");
+            setFacState("总烃","C");
+            setFacState("总烃干值","C");
+            setFacState("非甲烷总烃","C");
+            setFacState("非甲烷总烃干值","C");
+            setFacState("折算非甲烷总烃","C");
+            setFacState("折算非甲烷总烃干值","C");
+            setFacState("非甲烷总烃排放量","C");
+
+            emit sendlogmsg("天蓝校准模式开启");
+        }
 
     }
 }
@@ -1021,32 +1210,6 @@ void SerialWorker::VocsHandler() {
 
     //Tx: -15 04 00 10 00 10 F3 17
     //Rx: -15 04 20 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 66 BB
-
-    if(isJSModeOn)
-    {
-        qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
-        emit sendlogmsg("VOCs校准模式开启");
-        setFacState("烟气温度","C");
-        setFacState("烟气压力","C");
-        setFacState("烟气流速","C");
-        setFacState("烟尘湿值","C");
-        setFacState("烟气湿度","C");
-        setFacState("氧气含量","C");
-        setFacState("硫化氢","C");
-        setFacState("标况流量","C");
-        setFacState("工况流量","C");
-        setFacState("烟尘干值","C");
-        setFacState("烟尘排放量","C");
-        setFacState("氧气含量干值","C");
-        setFacState("硫化氢干值","C");
-
-
-
-        return;
-    }
-
-    emit sendlogmsg("VOCs校准模式关闭");
-
 
 
     if(serial->isOpen())
@@ -1112,19 +1275,42 @@ void SerialWorker::VocsHandler() {
                 pFunc.append(buf.at(1));
                 if(pFunc.toHex().toInt() == 0x04)
                 {
-                    setFacState("烟气温度","N");
-                    setFacState("烟气压力","N");
-                    setFacState("烟气流速","N");
-                    setFacState("烟尘湿值","N");
-                    setFacState("烟气湿度","N");
-                    setFacState("氧气含量","N");
-                    setFacState("硫化氢","N");
-                    setFacState("标况流量","N");
-                    setFacState("工况流量","N");
-                    setFacState("烟尘干值","N");
-                    setFacState("烟尘排放量","N");
-                    setFacState("氧气含量干值","N");
-                    setFacState("硫化氢干值","N");
+                    if(!isJSModeOn)
+                    {
+//                        emit sendlogmsg("VOCs校准模式关闭");
+                        setFacState("烟气温度","N");
+                        setFacState("烟气压力","N");
+                        setFacState("烟气流速","N");
+                        setFacState("烟尘湿值","N");
+                        setFacState("烟气湿度","N");
+                        setFacState("氧气含量","N");
+                        setFacState("硫化氢","N");
+                        setFacState("标况流量","N");
+                        setFacState("工况流量","N");
+                        setFacState("烟尘干值","N");
+                        setFacState("烟尘排放量","N");
+                        setFacState("氧气含量干值","N");
+                        setFacState("硫化氢干值","N");
+                    }
+                    else
+                    {
+                        qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+//                        emit sendlogmsg("VOCs校准模式开启");
+                        setFacState("烟气温度","C");
+                        setFacState("烟气压力","C");
+                        setFacState("烟气流速","C");
+                        setFacState("烟尘湿值","C");
+                        setFacState("烟气湿度","C");
+                        setFacState("氧气含量","C");
+                        setFacState("硫化氢","C");
+                        setFacState("标况流量","C");
+                        setFacState("工况流量","C");
+                        setFacState("烟尘干值","C");
+                        setFacState("烟尘排放量","C");
+                        setFacState("氧气含量干值","C");
+                        setFacState("硫化氢干值","C");
+
+                    }
 
 
                     int16_t parMa[7] = {0};
@@ -1254,6 +1440,50 @@ void SerialWorker::VocsHandler() {
                 }
                 else
                 {
+                    if(!isJSModeOn)
+                    {
+                        setFacState("烟气温度","D");
+                        setFacState("烟气压力","D");
+                        setFacState("烟气流速","D");
+                        setFacState("烟气湿度","D");
+                        setFacState("烟尘湿值","D");
+                        setFacState("氧气含量","D");
+                        setFacState("硫化氢","D");
+                        setFacState("标况流量","D");
+                        setFacState("工况流量","D");
+                        setFacState("烟尘干值","D");
+                        setFacState("烟尘排放量","D");
+                        setFacState("氧气含量干值","D");
+                        setFacState("硫化氢干值","D");
+
+                        writeinLog("功能码无效："+pFunc.toHex().toInt());
+                    }
+                    else
+                    {
+                        qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+//                        emit sendlogmsg("VOCs校准模式开启");
+                        setFacState("烟气温度","C");
+                        setFacState("烟气压力","C");
+                        setFacState("烟气流速","C");
+                        setFacState("烟尘湿值","C");
+                        setFacState("烟气湿度","C");
+                        setFacState("氧气含量","C");
+                        setFacState("硫化氢","C");
+                        setFacState("标况流量","C");
+                        setFacState("工况流量","C");
+                        setFacState("烟尘干值","C");
+                        setFacState("烟尘排放量","C");
+                        setFacState("氧气含量干值","C");
+                        setFacState("硫化氢干值","C");
+
+                    }
+
+                }
+            }
+            else
+            {
+                if(!isJSModeOn)
+                {
                     setFacState("烟气温度","D");
                     setFacState("烟气压力","D");
                     setFacState("烟气流速","D");
@@ -1267,11 +1497,32 @@ void SerialWorker::VocsHandler() {
                     setFacState("烟尘排放量","D");
                     setFacState("氧气含量干值","D");
                     setFacState("硫化氢干值","D");
+                    writeinLog("CRC验证失败，错误码："+pRetVal);
+                }
+                else
+                {
+                    qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+//                        emit sendlogmsg("VOCs校准模式开启");
+                    setFacState("烟气温度","C");
+                    setFacState("烟气压力","C");
+                    setFacState("烟气流速","C");
+                    setFacState("烟尘湿值","C");
+                    setFacState("烟气湿度","C");
+                    setFacState("氧气含量","C");
+                    setFacState("硫化氢","C");
+                    setFacState("标况流量","C");
+                    setFacState("工况流量","C");
+                    setFacState("烟尘干值","C");
+                    setFacState("烟尘排放量","C");
+                    setFacState("氧气含量干值","C");
+                    setFacState("硫化氢干值","C");
 
-                    writeinLog("功能码无效："+pFunc.toHex().toInt());
                 }
             }
-            else
+        }
+        else
+        {
+            if(!isJSModeOn)
             {
                 setFacState("烟气温度","D");
                 setFacState("烟气压力","D");
@@ -1286,45 +1537,67 @@ void SerialWorker::VocsHandler() {
                 setFacState("烟尘排放量","D");
                 setFacState("氧气含量干值","D");
                 setFacState("硫化氢干值","D");
-                writeinLog("CRC验证失败，错误码："+pRetVal);
-            }
-        }
-        else
-        {
-            setFacState("烟气温度","D");
-            setFacState("烟气压力","D");
-            setFacState("烟气流速","D");
-            setFacState("烟气湿度","D");
-            setFacState("烟尘湿值","D");
-            setFacState("氧气含量","D");
-            setFacState("硫化氢","D");
-            setFacState("标况流量","D");
-            setFacState("工况流量","D");
-            setFacState("烟尘干值","D");
-            setFacState("烟尘排放量","D");
-            setFacState("氧气含量干值","D");
-            setFacState("硫化氢干值","D");
 
-            writeinLog("读取数据失败，错误码："+pRetVal);
+                writeinLog("读取数据失败，错误码："+pRetVal);
+            }
+            else
+            {
+                qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+//                        emit sendlogmsg("VOCs校准模式开启");
+                setFacState("烟气温度","C");
+                setFacState("烟气压力","C");
+                setFacState("烟气流速","C");
+                setFacState("烟尘湿值","C");
+                setFacState("烟气湿度","C");
+                setFacState("氧气含量","C");
+                setFacState("硫化氢","C");
+                setFacState("标况流量","C");
+                setFacState("工况流量","C");
+                setFacState("烟尘干值","C");
+                setFacState("烟尘排放量","C");
+                setFacState("氧气含量干值","C");
+                setFacState("硫化氢干值","C");
+            }
         }
     }
     else
     {
 
 
-        setFacState("烟气温度","T");
-        setFacState("烟气压力","T");
-        setFacState("烟气流速","T");
-        setFacState("烟气湿度","T");
-        setFacState("烟尘湿值","T");
-        setFacState("氧气含量","T");
-        setFacState("硫化氢","T");
-        setFacState("标况流量","T");
-        setFacState("工况流量","T");
-        setFacState("烟尘干值","T");
-        setFacState("烟尘排放量","T");
-        setFacState("氧气含量干值","T");
-        setFacState("硫化氢干值","T");
+        if(!isJSModeOn)
+        {
+            setFacState("烟气温度","T");
+            setFacState("烟气压力","T");
+            setFacState("烟气流速","T");
+            setFacState("烟气湿度","T");
+            setFacState("烟尘湿值","T");
+            setFacState("氧气含量","T");
+            setFacState("硫化氢","T");
+            setFacState("标况流量","T");
+            setFacState("工况流量","T");
+            setFacState("烟尘干值","T");
+            setFacState("烟尘排放量","T");
+            setFacState("氧气含量干值","T");
+            setFacState("硫化氢干值","T");
+        }
+        else
+        {
+            qDebug()<<__LINE__<<"isJSModeOn ON"<<endl;
+//                        emit sendlogmsg("VOCs校准模式开启");
+            setFacState("烟气温度","C");
+            setFacState("烟气压力","C");
+            setFacState("烟气流速","C");
+            setFacState("烟尘湿值","C");
+            setFacState("烟气湿度","C");
+            setFacState("氧气含量","C");
+            setFacState("硫化氢","C");
+            setFacState("标况流量","C");
+            setFacState("工况流量","C");
+            setFacState("烟尘干值","C");
+            setFacState("烟尘排放量","C");
+            setFacState("氧气含量干值","C");
+            setFacState("硫化氢干值","C");
+        }
     }
 }
 
@@ -1540,6 +1813,8 @@ void SerialWorker::doWork4() {
         qDebug() << "serial thread...HJ212_2";
 
         //UploadHandler2();
+        getuploadstate();
+        UploadHandler1();
 
         QThread::sleep(2);
     }
@@ -2147,8 +2422,10 @@ void MainWindow::Widget_Init()
 
     ui->mainFrame->installEventFilter(this);
 
-    if(!paramSet)
-        paramSet = new ParamSet();
+    ui->timeSet->hide();
+
+
+    paramSet = new ParamSet();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -2234,15 +2511,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    if(obj == ui->mainFrame)
-    {
-        if(event->type() == QEvent::HoverLeave)
-        {
-            if(ui->mainFrame->isVisible())
-                ui->mainFrame->hide();
-            return true;
-        }
-    }
+//    if(obj == ui->mainFrame)
+//    {
+//        if(event->type() == QEvent::HoverLeave)
+//        {
+//            if(ui->mainFrame->isVisible())
+//                ui->mainFrame->hide();
+//            return true;
+//        }
+//    }
 
 
 
@@ -2558,78 +2835,78 @@ void MainWindow::on_pushButton_Set_clicked()
     {
         paramSet->switchtopage(0);
         paramSet->setWindowModality(Qt::WindowModal);
-        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
-        {
-            QJsonObject pJsonFactors;
-            QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
-            QFile file(dir_file);
+//        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
+//        {
+//            QJsonObject pJsonFactors;
+//            QString dir_file = QApplication::applicationDirPath()+"/voc-factors.json";
+//            QFile file(dir_file);
 
-            if(file.exists())
-            {
-                file.open(QIODevice::ReadOnly | QIODevice::Text);
-                QString value = file.readAll();
-                file.close();
-                QJsonParseError parseJsonErr;
-                QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
-                if(!(parseJsonErr.error == QJsonParseError::NoError))
-                {
-                    QLOG_ERROR() << "配置文件格式错误！";
-                }
-                QJsonObject jsonObject= document.object();
-                if(jsonObject.contains(FACTORS))
-                {
-                    pJsonFactors = jsonObject.value(FACTORS).toObject();
-                }
-            }
+//            if(file.exists())
+//            {
+//                file.open(QIODevice::ReadOnly | QIODevice::Text);
+//                QString value = file.readAll();
+//                file.close();
+//                QJsonParseError parseJsonErr;
+//                QJsonDocument document = QJsonDocument::fromJson(value.toUtf8(),&parseJsonErr);
+//                if(!(parseJsonErr.error == QJsonParseError::NoError))
+//                {
+//                    QLOG_ERROR() << "配置文件格式错误！";
+//                }
+//                QJsonObject jsonObject= document.object();
+//                if(jsonObject.contains(FACTORS))
+//                {
+//                    pJsonFactors = jsonObject.value(FACTORS).toObject();
+//                }
+//            }
 
-            //map_Factors 20
-            // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
+//            //map_Factors 20
+//            // --------------------1-----------2----------3-----------4------------5---------6-------------7------------8-------------9---------------10---------------11---------------12-----------13------------14----------15----------16---------17---------18---------19----------20---
 
-            int pCnt = g_FactorsNameList.size();
-            for(int i=0;i<pCnt;i++)
-            {
-                QString pItemName = g_FactorsNameList.at(i);
+//            int pCnt = g_FactorsNameList.size();
+//            for(int i=0;i<pCnt;i++)
+//            {
+//                QString pItemName = g_FactorsNameList.at(i);
 
-                // 是否上传 因子编码
-                // 量程上限 量程下限 差值 输入通道
+//                // 是否上传 因子编码
+//                // 量程上限 量程下限 差值 输入通道
 
-                QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
+//                QJsonObject pJsonfactor = pJsonFactors.value(pItemName).toObject();
 
-                bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
-                bool pUpload = pJsonfactor.value(UPLOAD).toBool();
-                uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
-                float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
-                float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
-                QString pUnit = pJsonfactor.value(UNIT).toString();
-                float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
-                bool pUsed = pJsonfactor.value("Used").toBool();
+//                bool pDisplay = pJsonfactor.value(DISPLAY).toBool();
+//                bool pUpload = pJsonfactor.value(UPLOAD).toBool();
+//                uint16_t pChan = pJsonfactor.value(CHAN).toString().toInt();
+//                float pRangeUpper = pJsonfactor.value(RANGEUPPER).toString().toDouble();
+//                float pRangeLower = pJsonfactor.value(RANGELOWER).toString().toDouble();
+//                QString pUnit = pJsonfactor.value(UNIT).toString();
+//                float pAlarmUpper = pJsonfactor.value("AlarmUpper").toString().toDouble();
+//                bool pUsed = pJsonfactor.value("Used").toBool();
 
-                FactorInfo *pItemInfo = new FactorInfo();
-                pItemInfo->m_name = pItemName;
-                pItemInfo->m_value = "0.00";
-                //        pItemInfo->m_state = "D";
-                pItemInfo->m_unit = pUnit;
-                pItemInfo->m_used = pUsed;
-                pItemInfo->m_display = pDisplay;
-                pItemInfo->m_upload = pUpload;
-                pItemInfo->m_Chan = pChan;
-                pItemInfo->m_RangeUpper = pRangeUpper;
-                pItemInfo->m_RangeLower = pRangeLower;
-                pItemInfo->m_LC = pRangeUpper - pRangeLower;
-                pItemInfo->m_AlarmUpper = pAlarmUpper;
-                pItemInfo->m_Alias = QString::number(i);
+//                FactorInfo *pItemInfo = new FactorInfo();
+//                pItemInfo->m_name = pItemName;
+//                pItemInfo->m_value = "0.00";
+//                //        pItemInfo->m_state = "D";
+//                pItemInfo->m_unit = pUnit;
+//                pItemInfo->m_used = pUsed;
+//                pItemInfo->m_display = pDisplay;
+//                pItemInfo->m_upload = pUpload;
+//                pItemInfo->m_Chan = pChan;
+//                pItemInfo->m_RangeUpper = pRangeUpper;
+//                pItemInfo->m_RangeLower = pRangeLower;
+//                pItemInfo->m_LC = pRangeUpper - pRangeLower;
+//                pItemInfo->m_AlarmUpper = pAlarmUpper;
+//                pItemInfo->m_Alias = QString::number(i);
 
-                if(pItemInfo->m_display)
-                {
-                    map_Factors.insert(pItemName,pItemInfo);
-                    seqlist.append(pItemInfo->m_Alias);
-                    nameseqlist.append(pItemName);
-                    facseqlist.append(pItemInfo);
-                }
-            }
-        });
-        connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
-        connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
+//                if(pItemInfo->m_display)
+//                {
+//                    map_Factors.insert(pItemName,pItemInfo);
+//                    seqlist.append(pItemInfo->m_Alias);
+//                    nameseqlist.append(pItemName);
+//                    facseqlist.append(pItemInfo);
+//                }
+//            }
+//        });
+//        connect(paramSet,&ParamSet::sendCMDStr,this,&MainWindow::writeLog);
+//        connect(this,&MainWindow::sendlogmsg,paramSet,&ParamSet::sendlogmsg);
 
 
         emit sendlogmsg("打开参数设置");

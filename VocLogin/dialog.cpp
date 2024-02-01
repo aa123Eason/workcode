@@ -174,6 +174,8 @@ void Dialog::init()
     usersArray = getUserInfo();
 
     ui->lineEdit_2->installEventFilter(this);
+    ui->lineEdit_2->setEchoMode(QLineEdit::Password);
+
 }
 
 bool Dialog::datebaseinit()

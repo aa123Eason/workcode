@@ -15,6 +15,10 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QMessageBox>
+#include <QCloseEvent>
+#include <QEvent>
+#include <QMouseEvent>
+#include <windows.h>
 
 namespace Ui {
 class ParamSet;
@@ -52,6 +56,8 @@ public:
 
     void switchtopage(int pagenum);
 
+
+
 signals:
     void sendUpLoadType(int);
     void sendChangeFactors(bool);
@@ -68,7 +74,8 @@ private slots:
     void onReceiveUpLoadType(int);
     void onPrintlog(QString msg);
 
-
+protected:
+    bool eventFilter(QObject *o=nullptr,QEvent *e=nullptr);
 
 private:
     Ui::ParamSet *ui;

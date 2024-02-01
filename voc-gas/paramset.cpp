@@ -10,11 +10,24 @@ ParamSet::ParamSet(QWidget *parent) :
     ui(new Ui::ParamSet)
 {
     ui->setupUi(this);
-    setAttribute(Qt::WA_DeleteOnClose);
+//    setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
     ui->tabWidget->setStyleSheet("QTabWidget#tabWidget{background-color:rgb(255,0,0);}\
                                  QTabBar::tab{background-color:rgb(220,200,180);width:100;height:40;color:rgb(0,0,0);font:10pt '新宋体'}\
                                  QTabBar::tab::selected{background-color:rgb(0,100,200);width:100;height:40;color:rgb(255,0,0);font:12pt '新宋体'}");
+
+    QList<QLineEdit *> list = this->centralWidget()->findChildren<QLineEdit *>();
+    qDebug()<<__LINE__<<list.count()<<endl;
+    for(auto e:list)
+    {
+        if(e)
+        {
+            qDebug()<<__LINE__<<e->objectName()<<endl;
+            e->installEventFilter(this);
+        }
+
+    }
+
 
     setUserTableHeader();
     setUserTableContents();
@@ -73,12 +86,38 @@ ParamSet::ParamSet(QWidget *parent) :
     connect(ui->clearStr,&QPushButton::clicked,ui->textBrowser,&QTextBrowser::clear);
 
 
+
 }
 
 ParamSet::~ParamSet()
 {
 
     delete ui;
+}
+
+bool ParamSet::eventFilter(QObject *o,QEvent *e)
+{
+    if(o->inherits("QLineEdit"))
+    {
+        if(e->type() == QEvent::MouseButtonPress)
+        {
+            QMouseEvent *me = (QMouseEvent *)e;
+            if(me->button()==Qt::LeftButton)
+            {
+                PVOID OldValue;
+                BOOL bRet = Wow64DisableWow64FsRedirection (&OldValue);
+                QString csProcess="C:\\Windows\\System32\\osk.exe";
+                QString params="";
+                ShellExecute(NULL, L"open", (LPCWSTR)csProcess.utf16(), (LPCWSTR)params.utf16(), NULL, SW_SHOWNORMAL);
+                if ( bRet )
+                {
+                    Wow64RevertWow64FsRedirection(OldValue);
+                }
+            }
+        }
+    }
+
+    return QWidget::eventFilter(o,e);
 }
 
 void ParamSet::System_Display()
@@ -123,6 +162,8 @@ void ParamSet::System_Display()
         }
     }
 }
+
+
 
 void ParamSet::switchtopage(int pagenum)
 {
@@ -1066,22 +1107,24 @@ void ParamSet::on_pushButton_clicked()
     QFile file(pDir_FileName);
 
     //打开文件
-    bool isOK = file.open(QIODevice::ReadOnly);
+    bool isOK = file.open(QIODevice::ReadOnly|QIODevice::Text);
     if(isOK == true){
 
         QByteArray array;
         while (file.atEnd() == false) {
             //读一行
-            array = file.readLine();
-            ui->textBrowser->append(array.trimmed());
+            array.append(file.readLine());
+            file.flush();
+            ui->textBrowser->append(QString(array.trimmed()).toUtf8());
         }
         ui->textBrowser->setTextColor(QColor("#00147f"));
 
-        QMessageBox::about(NULL, "提示", "<font color='black'>获取日志信息成功！</font>");
+        array.clear();
+        //QMessageBox::about(NULL, "提示", "<font color='black'>获取日志信息成功！</font>");
     }
     else
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>未查询到相关日志信息！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>未查询到相关日志信息！</font>");
     }
     file.close();
 }
@@ -1228,7 +1271,8 @@ void ParamSet::on_pushButton_10_clicked()
 
     if(Save_FactorSet())
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>保存因子信息成功！</font>");
+//        //QMessageBox::about(NULL, "提示", "<font color='black'>保存因子信息成功！</font>");
+        sendlogmsg("保存因子信息成功!");
     }
 }
 
@@ -1431,8 +1475,8 @@ void ParamSet::on_pushButton_7_clicked()
 
     if(Save_CommSet())
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>保存通讯配置信息成功！</font>");
-        QMessageBox::about(NULL, "提示", "<font color='black'>重启后串口通讯生效！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>保存通讯配置信息成功！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>重启后串口通讯生效！</font>");
     }
 }
 
@@ -1556,7 +1600,7 @@ void ParamSet::on_pushButton_8_clicked()
 
     if(Save_SysSet())
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>保存系统配置信息成功！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>保存系统配置信息成功！</font>");
     }
 }
 
@@ -1618,7 +1662,7 @@ void ParamSet::on_pushButton_11_clicked()
 
     if(Save_FanSet())
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>保存反吹配置信息成功！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>保存反吹配置信息成功！</font>");
     }
 }
 
@@ -1803,7 +1847,7 @@ void ParamSet::on_pushButton_12_clicked()
 
     if(Save_UserSet())
     {
-        QMessageBox::about(NULL, "提示", "<font color='black'>保存用户管理信息成功！</font>");
+        //QMessageBox::about(NULL, "提示", "<font color='black'>保存用户管理信息成功！</font>");
     }
 }
 
@@ -1841,16 +1885,16 @@ void ParamSet::onReceiveUpLoadType(int uploadtype)
     {
 
     case UPLOAD_WET:
-        QMessageBox::about(this,"提示","只上传湿值设置成功");
+        //QMessageBox::about(this,"提示","只上传湿值设置成功");
         emit sendlogmsg("只上传湿值");
         break;
     case UPLOAD_DRY:
-        QMessageBox::about(this,"提示","只上传干值设置成功");
+        //QMessageBox::about(this,"提示","只上传干值设置成功");
         emit sendlogmsg("只上传干湿值");
         break;
     case UPLOAD_ALL:
     default:
-        QMessageBox::about(this,"提示","上传所有值设置成功");
+        //QMessageBox::about(this,"提示","上传所有值设置成功");
         emit sendlogmsg("上传所有值");
         break;
     }
