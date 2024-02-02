@@ -34,7 +34,7 @@ void localKeyboard::init()
 
     this->move(this->x() + (screenWidth - width) / 2,this->y()+(screenHeight - height) / 2);
 
-    this->setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::WindowStaysOnTopHint|Qt::FramelessWindowHint|Qt::WindowDoesNotAcceptFocus);
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowModality(Qt::WindowModal);
     ui->label->installEventFilter(this);
@@ -162,17 +162,20 @@ void localKeyboard::keymap()
 
     for(int i=0;i<numberBtns.count();++i)
     {
-        connect(numberBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyNumberButtonClicked);
+        if(numberBtns[i])
+            connect(numberBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyNumberButtonClicked);
     }
 
     for(int i=0;i<letterBtns.count();++i)
     {
-        connect(letterBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyLetterButtonClicked);
+        if(numberBtns[i])
+            connect(letterBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyLetterButtonClicked);
     }
 
     for(int i=0;i<funcBtns.count();++i)
     {
-        connect(funcBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyButtonClicked);
+        if(numberBtns[i])
+            connect(funcBtns[i],&QPushButton::clicked,this,&localKeyboard::slotKeyButtonClicked);
     }
 
     sysKeyMap["0"]=Qt::Key_0;
@@ -278,15 +281,19 @@ bool localKeyboard::eventFilter(QObject *o,QEvent *ev)
 
 void localKeyboard::slotKeyButtonClicked()
 {
-    if(!curWidget)return;
+    if(!this->parentWidget())return;
+    if(!this->parentWidget()->focusWidget())return;
     QPushButton* pbtn = (QPushButton*)sender();
+    if(!pbtn) return;
     qDebug()<<__LINE__<<pbtn->text()<<endl;
     QString objectName = pbtn->objectName();
     if (pbtn->text().contains("BackSpace")) {
         QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
         QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Backspace, Qt::NoModifier);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
+
     }
     else if (pbtn->text().contains("Caps")) {
         if (pbtn->isChecked()) {
@@ -306,26 +313,26 @@ void localKeyboard::slotKeyButtonClicked()
     else if(pbtn == ui->Space) {
         QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier, " ");
         QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier, " ");
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     else if (pbtn->text().contains("Enter")) {
         QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
         QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Enter, Qt::NoModifier);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     else if (pbtn->text().contains("Ctrl")) {
         QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Control, Qt::NoModifier);
         QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Control, Qt::NoModifier);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+//        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     else if (pbtn->text().contains("Alt")) {
         QKeyEvent keyPress(QEvent::KeyPress, Qt::Key_Alt, Qt::NoModifier);
         QKeyEvent keyRelease(QEvent::KeyRelease, Qt::Key_Alt, Qt::NoModifier);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+//        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     else if(pbtn->text().contains("符"))
     {
@@ -398,19 +405,21 @@ void localKeyboard::slotKeyButtonClicked()
 void localKeyboard::slotKeyLetterButtonClicked()
 {
     if(!curWidget)return;
+    if(!curWidget->focusWidget())return;
     QPushButton* pbtn = (QPushButton*)sender();
+    if(!pbtn)return;
     qDebug()<<__LINE__<<pbtn->text()<<endl;
     if (pbtn->text() >= 'a' && pbtn->text() <= 'z') {
         QKeyEvent keyPress(QEvent::KeyPress, int(pbtn->text().at(0).toLatin1()) - 32, Qt::NoModifier, pbtn->text());
         QKeyEvent keyRelease(QEvent::KeyRelease, int(pbtn->text().at(0).toLatin1()) - 32, Qt::NoModifier, pbtn->text());
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     else if (pbtn->text() >= 'A' && pbtn->text() <= 'Z') {
         QKeyEvent keyPress(QEvent::KeyPress, int(pbtn->text().at(0).toLatin1()), Qt::NoModifier, pbtn->text());
         QKeyEvent keyRelease(QEvent::KeyRelease, int(pbtn->text().at(0).toLatin1()), Qt::NoModifier, pbtn->text());
-        QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-        QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+        QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
     }
     //取消组合键按下
 //    if (!pbtn->text().contains("Ctrl") && !pbtn->text().contains("Alt") ) {
@@ -449,13 +458,19 @@ void localKeyboard::slotKeyLetterButtonClicked()
 
 void localKeyboard::slotKeyNumberButtonClicked()
 {
-    if(!curWidget)return;
+    if(!this->parentWidget())return;
+    if(!this->parentWidget()->focusWidget())return;
     QPushButton* pbtn = (QPushButton*)sender();
+    if(!pbtn)return;
     qDebug()<<__LINE__<<pbtn->text()<<endl;
     QKeyEvent keyPress(QEvent::KeyPress, pbtn->text().toInt() + 48, Qt::NoModifier, pbtn->text());
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
     QKeyEvent keyRelease(QEvent::KeyRelease, pbtn->text().toInt() + 48, Qt::NoModifier, pbtn->text());
-    QApplication::sendEvent(curWidget->focusWidget(), &keyPress);
-    QApplication::sendEvent(curWidget->focusWidget(), &keyRelease);
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
+    QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyPress);
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
+    QApplication::sendEvent(this->parentWidget()->focusWidget(), &keyRelease);
+    qDebug()<<__LINE__<<pbtn->text()<<endl;
     //取消组合键按下
 //    if (!pbtn->text().contains("Ctrl") && !pbtn->text().contains("Alt") ) {
 //        if (ui->Caps->isChecked()) {

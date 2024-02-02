@@ -24,8 +24,14 @@ kb = new localKeyboard(this);
     connect(ui->comboBox_devProto,&QComboBox::currentTextChanged,this,&DevEdit::onComboBoxProtoCurrentChanged);
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        if(!kb->isVisible())
-             kb->show();
+//        if(!kb->isVisible())
+//             kb->show();
+        QProcess pro;
+        pro.startDetached("pkill florence");
+        pro.close();
+        QProcess pro1;
+        pro1.startDetached("florence");
+        pro1.close();
     });
 
     ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);

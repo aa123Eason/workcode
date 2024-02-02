@@ -614,8 +614,14 @@ void MainWindow::Widget_Init()
     {
 
 
-        if(!kb->isVisible())
-             kb->show();
+//        if(!kb->isVisible())
+//             kb->show();
+        QProcess pro;
+        pro.startDetached("pkill florence");
+        pro.close();
+        QProcess pro1;
+        pro1.startDetached("florence");
+        pro1.close();
 
     });
 
@@ -833,10 +839,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
 
-                   if(!kb)
-                       kb = new localKeyboard(this);
-                   else
-                       kb->show();
+//                   if(!kb)
+//                       kb = new localKeyboard(this);
+//                   else
+//                       kb->show();
+
+                   QProcess pro;
+                   pro.startDetached("pkill florence");
+                   pro.close();
+                   QProcess pro1;
+                   pro1.startDetached("florence");
+                   pro1.close();
 
                    return true;
                 }
@@ -851,9 +864,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
                 if(mouseEvent->button() == Qt::LeftButton) {
                    qDebug()<<__LINE__<<lineEditList.at(i)->objectName()<<endl;
-
-                   if(!kb->isVisible())
-                        kb->show();
+                   lineEditList.at(i)->setFocus();
+//                   if(!kb->isVisible())
+//                        kb->show();
+                   QProcess pro;
+                   pro.startDetached("pkill florence");
+                   pro.close();
+                   QProcess pro1;
+                   pro1.startDetached("florence");
+                   pro1.close();
 
                    return true;
                 }

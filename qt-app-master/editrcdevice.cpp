@@ -173,11 +173,17 @@ bool EditRCDevice::eventFilter(QObject *watched, QEvent *event)
             QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
             if(mouseEvent->button() == Qt::LeftButton) {
 //                qDebug()<<__LINE__<<textEditList.at(i)->objectName()<<endl;
-
-                if(!kb)
-                    kb = new localKeyboard(this);
-                else
-                    kb->show();
+//                ui->e_modbusindex->setFocus();
+//                if(!kb)
+//                    kb = new localKeyboard(this);
+//                else
+//                    kb->show();
+                QProcess pro;
+                pro.startDetached("pkill florence");
+                pro.close();
+                QProcess pro1;
+                pro1.startDetached("florence");
+                pro1.close();
 
                 return true;
             }

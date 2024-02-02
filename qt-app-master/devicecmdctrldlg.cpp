@@ -174,8 +174,14 @@ bool DeviceCMDCtrlDlg::eventFilter(QObject *obj,QEvent *e)
             QMouseEvent *me = (QMouseEvent *)e;
             if(me->button() == Qt::LeftButton)
             {
-                if(!kb->isVisible())
-                     kb->show();
+//                if(!kb->isVisible())
+//                     kb->show();
+                QProcess pro;
+                pro.startDetached("pkill florence");
+                pro.close();
+                QProcess pro1;
+                pro1.startDetached("florence");
+                pro1.close();
 
             }
         }
@@ -277,8 +283,14 @@ void DeviceCMDCtrlDlg::connectevent()
 
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
-        if(!kb->isVisible())
-             kb->show();
+//        if(!kb->isVisible())
+//             kb->show();
+        QProcess pro;
+        pro.startDetached("pkill florence");
+        pro.close();
+        QProcess pro1;
+        pro1.startDetached("florence");
+        pro1.close();
     });
 
     connect(ui->curPort,&QComboBox::currentTextChanged,this,[=](const QString &)
