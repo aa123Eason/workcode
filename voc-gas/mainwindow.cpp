@@ -228,12 +228,11 @@ void MainWindow::onPrintlog(QString msg)
     QFile file(pDir_FileName);
     QByteArray array;
     array.append(txt);
-    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
-    if(file.waitForBytesWritten(3000))
-        file.write(array,array.length());
-    else
-        file.flush();
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);   
+    file.write(array,array.length());
+    file.flush();
     file.close();
+    array.clear();
 }
 
 void MainWindow::chartinit()
@@ -326,8 +325,6 @@ void MainWindow::handleMarkersClicked()
 
 void MainWindow::connectevent()
 {
-
-
     connect(ui->pushButton_8,&QPushButton::clicked,this,[=]()
     {
         qDebug()<<__LINE__<<endl;
@@ -586,6 +583,31 @@ void MainWindow::connectevent()
     });
 
 
+    connect(ui->threadBtn,&QPushButton::clicked,[=](bool isOn)
+    {
+        if(!isOn)
+        {
+            qDebug()<<__LINE__<<"线程开"<<endl;
+            ui->threadBtn->setText("开启线程");
+            serialWorker1-> isThreadOn = true;
+            serialWorker2-> isThreadOn = true;
+            serialWorker3-> isThreadOn = true;
+            serialWorker4-> isThreadOn = true;
+        }
+        else
+        {
+            qDebug()<<__LINE__<<"线程关"<<endl;
+            ui->threadBtn->setText("关闭线程");
+            serialWorker1-> isThreadOn = false;
+            serialWorker2-> isThreadOn = false;
+            serialWorker3-> isThreadOn = false;
+            serialWorker4-> isThreadOn = false;
+
+        }
+    });
+
+    ui->threadBtn->setChecked(false);
+
 
 }
 
@@ -621,7 +643,7 @@ void SerialWorker::doWork1() {
     isCanRun = true;
 
     /* 死循环 */
-    while (isCanRun) {
+    while (1) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -634,26 +656,29 @@ void SerialWorker::doWork1() {
         qDebug() << "serial thread...Modbus";
         // 获取协议名称
 
-        if(g_Sepuyi == "天蓝")
+        if(isThreadOn)
         {
-            // 01 04 00 14 00 04 B1 CD
-            // 01 04 08 00 00 00 00 00 00 00 00 24 0D
-            // 总烃0x14 float
-            // 甲烷0x16 float
-            skybluework();
+            if(g_Sepuyi == "天蓝")
+            {
+                // 01 04 00 14 00 04 B1 CD
+                // 01 04 08 00 00 00 00 00 00 00 00 24 0D
+                // 总烃0x14 float
+                // 甲烷0x16 float
+                skybluework();
 
-        }
-        else if(g_Sepuyi == "鲁南")
-        {
-            lunanwork();
-        }
-        else if(g_Sepuyi == "VOC")
-        {
+            }
+            else if(g_Sepuyi == "鲁南")
+            {
+                lunanwork();
+            }
+            else if(g_Sepuyi == "VOC")
+            {
 
-        }
-        else if(g_Sepuyi == "VOCS")
-        {
-            VocsHandler();
+            }
+            else if(g_Sepuyi == "VOCS")
+            {
+                VocsHandler();
+            }
         }
 
 
@@ -1623,7 +1648,7 @@ void SerialWorker::doWork2() {
     isCanRun = true;
 
     /* 死循环 */
-    while (isCanRun) {
+    while (1) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -1636,22 +1661,26 @@ void SerialWorker::doWork2() {
         // 温压流模块PLC
         qDebug() << "serial thread...PLC" << g_PLC;
 
-        if(g_PLC == "VOCS")
-        {
-            qDebug() << "plc debug.....";
-            VocsHandler();
-        }
-        else if(g_PLC == "鲁南")
-        {
-            lunanwork();
-        }
-        else if(g_PLC == "天蓝")
-        {
-            skybluework();
-        }
-        else if(g_PLC == "VOC")
+        if(isThreadOn)
         {
 
+            if(g_PLC == "VOCS")
+            {
+                qDebug() << "plc debug.....";
+                VocsHandler();
+            }
+            else if(g_PLC == "鲁南")
+            {
+                lunanwork();
+            }
+            else if(g_PLC == "天蓝")
+            {
+                skybluework();
+            }
+            else if(g_PLC == "VOC")
+            {
+
+            }
         }
 
         QThread::sleep(3);
@@ -1777,7 +1806,7 @@ void SerialWorker::doWork3() {
     isCanRun = true;
 
     /* 死循环 */
-    while (isCanRun) {
+    while (1) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -1788,8 +1817,11 @@ void SerialWorker::doWork3() {
 
         qDebug() << "serial thread...HJ212 2017";
         //读上传状态
-        getuploadstate();
-        UploadHandler1();
+        if(isThreadOn)
+        {
+            getuploadstate();
+            UploadHandler1();
+        }
 
         QThread::sleep(3);
     }
@@ -1801,7 +1833,7 @@ void SerialWorker::doWork4() {
     isCanRun = true;
 
     /* 死循环 */
-    while (isCanRun) {
+    while (1) {
 
         QMutexLocker locker(&lock);
         /* 如果标志位不为真 */
@@ -1813,8 +1845,11 @@ void SerialWorker::doWork4() {
         qDebug() << "serial thread...HJ212_2";
 
         //UploadHandler2();
-        getuploadstate();
-        UploadHandler1();
+        if(isThreadOn)
+        {
+            getuploadstate();
+            UploadHandler1();
+        }
 
         QThread::sleep(2);
     }
@@ -2271,11 +2306,11 @@ void MainWindow::InitComm()
                 /* 判断线程是否在运行 */
                 if(!serialThread_4.isRunning()) {
                     /* 开启线程 */
-//                    serialThread_4.start();
+                    serialThread_4.start();
                 }
 
                 /* 发送正在运行的信号，线程收到信号后执行后返回线程耗时函数 + 此字符串 */
-//                emit this->startWork4();
+                emit this->startWork4();
             }
         }
     }
@@ -2834,7 +2869,7 @@ void MainWindow::on_pushButton_Set_clicked()
     if(paramSet)
     {
         paramSet->switchtopage(0);
-        paramSet->setWindowModality(Qt::WindowModal);
+//        paramSet->setWindowModality(Qt::WindowModal);
 //        connect(paramSet,&ParamSet::sendChangeFactors,this,[=](bool state)
 //        {
 //            QJsonObject pJsonFactors;

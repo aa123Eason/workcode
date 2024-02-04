@@ -89,7 +89,8 @@ public:
     void writeinLog(QString);
     void setFacState(QString name,QString stateNote);
     bool getJZModeState();
-
+    bool isCanRun;
+    bool isThreadOn = true;
 
 
 signals:
@@ -108,7 +109,7 @@ private:
     /* 互斥锁 */
     QMutex lock;
     /* 标志位 */
-    bool isCanRun;
+
 
     bool isUpLoadWet = true;
     bool isUpLoadDry = true;

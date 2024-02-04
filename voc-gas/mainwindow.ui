@@ -14,7 +14,7 @@
    <string>VOCGas</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../VocLogin/res.qrc">
+   <iconset resource="res.qrc">
     <normaloff>:/images/icon.ico</normaloff>:/images/icon.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -274,7 +274,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/wd.png</pixmap>
+            <pixmap resource="res.qrc">:/images/wd.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -346,7 +346,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/yl.png</pixmap>
+            <pixmap resource="res.qrc">:/images/yl.png</pixmap>
            </property>
           </widget>
          </item>
@@ -415,7 +415,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/ls.png</pixmap>
+            <pixmap resource="res.qrc">:/images/ls.png</pixmap>
            </property>
           </widget>
          </item>
@@ -484,7 +484,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/bk.png</pixmap>
+            <pixmap resource="res.qrc">:/images/bk.png</pixmap>
            </property>
           </widget>
          </item>
@@ -571,7 +571,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/sd.png</pixmap>
+            <pixmap resource="res.qrc">:/images/sd.png</pixmap>
            </property>
           </widget>
          </item>
@@ -640,7 +640,7 @@ QLabel::hover
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/o2.png</pixmap>
+            <pixmap resource="res.qrc">:/images/o2.png</pixmap>
            </property>
           </widget>
          </item>
@@ -817,7 +817,7 @@ QPushButton::hover
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1">
+     <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1,0">
       <item>
        <widget class="QPushButton" name="keyboard">
         <property name="sizePolicy">
@@ -852,7 +852,7 @@ QPushButton::hover
          <string/>
         </property>
         <property name="icon">
-         <iconset>
+         <iconset resource="res.qrc">
           <normaloff>:/images/keyboard-on.png</normaloff>:/images/keyboard-on.png</iconset>
         </property>
         <property name="iconSize">
@@ -892,6 +892,39 @@ QPushButton::hover
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="threadBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton
+{
+	background-color:transparent;
+	color:transparent;
+}
+
+QPushButton::hover
+{
+	color:gray;
+
+}
+</string>
+        </property>
+        <property name="text">
+         <string>开启线程</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -1197,7 +1230,7 @@ QPushButton::hover
         <string>日志管理</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/Log.png</normaloff>:/images/Log.png</iconset>
        </property>
        <property name="iconSize">
@@ -1258,7 +1291,7 @@ QPushButton::hover
         <string>用户管理</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/UserManage.png</normaloff>:/images/UserManage.png</iconset>
        </property>
        <property name="iconSize">
@@ -1328,7 +1361,7 @@ QPushButton::hover
         <string>串口助手</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/uart.png</normaloff>:/images/uart.png</iconset>
        </property>
        <property name="iconSize">
@@ -1389,7 +1422,7 @@ QPushButton::hover
         <string>校准模式</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/calibration.png</normaloff>:/images/calibration.png</iconset>
        </property>
        <property name="iconSize">
@@ -1450,7 +1483,7 @@ QPushButton::hover
         <string>历史数据</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/data.png</normaloff>:/images/data.png</iconset>
        </property>
        <property name="iconSize">
@@ -1520,7 +1553,7 @@ QPushButton::hover
         <string>历史曲线</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/Curve.png</normaloff>:/images/Curve.png</iconset>
        </property>
        <property name="iconSize">
@@ -1581,7 +1614,7 @@ QPushButton::hover
         <string>数据清零</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/clear.png</normaloff>:/images/clear.png</iconset>
        </property>
        <property name="iconSize">
@@ -1651,7 +1684,7 @@ QPushButton::hover
         <string>参数设置</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/Set.png</normaloff>:/images/Set.png</iconset>
        </property>
        <property name="iconSize">
@@ -1712,7 +1745,7 @@ QPushButton::hover
         <string>时间设置</string>
        </property>
        <property name="icon">
-        <iconset>
+        <iconset resource="res.qrc">
          <normaloff>:/images/clock.png</normaloff>:/images/clock.png</iconset>
        </property>
        <property name="iconSize">
@@ -1736,6 +1769,8 @@ QPushButton::hover
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

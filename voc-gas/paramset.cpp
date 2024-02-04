@@ -1095,31 +1095,26 @@ ui->tableWidget_Up->verticalHeader()->hide();
 void ParamSet::on_pushButton_clicked()
 {
     ui->textBrowser->clear();
+    qDebug()<<__LINE__<<endl;
 
     QString dir_root = QApplication::applicationDirPath()+"/"+LOG_PATH;
-
+    qDebug()<<__LINE__<<endl;
     // 声明目录对象
     QString path_root = ui->dateEdit->date().toString(QLatin1String("yyyy-MM"));
     QString file_name = ui->dateEdit->date().toString(QLatin1String("dd")) + ".txt";
 
     QString dir_str = dir_root + path_root;
     QString pDir_FileName = dir_str + "/" + file_name;
+    qDebug()<<__LINE__<<pDir_FileName<<endl;
     QFile file(pDir_FileName);
 
     //打开文件
     bool isOK = file.open(QIODevice::ReadOnly|QIODevice::Text);
     if(isOK == true){
 
-        QByteArray array;
-        while (file.atEnd() == false) {
-            //读一行
-            array.append(file.readLine());
-            file.flush();
-            ui->textBrowser->append(QString(array.trimmed()).toUtf8());
-        }
-        ui->textBrowser->setTextColor(QColor("#00147f"));
+        ui->textBrowser->setText(file.readAll());
+        file.flush();
 
-        array.clear();
         //QMessageBox::about(NULL, "提示", "<font color='black'>获取日志信息成功！</font>");
     }
     else
@@ -1917,12 +1912,10 @@ void ParamSet::onPrintlog(QString msg)
     QFile file(pDir_FileName);
     QByteArray array;
     array.append(txt);
-    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
-    if(file.waitForBytesWritten(3000))
-        file.write(array,array.length());
-    else
-        file.flush();
+    file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);   
+    file.write(array,array.length());
     file.close();
+    array.clear();
 
 //    ui->textBrowser->setText(txt);
 }

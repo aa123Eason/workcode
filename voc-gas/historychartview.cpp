@@ -45,25 +45,31 @@ void HistoryChartView::chartInit()
     chart->legend()->setMarkerShape(QLegend::MarkerShapeRectangle);
 
     QFont font;
-    font.setPointSize(14);
+    font.setPointSize(10);
     font.setBold(true);
     font.setFamily("微软雅黑");
     chart->legend()->setFont(font);
+    chart->legend()->resize(50,400);
 
     m_axisX = new QValueAxis(chart);
     m_axisY = new QValueAxis(chart);
     m_axisX->setGridLineVisible(true);
     m_axisY->setGridLineVisible(true);
 
-
-
     QChartView *mainChartView = new QChartView(chart,ui->chartWidget);
     mainChartView->setRenderHint(QPainter::Antialiasing);
-//    qDebug()<<__LINE__<<ui->chartWidget->width()<<ui->chartWidget->height()<<endl;
-    mainChartView->setFixedSize(800,570);
+    qDebug()<<__LINE__<<this->width()<<this->height()<<endl;
+    mainChartView->setFixedSize(800,600);
     mainChartView->setAlignment(Qt::AlignCenter);
-//    mainChartView->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-//    mainChartView->setRubberBand(QChartView::VerticalRubberBand);
+    mainChartView->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+    mainChartView->setRubberBand(QChartView::VerticalRubberBand);
+//    chart->resize(mainChartView->width(),mainChartView->height());
+    mainChartView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    QHBoxLayout layout;
+    layout.addWidget(mainChartView);
+    layout.setMargin(2);
+    ui->chartWidget->setLayout(&layout);
 
 }
 
@@ -174,27 +180,33 @@ void HistoryChartView::on_pushbutton_query()
     }
 
     QString rangeStartDT,rangeEndDT;
+    int lendt = dt_begin.secsTo(dt_end);
+    int reflen;
     //获取需要查询的表名和日期时间格式
     if(curDTType == "分钟均值")
     {
+        reflen = lendt/60;
         tableName = "T_History_Minute";
         queryFormat = "yyyy-MM-dd HH:mm";
         chart->setTitle("历史分钟数据趋势");
     }
     else if(curDTType == "小时均值")
     {
+        reflen = lendt/3600;
         tableName = "T_History_Hour";
         queryFormat = "yyyy-MM-dd HH";
         chart->setTitle("历史小时数据趋势");
     }
     else if(curDTType == "日均值")
     {
+        reflen = dt_begin.daysTo(dt_end);
         tableName = "T_History_Day";
         queryFormat = "yyyy-MM-dd";
         chart->setTitle("历史日数据趋势");
     }
     else if(curDTType == "月均值")
     {
+        reflen = dt_begin.daysTo(dt_end)/30;
         tableName = "T_History_Month";
         queryFormat = "yyyy-MM";
         chart->setTitle("历史月数据趋势");
@@ -233,6 +245,18 @@ void HistoryChartView::on_pushbutton_query()
             QMessageBox::warning(this,"查询错误提示","查询失败，本地数据库异常");
             return;
         }
+
+//        if(curDTType == "分钟均值")
+//        {
+        qDebug()<<__LINE__<<reflen<<endl;
+        if(reflen>1440)
+        {
+            QMessageBox::warning(this,"提示","查询量过大，会拖慢运行速度，建议缩短时间范围");
+            return;
+        }
+
+//        }
+
         //拼接查询语句
         QString queStr = "select ";
         qDebug()<<"==================x"<<endl;

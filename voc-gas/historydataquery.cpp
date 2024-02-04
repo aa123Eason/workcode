@@ -340,6 +340,36 @@ void HistoryDataQuery::onQuery()
     qDebug()<<__LINE__<<queStr<<endl;
     emit sendlogmsg("历史数据查询窗口——查询sql命令："+queStr);
 
+    int delDT = dt1.secsTo(dt2);
+    int refDT = delDT;
+
+    if(ui->queryDTType->currentText() == "分钟查询")
+    {
+        refDT = delDT/60;
+    }
+    else if(ui->queryDTType->currentText() == "小时查询")
+    {
+        refDT = delDT / 3600;
+    }
+    else if(ui->queryDTType->currentText() == "日查询")
+    {
+        refDT = dt1.daysTo(dt2);
+    }
+    else if(ui->queryDTType->currentText() == "月查询")
+    {
+        refDT = dt1.daysTo(dt2) / 30;
+    }
+    else
+    {
+        refDT = delDT/60;
+    }
+
+    if(refDT>1440)
+    {
+        QMessageBox::warning(this,"提示","查询量过大，会拖慢运行速度，建议缩短时间范围");
+        return;
+    }
+
     QSqlQuery q(queStr);
     q.exec();
 
@@ -473,14 +503,14 @@ void HistoryDataQuery::fillinDatas()
     qDebug()<<__LINE__<<resMap.count()<<resMap["HistoryTime"].count()<<endl;
     qDebug()<<__LINE__<<resMap["HistoryTime"]<<endl;
 
-    if(ui->queryDTType->currentText() == "分钟查询")
-    {
-        if(resMap["HistoryTime"].count()>1440)
-        {
-            QMessageBox::warning(this,"提示","查询量过大，会拖慢运行速度，建议缩短时间范围");
-            return;
-        }
-    }
+//    if(ui->queryDTType->currentText() == "分钟查询")
+//    {
+//        if(resMap["HistoryTime"].count()>1440)
+//        {
+//            QMessageBox::warning(this,"提示","查询量过大，会拖慢运行速度，建议缩短时间范围");
+//            return;
+//        }
+//    }
 
     for(int i=0;i<resMap["HistoryTime"].count();++i)
     {
