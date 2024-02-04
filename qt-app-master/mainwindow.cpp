@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
     Widget_Init();
 
     m_pDateTimer = new QTimer(this);
-    m_pDateTimer->setInterval(100);
+    m_pDateTimer->setInterval(1000);
     connect(m_pDateTimer, SIGNAL(timeout()), this, SLOT(handleDateTimeout()));
     m_pDateTimer->start();
 
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
         if(jtmpObj.count()>0)
         {
             handleResults("rccom_state",jtmpObj);
-            QThread::sleep(3);
+//            QThread::sleep(3);
         }
     }
 
@@ -455,27 +455,40 @@ void MainWindow::setDeviceTableContent()
 
 void MainWindow::checkRCCOMSTate(QMap<QString,bool> &map,const QJsonObject &obj)
 {
+    QString str;
     QJsonObject::const_iterator it = obj.begin();
     QStringList list;
     while(it != obj.end())
     {
+
         QJsonObject jValueObj = it.value().toObject();
         QString port = jValueObj.value("port").toString();
-        if(!map.contains(port))
+        str += it.key()+"-"+port+"\r\n";
+        if(map.contains(port)&&(!list.contains(port)))
         {
             list << port;
         }
         it++;
     }
 
+//    str = "RCCOM:"+QString::number(list.count())+"\r\n";
     for(QString port:list)
     {
         QString oriName = util.Uart_Convert(port);
         SerialPort *s = new SerialPort();
         bool isConnected = s->openPort(oriName,BAUD9600,DATA_8,PAR_NONE,STOP_1,FLOW_OFF,60);
+        str += oriName;
+        str += "baud:9600,data_bit:8,parity:none,stop_bit:1,timeout:60\r\n";
+        if(isConnected)
+            str += "*******Connected!*******\r\n";
+        else
+            str += "*******Disconnected!*******\r\n";
+
         map.insert(port,isConnected);
         avaSeriPorts.insert(port,s);
     }
+
+    emit sendlog(str);
 
 
 
@@ -675,6 +688,16 @@ void MainWindow::Widget_Init()
 
     });
 
+    connect(ui->stackedWidget,&QStackedWidget::currentChanged,this,[=](int refindex)
+    {
+        int index = ui->stackedWidget->indexOf(ui->page_DRCA);
+
+        if(refindex == index)
+        {
+            setDeviceTableContent();
+        }
+    });
+
     connect(ui->btn_refresh,&QPushButton::clicked,this,[=]()
     {
         setDeviceTableContent();
@@ -694,6 +717,17 @@ void MainWindow::Widget_Init()
         }
 
         testModeState = state;
+    });
+
+    connect(this,&MainWindow::sendlog,this,[=](QString str)
+    {
+        QFile file("/home/rpdzkj/log.txt");
+        if(file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate))
+        {
+            file.write(str.toUtf8());
+            file.flush();
+            file.close();
+        }
     });
 
     connect(ui->log,&QPushButton::clicked,this,[=]()
@@ -1834,6 +1868,7 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
     }
     else if(item == "rccom_state")
     {
+//        emit sendlog("rccom_state");
         checkRCCOMSTate(avaPortStateMap,results);
         addRCPorts();
         rcReadWrite();
@@ -1855,7 +1890,7 @@ void MainWindow::rcReadWrite()
             emit sendlog(logStr);
             SerialPort *s = avaSeriPorts[portName];
             emit sendRCRW(RC_WRITE);
-            QThread::sleep(3);
+//            QThread::sleep(3);
             emit sendRCRW(RC_READ);
         }
         it++;
@@ -1950,9 +1985,13 @@ void MainWindow::onSlotRW(bool isRead)
                         if(!cmd.isEmpty())
                         {
                             QByteArray bytArr = QString2Hex(cmd.toLatin1().toUpper());
-                            int length = cmd.length();
+                            int length = bytArr.length();
                             s->write(QString2Hex(cmd));
-                            logStr += infoStr+"[S]"+portName+":"+cmdKey+"-"+cmd+"\r\n";
+
+                            QThread::sleep(1);
+
+                            logStr += infoStr+"[S]"+portName+":"+cmdKey+"-"+cmd+" Len:"+QString::number(length)+"\r\n";
+//                            QThread::sleep(3);
                         }
 
                     }
@@ -1965,19 +2004,19 @@ void MainWindow::onSlotRW(bool isRead)
 #pragma endregion SENDCMD}
 
 #pragma region RECEICMD{
-        else
+        if(isRead)
         {
             connect(s,&SerialPort::hasdata,this,[=](QByteArray &bytR)
             {
                 QString recStr = QString(bytR.toHex());
-                logStr += infoStr+"[R]"+portName+":"+recStr+"\r\n";
+//                logStr += infoStr+"[R]"+portName+":"+recStr+"\r\n";
             });
 
             s->remoteDateInComing();
 
         }
 #pragma endregion RECEICMD}
-        emit sendlog(logStr);
+        emit sendlog(portName+"-RESULT:"+logStr);
         itx++;
     }
 }
