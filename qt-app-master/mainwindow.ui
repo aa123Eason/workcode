@@ -173,7 +173,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>9</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -4151,6 +4151,25 @@ border-style: solid;</string>
        <string>数据查询</string>
       </property>
      </widget>
+     <widget class="QLabel" name="resShow">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>520</y>
+        <width>121</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
      <zorder>tableWidget</zorder>
      <zorder>groupBox_10</zorder>
      <zorder>groupBox_9</zorder>
@@ -4170,6 +4189,7 @@ border-style: solid;</string>
      <zorder>line_4</zorder>
      <zorder>progressBar</zorder>
      <zorder>label_3</zorder>
+     <zorder>resShow</zorder>
     </widget>
     <widget class="QWidget" name="page_10">
      <widget class="QWidget" name="layoutWidget">

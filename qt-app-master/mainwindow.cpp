@@ -606,9 +606,12 @@ void MainWindow::Widget_Init()
     ui->label_46->hide();
     ui->comboBox_3->hide();
 
-    ui->payload->setAlignment( Qt::AlignLeft);
-    ui->response->setAlignment( Qt::AlignLeft);
+    ui->payload->setAlignment(Qt::AlignLeft);
+    ui->response->setAlignment(Qt::AlignLeft);
     ui->stackedWidget->setCurrentIndex(0);
+    ui->tableWidget->verticalScrollBar()->setStyleSheet("QScrollBar{background-color:rgb(218,222,223); width:10px;}""QScrollBar::handle{background-color:rgb(180, 180, 180); border:2px solid transparent; border-radius:5px;}""QScrollBar::handle:hover{background-color:rgb(139, 139, 139);}""QScrollBar::sub-line{background:transparent;}""QScrollBar::add-line{background:transparent;}"); //设置纵向滚动条样式
+    ui->tableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background-color:rgb(218,222,223); height:10px;}""QScrollBar::handle{background-color:rgb(180, 180, 180); border:2px solid transparent; border-radius:5px;}""QScrollBar::handle:hover{background-color:rgb(139, 139, 139);}""QScrollBar::sub-line{background:transparent;}""QScrollBar::add-line{background:transparent;}");  //设置横向滚动条样式
+
 
     connect(ui->closewindow,&QPushButton::clicked,this,[=]()
     {
@@ -737,6 +740,8 @@ void MainWindow::Widget_Init()
         logdlg->show();
     });
 
+//    connect(ui->pushButtonFind,&QPushButton::clicked,this,&MainWindow::on_pushButtonFind_clicked);
+
 }
 
 void MainWindow::ClearTable()
@@ -847,6 +852,7 @@ void MainWindow::installEvents() {
 
     ui->pushButton_devicecmdctrl->installEventFilter(this);
     ui->modbus->installEventFilter(this);
+//    ui->pushButtonFind->installEventFilter(this);
 }
 
 //事件过滤器
@@ -1039,6 +1045,34 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
+
+//    if(obj == ui->pushButtonFind) {
+//        if (event->type() == QEvent::MouseButtonPress) {
+//            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+//            if(mouseEvent->button() == Qt::LeftButton) {
+//                if(!m_LoginStatus)
+//                {
+//                    QMessageBox::about(NULL, "提示", "<font color='black'>请先登录！</font>");
+//                    ui->stackedWidget->setCurrentIndex(2);
+//                    return false;
+//                }
+////                qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
+//                ui->stackedWidget->setCurrentWidget(ui->page_9);
+////                ui->factorBox->setCurrentIndex(0);
+//                ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
+//                ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
+//                ui->checkBox->setChecked(true);
+//                ui->label_46->hide();
+//                ui->comboBox_3->hide();
+//                ui->label_48->show();
+//                ui->factorBox->show();
+//                on_pushButtonFind_clicked();
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
     return QWidget::eventFilter(obj, event);
 }
 
@@ -1046,7 +1080,11 @@ void MainWindow::openModbus()
 {
     ui->stackedWidget->setCurrentIndex(13);
     QStringList comlist,baudlist,databitlist,paritylist,stopbitlist;
-    comlist<<"COM1"<<"COM2"<<"COM3"<<"COM4"<<"COM5"<<"COM6"<<"COM7"<<"COM8"<<"COM9"<<"COM10"<<"COM11"<<"COM12";
+    comlist<<"COM1"<<"COM2"<<"COM3"<<"COM4"
+          <<"COM5"<<"COM6"<<"COM7"<<"COM8"
+          <<"COM9"<<"COM10"<<"COM11"<<"COM12"
+          <<"XR-COM1"<<"XR-COM2"<<"XR-COM3"<<"XR-COM4"
+          <<"USB-COM1"<<"USB-COM2"<<"USB-COM3"<<"USB-COM4";
     baudlist<<"9600"<<"4800"<<"115200";
     databitlist<<"7"<<"8";
     paritylist<<"N"<<"E"<<"O";
@@ -2586,7 +2624,11 @@ void MainWindow::OpenData_Query()
             QJsonValue iconArray = m_JsonArray.at(i);
             QJsonObject icon = iconArray.toObject();
             QString b = icon[QLatin1String("ip_addr_port")].toString();
+            ui->resShow->setText(b);
+
             ui->comboBox_3->addItem(b,icon[QLatin1String("ip_addr_port")].toString());
+
+//            emit sendlog(icon[QLatin1String("ip_addr_port")].toString());
         }
     }else
     {
@@ -3177,7 +3219,7 @@ void MainWindow::qingqiu(int page)
 
         if(m_history_rtd.size() <= 0)
         {
-            QMessageBox::about(NULL, "提示", "<font color='black'>未查询到任何数据，请重新选择起始时间！</font>");
+//            QMessageBox::about(NULL, "提示", "<font color='black'>未查询到任何数据，请重新选择起始时间！</font>");
             ui->progressBar->setValue(0);
             ui->progressBar->hide();
             return;
@@ -3249,17 +3291,18 @@ ui->tableWidget->setHorizontalHeaderLabels(headerText);
 ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
-ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
+ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
 ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-QFont font =  ui->tableWidget->horizontalHeader()->font();
+//QFont font =  ui->tableWidget->horizontalHeader()->font();
 
-ui->tableWidget->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
+ui->tableWidget->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
 
 int widths[] = {100, 245,245,245,245};                  //1080
 for (int i = 0;i < cnt; i++ ){ //列编号从0开始
     ui->tableWidget->setColumnWidth(i, widths[i]);
 }
 
+ui->tableWidget->setRowHeight(0,22);
 ui->tableWidget->setStyleSheet(qssTV);
 ui->tableWidget->horizontalHeader()->setVisible(true);
 ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
@@ -3297,6 +3340,7 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
         // 序号
         item = new QTableWidgetItem( QString::number(i+1,10) );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,0,item);
 
         //采集时间
@@ -3304,21 +3348,25 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
         a.replace("T"," ");a.replace("Z"," ");
         item = new QTableWidgetItem( a );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,1,item);
 
         //因子名称
         item = new QTableWidgetItem( ui->factorBox->currentText() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,2,item);
 
         //实时值
         item = new QTableWidgetItem( json[QLatin1String("Data")].toString() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,3,item);
 
         //数据标识
         item = new QTableWidgetItem( json[QLatin1String("Flag")].toString() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,4,item);
     }
 
@@ -3331,7 +3379,7 @@ void MainWindow::qingqiuHisData(int page, QString type)
     if(ui->pushButtonExport->isEnabled())
     {
         ui->progressBar->setValue(0);
-        ui->progressBar->show();
+//        ui->progressBar->show();
     }
 
     m_CurPage = page;
@@ -3468,8 +3516,10 @@ void MainWindow::qingqiuHisData(int page, QString type)
 
 void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
 {
+    QFont resFont;
+    resFont.setPointSize(16);
     ui->progressBar->setValue(100);
-    usleep(200000);
+    usleep(5);
 
     if(m_CurPage == 0) ui->pushButtonLast->setEnabled(false);
     else ui->pushButtonLast->setEnabled(true);
@@ -3539,15 +3589,19 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     ui->tableWidget->setSpan(0,0,2,1);  // xuhao
     ui->tableWidget->setSpan(0,1,2,1);  // timestamp
 
-    QTableWidgetItem * item0 = new QTableWidgetItem( "序号" );
+    QTableWidgetItem *item0 = new QTableWidgetItem( "序号" );
     item0->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(0,0,item0);
     item0->setBackground(Qt::lightGray);
+    item0->setFont(resFont);
 
-    QTableWidgetItem * itemStamp = new QTableWidgetItem( "时间戳" );
+    QTableWidgetItem *itemStamp = new QTableWidgetItem( "时间戳" );
     itemStamp->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(0,1,itemStamp);
     itemStamp->setBackground(Qt::darkGray);
+    itemStamp->setFont(resFont);
+
+
 
     for(int i=0;i<pColNum;i++)
     {
@@ -3567,31 +3621,37 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         itemFactorName->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(0,2+i*5,itemFactorName);
         itemFactorName->setBackground(Qt::darkYellow);
+        itemFactorName->setFont(resFont);
 
         QTableWidgetItem * itemMax = new QTableWidgetItem( "最大值" );
         itemMax->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,2+i*5,itemMax);
         itemMax->setBackground(Qt::red);
+        itemMax->setFont(resFont);
 
         QTableWidgetItem * itemMin = new QTableWidgetItem( "最小值" );
         itemMin->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,3+i*5,itemMin);
         itemMin->setBackground(Qt::yellow);
+        itemMin->setFont(resFont);
 
         QTableWidgetItem * itemAvg = new QTableWidgetItem( "平均值" );
         itemAvg->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,4+i*5,itemAvg);
         itemAvg->setBackground(Qt::cyan);
+        itemAvg->setFont(resFont);
 
         QTableWidgetItem * itemSum = new QTableWidgetItem( "累计值" );
         itemSum->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,5+i*5,itemSum);
         itemSum->setBackground(Qt::darkCyan);
+        itemSum->setFont(resFont);
 
         QTableWidgetItem * itemFlag = new QTableWidgetItem( "数据标记" );
         itemFlag->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,6+i*5,itemFlag);
         itemFlag->setBackground(Qt::magenta);
+        itemFlag->setFont(resFont);
     }
 
     int pRow = 2;
@@ -3620,26 +3680,31 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
                     if(pDataList[0] == "") pDataList[0] = "-";
                     item = new QTableWidgetItem( pDataList[0] );
                     item->setTextAlignment(Qt::AlignCenter);
+                    item->setFont(resFont);
                     ui->tableWidget->setItem(pRow,2+j*5,item);
 
                     if(pDataList[1] == "") pDataList[1] = "-";
                     item = new QTableWidgetItem( pDataList[1] );
                     item->setTextAlignment(Qt::AlignCenter);
+                    item->setFont(resFont);
                     ui->tableWidget->setItem(pRow,3+j*5,item);
 
                     if(pDataList[2] == "") pDataList[2] = "-";
                     item = new QTableWidgetItem( pDataList[2] );
                     item->setTextAlignment(Qt::AlignCenter);
+                    item->setFont(resFont);
                     ui->tableWidget->setItem(pRow,4+j*5,item);
 
                     if(pDataList[3] == "") pDataList[3] = "-";
                     item = new QTableWidgetItem( pDataList[3] );
                     item->setTextAlignment(Qt::AlignCenter);
+                    item->setFont(resFont);
                     ui->tableWidget->setItem(pRow,5+j*5,item);
 
                     if(pDataList[4] == "") pDataList[4] = "-";
                     item = new QTableWidgetItem( pDataList[4] );
                     item->setTextAlignment(Qt::AlignCenter);
+                    item->setFont(resFont);
                     ui->tableWidget->setItem(pRow,6+j*5,item);
                 }
             }
@@ -3647,22 +3712,27 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
             {
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(resFont);
                 ui->tableWidget->setItem(pRow,2+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(resFont);
                 ui->tableWidget->setItem(pRow,3+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(resFont);
                 ui->tableWidget->setItem(pRow,4+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(resFont);
                 ui->tableWidget->setItem(pRow,5+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
+                item->setFont(resFont);
                 ui->tableWidget->setItem(pRow,6+j*5,item);
             }
         }
@@ -3722,11 +3792,11 @@ ui->tableWidget->setHorizontalHeaderLabels(headerText);
 ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
 ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
-ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 12));
+ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
 ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget->horizontalHeader()->font();
 
-ui->tableWidget->setFont(QFont(QLatin1String("song"), 10)); // 表格内容的字体为10号宋体
+ui->tableWidget->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
 
 int widths[] = {50,200,120,200,600};                  //1080
 for (int i = 0;i < cnt; i++ ){ //列编号从0开始

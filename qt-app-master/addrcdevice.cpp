@@ -73,6 +73,10 @@ void AddRCDevice::init()
    addTimeCks(timecks,al4,ui->ap4);
 
    ui->a_modbusindex->installEventFilter(this);
+   QMessageBox::about(this,"操作提示","指定设备名称，串口号，modbus设备序号，"\
+                      "为四个指令指定不同的时间数字组合，"\
+                      "非测试模式下，将数字昨晚小时数运行线程，测试模式下，"\
+                      "将数字昨晚秒数运行线程，点击确定完成新增");
 }
 
 bool AddRCDevice::eventFilter(QObject *watched, QEvent *event)

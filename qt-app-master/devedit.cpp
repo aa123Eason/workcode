@@ -354,7 +354,9 @@ void DevEdit::loadParamtable(QString dev_params)
                 {
                     QTableWidgetItem *itemName = new QTableWidgetItem("输入"+index+"范围上限");
                     itemName->setFont(font);
-                    QTableWidgetItem *itemValue = new QTableWidgetItem(paramValue);
+
+                    QString valuep = QString::number(paramValue.toDouble(),'f',0);
+                    QTableWidgetItem *itemValue = new QTableWidgetItem(valuep);
                     itemValue->setFont(font);
                     ui->paramtable->setItem(4*t+2,0,itemName);
                     ui->paramtable->setItem(4*t+2,1,itemValue);
@@ -363,7 +365,8 @@ void DevEdit::loadParamtable(QString dev_params)
                 {
                     QTableWidgetItem *itemName = new QTableWidgetItem("输入"+index+"范围下限");
                     itemName->setFont(font);
-                    QTableWidgetItem *itemValue = new QTableWidgetItem(paramValue);
+                    QString valuep = QString::number(paramValue.toDouble(),'f',0);
+                    QTableWidgetItem *itemValue = new QTableWidgetItem(valuep);
                     itemValue->setFont(font);
                     ui->paramtable->setItem(4*t+3,0,itemName);
                     ui->paramtable->setItem(4*t+3,1,itemValue);
@@ -711,7 +714,6 @@ QString DevEdit::builddevparams()
                                     }
                                     else
                                     {
-
 
                                         if(jSubObj.value(CONF_IS_ANALOG_PARAM).toBool())
                                         {

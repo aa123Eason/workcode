@@ -163,6 +163,11 @@ void EditRCDevice::init()
     ui->editfacBox->setEnabled(false);
     ui->e_modbusindex->installEventFilter(this);
     kb = new localKeyboard(this);
+
+    QMessageBox::about(this,"操作提示","指定串口号，modbus设备序号，"\
+                       "为四个指令指定不同的时间数字组合，"\
+                       "非测试模式下，将数字昨晚小时数运行线程，测试模式下，"\
+                       "将数字昨晚秒数运行线程，点击确定完成新增");
 }
 
 bool EditRCDevice::eventFilter(QObject *watched, QEvent *event)
