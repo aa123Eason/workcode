@@ -1,4 +1,4 @@
-#ifndef ADDRCDEVICE_H
+﻿#ifndef ADDRCDEVICE_H
 #define ADDRCDEVICE_H
 
 #include <QWidget>
@@ -25,7 +25,7 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-
+//添加反控设备
 
 namespace Ui {
 class AddRCDevice;
@@ -40,7 +40,7 @@ public:
     ~AddRCDevice();
     void init();
     void connectevent();
-    void addTimeCks(QList<QCheckBox *> &timecks,QGridLayout &timeset,QWidget *w);
+    void addTimeCks(QList<QCheckBox *> &timecks,QGridLayout &timeset,QWidget *w);//添加时间复选框
 
 signals:
     void sendFinished(bool);

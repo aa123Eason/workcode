@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -81,111 +81,111 @@ public:
         RC_READ = true
     };
 
-    bool FactorGui_Init(QString pDev_ID);
-    void setTableFaHeader();
-    bool DevGui_Init();
-    void setTableDevHeader();
-    void setTableUpHeader();
-    bool UploadGui_Init();
-    void setTableTeHeader();
-    QJsonObject Conf_RootObjGet();
-    void Analog_RenewDevParam();
+    bool FactorGui_Init(QString pDev_ID);//因子配置初始化
+    void setTableFaHeader();//绘制因子表格的表头
+    bool DevGui_Init();//设备配置初始化
+    void setTableDevHeader();//绘制设备配置表格的表头
+    void setTableUpHeader();//绘制上位机配置表格的表头
+    bool UploadGui_Init();//上位机设置初始化
+    void setTableTeHeader();//绘制特殊值配置表格
+    QJsonObject Conf_RootObjGet();//获取QDesktop.json文件中的内容
+    void Analog_RenewDevParam();//更新模拟量的配置参数
     void ConfFactor_Filled(QString pTemp,bool isAnalogProtocl);
-    bool TeshuzhiGui_Init();
-    void loadTesshuzhiLocal();
-    bool Conf_TeshuzhiUpdate();
-    void ConfNode_Init();
-    void ConfFile_Init();
-    void Widget_Init();
+    bool TeshuzhiGui_Init();//特殊值初始化
+    void loadTesshuzhiLocal();//将配置好的特殊值填入表格
+    bool Conf_TeshuzhiUpdate();//特殊值更新
+    void ConfNode_Init();//QDesktop.json文件初始化
+    void ConfFile_Init();//QDesktop.json文件初始化
+    void Widget_Init();//主界面主要控件初始化
     // void Teshuzhi_EditInit(bool ok);
-    void UpSetting_EditInit(bool ok);
-    void setTableContents(const QJsonObject &pJsonObj,const QJsonObject & pConfJsonTeList);
-    void delfactor(int differ, const QJsonObject & results,const QJsonObject & pConfJsonTeList);
-    void addfactor( int differ, const QJsonObject & results,const QJsonObject & pConfJsonTeList);
-    void label_clear();
-    void qingqiu(int page);
-    void setTableHeader();
-    void setTableContents(QJsonArray &history_real_time_data);
-    void qingqiuHisData(int page, QString type);
-    void setHisTableContents(QJsonArray &history_real_time_data);
-    void qingqiuMessage(int page);
-    void setMsgTableHeader();
-    void setMsgTableContents(QJsonArray &history_real_time_data);
+    void UpSetting_EditInit(bool ok);//上位机设置初始化
+    void setTableContents(const QJsonObject &pJsonObj,const QJsonObject & pConfJsonTeList);//实时数据显示界面内容填充
+    void delfactor(int differ, const QJsonObject & results,const QJsonObject & pConfJsonTeList);//删除因子
+    void addfactor( int differ, const QJsonObject & results,const QJsonObject & pConfJsonTeList);//添加因子
+    void label_clear();//软件关闭后，将控件List中的所有成员清除
+    void qingqiu(int page);//数据查询：实时数据查询
+    void setTableHeader();//数据查询:实时数据查询表格，表头绘制
+    void setTableContents(QJsonArray &history_real_time_data);//数据查询:实时数据查询表格，查询结果填充
+    void qingqiuHisData(int page, QString type);//数据查询:查询分钟、小时、日、月历史数据
+    void setHisTableContents(QJsonArray &history_real_time_data);//数据查询:分钟、小时、日、月历史数据查询结果填充
+    void qingqiuMessage(int page);//数据查询：传输报文查询
+    void setMsgTableHeader();//数据查询：传输报文表格表头绘制
+    void setMsgTableContents(QJsonArray &history_real_time_data);//数据查询：传输报文查询结果填充
 
     bool eventFilter(QObject *obj, QEvent *event);	// 添加时间过滤器声明
-    void installEvents();
+    void installEvents();//配置事件过滤器初始化参数
 
-    void deletecurrid(QString deviceid,QString facname);
-    void writeDevParams();
-    QJsonObject loadlocalJson(int gettype,QString dev_id);
-    void usbUpdateEvent();
-    bool checkUSBDevice();
-    void showModifiedTime();
-    void setDeviceTableHeader();
-    void setDeviceTableContent();
-    void checkRCCOMSTate(QMap<QString,bool> &,const QJsonObject &);
-    void addRCPorts();
-    void rcReadWrite();
+    void deletecurrid(QString deviceid,QString facname);//删除当前因子
+    void writeDevParams();//将模拟量设备参数的值记入本地json文件
+    QJsonObject loadlocalJson(int gettype,QString dev_id);//从本地json文件在读取设备参数、因子和特殊值
+    void usbUpdateEvent();//数采仪软件的U盘自动更新函数
+    bool checkUSBDevice();//检测是否有U盘插入
+    void showModifiedTime();//显示最近一般数采仪软件的更新时间
+    void setDeviceTableHeader();//绘制设备表格表头
+    void setDeviceTableContent();//将设备参数填入表格
+    void checkRCCOMSTate(QMap<QString,bool> &,const QJsonObject &);//检测所有设备反控端口是否已连接
+    void addRCPorts();//添加反控参数
+    void rcReadWrite();//反控设备的数据读写信号控制
 
 private slots:
 
-    void refresh_AnalogDevParam();
-    void refresh_SpecialsDevParam();
-    void onButtonDevDele(QString id);
-    void onButtonDevMore(QString id);
-    void onButtonDevFactor(QString id);
-    void handleDateTimeout();
-    void handleResults(QString item,const QJsonObject &results);
-    void ClearTable();
-    void ShowNextPage();
-    void ShowNewPage();
-    void ShowLastPage();
-    void onButtonDele(QString id);
-    void onButtonEdit(QString id);
+    void refresh_AnalogDevParam();//更新模拟量参数1
+    void refresh_SpecialsDevParam();//更新模拟量参数2
+    void onButtonDevDele(QString id);//删除设备
+    void onButtonDevMore(QString id);//编辑设备
+    void onButtonDevFactor(QString id);//查看设备因子
+    void handleDateTimeout();//实时更新时间
+    void handleResults(QString item,const QJsonObject &results);//自动运行线程：读取并展示实时因子数据，连接状态和反控状态，自动执行反控命令收发
+    void ClearTable();//数据查询：勾选不同的复选框，指定哪些控件显示，哪些控件隐藏
+    void ShowNextPage();//数据查询：显示下一页
+    void ShowNewPage();//数据查询：显示指定页
+    void ShowLastPage();//数据查询:显示上一页
+    void onButtonDele(QString id);//删除反控设备
+    void onButtonEdit(QString id);//编辑反控设备
 
-    void OpenSysInfo();
-    void OpenNeworkSetting();
-    void OpenComDebug();
-    void OpenBufa();
-    void OpenMasterSet();
-    void OpenTimeSet();
-    void OpenData_Query();
-    void OpenDev_Setting();
-    void OpenTeshuzhi();
+    void OpenSysInfo();//打开系统配置
+    void OpenNeworkSetting();//打开网络设置
+    void OpenComDebug();//打开串口调试
+    void OpenBufa();//打开数据补发
+    void OpenMasterSet();//打开上位机设置
+    void OpenTimeSet();//打开时间设置
+    void OpenData_Query();//打开数据查询
+    void OpenDev_Setting();//打开设备配置
+    void OpenTeshuzhi();//打开特殊值
 
-    void onButtonTeDele(QString pFactor);
-    void onButtonTeSaved(QString pFactor);
-    void on_login_clicked();
-    void on_main_clicked();
-    void on_data_clicked();
-    void on_Login_clicked();
-    void on_Return_clicked();
-    void on_pushButtonQuery_clicked();
-    void on_pushButtonModify_clicked();
-    void on_confirmBtn_clicked();
-    void on_pushButton_Bufa_clicked();
-    void on_pushButton_setlocal_clicked();
-    void on_pushButton_setself_clicked();
-    void on_pushButton_clicked();
-    void on_pushButton_3_clicked();
-    void on_pushButtonFind_clicked();
-    void on_pushButtonExport_clicked();
-    void on_pushButton_AddDev_clicked();
-    void on_pushButton_Addf_clicked();
-    void on_pushButton_Updatef_clicked();
-    void on_pushButton_AddFresh_clicked();
-    void on_pushButton_AddT_clicked();
-    void on_pushButton_UpdateT_clicked();
-    void onButtonDevParam(QString pFactorKey);
-    void onButtonUpDele(QString ipaddr);
-    void onButtonUpSaved(QString ipaddr);
-    void on_pushButton_ReturnDev_clicked();
+    void onButtonTeDele(QString pFactor);//特殊值删除
+    void onButtonTeSaved(QString pFactor);//特殊值保存
+    void on_login_clicked();//用户登录1
+    void on_main_clicked();//主界面
+    void on_data_clicked();//实时数据
+    void on_Login_clicked();//用户登录2
+    void on_Return_clicked();//返回实时数据界面
+    void on_pushButtonQuery_clicked();//数据查询
+    void on_pushButtonModify_clicked();//修改本机IP
+    void on_confirmBtn_clicked();//串口调试：确认
+    void on_pushButton_Bufa_clicked();//数据补发
+    void on_pushButton_setlocal_clicked();//设置本机时间
+    void on_pushButton_setself_clicked();//设置自定义时间
+    void on_pushButton_clicked();//新增上位机
+    void on_pushButton_3_clicked();//编辑上位机
+    void on_pushButtonFind_clicked();//查询
+    void on_pushButtonExport_clicked();//导出
+    void on_pushButton_AddDev_clicked();//新增设备
+    void on_pushButton_Addf_clicked();//新增因子
+    void on_pushButton_Updatef_clicked();//修改因子
+    void on_pushButton_AddFresh_clicked();//编辑设备
+    void on_pushButton_AddT_clicked();//新增特殊值
+    void on_pushButton_UpdateT_clicked();//修改特殊值
+    void onButtonDevParam(QString pFactorKey);//配置设备参数
+    void onButtonUpDele(QString ipaddr);//删除上位机
+    void onButtonUpSaved(QString ipaddr);//保存上位机配置
+    void on_pushButton_ReturnDev_clicked();//返回设备配置
 
-    void onButtonFaEdit(QString id);
-    void onButtonFaDele(QString id);
+    void onButtonFaEdit(QString id);//编辑设备因子
+    void onButtonFaDele(QString id);//删除设备因子
 
-    void onReceiveDeviceCMDCtrl();
-    void openModbus();
+    void onReceiveDeviceCMDCtrl();//没用
+    void openModbus();//打开Modbus配置窗口
 
 signals:
     /* 工人开始工作（做些耗时的操作 ） */

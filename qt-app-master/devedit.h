@@ -1,5 +1,7 @@
-#ifndef DEVEDIT_H
+﻿#ifndef DEVEDIT_H
 #define DEVEDIT_H
+
+//编辑设备参数
 
 #include <QDialog>
 #include "common.h"
@@ -28,9 +30,9 @@ public:
     explicit DevEdit(QString dev_id,QWidget *parent = nullptr);
     ~DevEdit();
 
-    void DevEdit_Init(QString dev_id);
-    void loadParamtable(QString dev_params);
-    QString builddevparams();
+    void DevEdit_Init(QString dev_id);//初始化函数：读取swagger接口的数据，填入相应的空间中
+    void loadParamtable(QString dev_params);//读取不同的设备参数
+    QString builddevparams();//建立设备参数
     void writeinfile(QString filepath,QJsonObject &obj);
     void writeloglocal(QString);
 
