@@ -28,7 +28,7 @@ public:
     bool Conf_FactorUpdate(QString pKey);
 
     void writeinLocalJson(QString filename,QJsonObject &obj,QString pKey);
-    void writeDevParams();
+    void writeDevParams(QJsonObject &mainObj);
 signals:
     void editSuccess();
 
@@ -41,7 +41,7 @@ private:
 
     QString m_FcodeID;
     QString m_Fcode;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 
 };
 

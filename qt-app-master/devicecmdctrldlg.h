@@ -96,7 +96,7 @@ private:
     SerialPort *serialPort = nullptr;
     QGridLayout l1,l2,l3,l4;
     QStringList list;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 
 
 };

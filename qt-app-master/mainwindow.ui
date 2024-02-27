@@ -173,7 +173,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>9</number>
+     <number>14</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -3555,132 +3555,17 @@ padding-top:1px;
      </widget>
     </widget>
     <widget class="QWidget" name="page_9">
-     <widget class="QLabel" name="label_32">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>13</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-width: 2px;
-border-style: solid;</string>
-      </property>
-      <property name="text">
-       <string>结束时间：</string>
-      </property>
-     </widget>
      <widget class="Line" name="line_2">
       <property name="geometry">
        <rect>
         <x>129</x>
         <y>10</y>
         <width>20</width>
-        <height>571</height>
+        <height>591</height>
        </rect>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="factorBox">
-      <property name="geometry">
-       <rect>
-        <x>790</x>
-        <y>10</y>
-        <width>221</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_38">
-      <property name="geometry">
-       <rect>
-        <x>147</x>
-        <y>13</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-width: 2px;
-border-style: solid;</string>
-      </property>
-      <property name="text">
-       <string>开始时间：</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_44">
-      <property name="geometry">
-       <rect>
-        <x>392</x>
-        <y>20</y>
-        <width>16</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>-</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButtonExport">
-      <property name="geometry">
-       <rect>
-        <x>1150</x>
-        <y>10</y>
-        <width>101</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(52, 101, 164);</string>
-      </property>
-      <property name="text">
-       <string>导出</string>
       </property>
      </widget>
      <widget class="QProgressBar" name="progressBar">
@@ -3705,97 +3590,13 @@ border-style: solid;</string>
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>70</y>
+        <y>110</y>
         <width>1101</width>
-        <height>421</height>
+        <height>381</height>
        </rect>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(238, 238, 236);</string>
-      </property>
-     </widget>
-     <widget class="QDateTimeEdit" name="dateTimeEdit">
-      <property name="geometry">
-       <rect>
-        <x>227</x>
-        <y>13</y>
-        <width>161</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="displayFormat">
-       <string>yyyy-MM-dd HH:mm</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="comboBox_3">
-      <property name="geometry">
-       <rect>
-        <x>790</x>
-        <y>10</y>
-        <width>221</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QComboBox {
-    border: 1px solid #4C84C3;
-	width: 181px;
-	height: 40px;
-	font-size: 15px;
-	font-family: Source Han Sans CN;
-	background-color: rgb(211, 215, 207);
-	font-weight: 400;
-	opacity: 1;
-	border-radius: 0px;
-}
- 
-QComboBox QAbstractItemView {
-    border-radius:  0px;  
-	background-color: rgb(233, 185, 110);
-	border:1px solid #4C84c3;
- 	selection-background-color: #2019DC;
-}
- 
-QComboBox QAbstractItemView::item {
-    height: 40px;   
-	border: none;
-}
- 
-</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButtonFind">
-      <property name="geometry">
-       <rect>
-        <x>1046</x>
-        <y>10</y>
-        <width>101</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(52, 101, 164);</string>
-      </property>
-      <property name="text">
-       <string>查询</string>
-      </property>
-     </widget>
-     <widget class="QDateTimeEdit" name="dateTimeEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>480</x>
-        <y>12</y>
-        <width>161</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="displayFormat">
-       <string>yyyy-MM-dd HH:mm</string>
       </property>
      </widget>
      <widget class="Line" name="line_3">
@@ -3807,52 +3608,11 @@ QComboBox QAbstractItemView::item {
         <height>20</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255,0);</string>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_46">
-      <property name="geometry">
-       <rect>
-        <x>650</x>
-        <y>10</y>
-        <width>131</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-width: 2px;
-border-style: solid;</string>
-      </property>
-      <property name="text">
-       <string>平台地址列表：</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_48">
-      <property name="geometry">
-       <rect>
-        <x>700</x>
-        <y>10</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-width: 2px;
-border-style: solid;</string>
-      </property>
-      <property name="text">
-       <string>因子列表：</string>
       </property>
      </widget>
      <widget class="Line" name="line_4">
@@ -3872,9 +3632,9 @@ border-style: solid;</string>
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>80</y>
+        <y>70</y>
         <width>139</width>
-        <height>411</height>
+        <height>421</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -3972,7 +3732,7 @@ border-style: solid;</string>
       <property name="geometry">
        <rect>
         <x>150</x>
-        <y>510</y>
+        <y>520</y>
         <width>1101</width>
         <height>71</height>
        </rect>
@@ -4170,22 +3930,332 @@ border-style: solid;</string>
        <string/>
       </property>
      </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>0</y>
+        <width>1172</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="0,0,0,0,1,0,1,0,0,0">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <item>
+        <widget class="QPushButton" name="setStartDT">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>开始时间</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateTimeEdit" name="dateTimeEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Ubuntu</family>
+           <pointsize>12</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QDateTimeEdit{
+	
+	font: 12pt &quot;Ubuntu&quot;;
+
+
+}
+
+QDateTimeEdit::down-button{
+
+	width:30px;
+
+}
+
+QDateTimeEdit::up-button{
+
+	width:30px;
+
+}</string>
+         </property>
+         <property name="wrapping">
+          <bool>true</bool>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::UpDownArrows</enum>
+         </property>
+         <property name="displayFormat">
+          <string>yyyy-MM-dd HH:mm</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="setEndDT">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>截止时间</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateTimeEdit" name="dateTimeEdit_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Ubuntu</family>
+           <pointsize>12</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QDateTimeEdit{
+	
+	font: 12pt &quot;Ubuntu&quot;;
+
+
+}
+
+QDateTimeEdit::down-button{
+
+	width:30px;
+
+}
+
+QDateTimeEdit::up-button{
+
+	width:30px;
+
+}</string>
+         </property>
+         <property name="wrapping">
+          <bool>true</bool>
+         </property>
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::UpDownArrows</enum>
+         </property>
+         <property name="displayFormat">
+          <string>yyyy-MM-dd HH:mm</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_46">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-width: 2px;
+border-style: solid;</string>
+         </property>
+         <property name="text">
+          <string>平台地址</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_48">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border-width: 2px;
+border-style: solid;</string>
+         </property>
+         <property name="text">
+          <string>因子名称</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="factorBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	font-size: 15px;
+	font-family: Source Han Sans CN;
+	background-color: rgb(211, 215, 207);
+	font-weight: 400;
+	opacity: 1;
+	border-radius: 0px;
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonFind">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(52, 101, 164);</string>
+         </property>
+         <property name="text">
+          <string>查询</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonExport">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(52, 101, 164);</string>
+         </property>
+         <property name="text">
+          <string>导出</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <zorder>layoutWidget</zorder>
      <zorder>tableWidget</zorder>
      <zorder>groupBox_10</zorder>
      <zorder>groupBox_9</zorder>
-     <zorder>label_44</zorder>
-     <zorder>label_32</zorder>
      <zorder>line_2</zorder>
-     <zorder>factorBox</zorder>
-     <zorder>label_38</zorder>
-     <zorder>pushButtonExport</zorder>
-     <zorder>dateTimeEdit</zorder>
-     <zorder>comboBox_3</zorder>
-     <zorder>pushButtonFind</zorder>
-     <zorder>dateTimeEdit_2</zorder>
      <zorder>line_3</zorder>
-     <zorder>label_46</zorder>
-     <zorder>label_48</zorder>
      <zorder>line_4</zorder>
      <zorder>progressBar</zorder>
      <zorder>label_3</zorder>

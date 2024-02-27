@@ -16,11 +16,7 @@ TeshuzhiAdd::TeshuzhiAdd(QWidget *parent) :
 
 TeshuzhiAdd::~TeshuzhiAdd()
 {
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
     delete ui;
 }
 

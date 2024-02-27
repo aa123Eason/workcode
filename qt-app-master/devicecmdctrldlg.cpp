@@ -25,11 +25,7 @@ DeviceCMDCtrlDlg::~DeviceCMDCtrlDlg()
 //    muartThread->deleteLater();
     serialPort->deleteLater();
 
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
 
     delete ui;
 }
@@ -95,7 +91,7 @@ void DeviceCMDCtrlDlg::init()
 
     ui->tmck1->setChecked(Qt::Checked);
 
-kb = new localKeyboard(this);
+//kb = new localKeyboard(this);
 
 }
 
@@ -273,11 +269,7 @@ void DeviceCMDCtrlDlg::connectevent()
     connect(ui->btn_quit,&QPushButton::clicked,[=]()
     {
         ui->loopread->setChecked(false);
-        if(kb)
-        {
-            kb->close();
-            kb->deleteLater();
-        }
+
         this->close();
     });
 

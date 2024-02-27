@@ -9,7 +9,7 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
     ui->setupUi(this) ;
 
     qDebug() << "id=--***********-->>" <<id;
-    kb = new localKeyboard(this);
+//    kb = new localKeyboard(this);
     m_FcodeID = id.split("-")[0];
     m_Fcode = id.split("-")[1];
     FacEdit_Init(id);
@@ -38,16 +38,13 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
 
 FacEdit::~FacEdit()
 {
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
     delete ui;
 }
 
 void FacEdit::FacEdit_Init(QString id)
 {
+    qDebug()<<__LINE__<<"FacEdit_Init:"<<id<<endl;
     ui->comboBox_fst->clear();
     ui->comboBox_fcode->clear();
 
@@ -78,17 +75,23 @@ void FacEdit::FacEdit_Init(QString id)
 
     if(pClient.get(DCM_DEVICE_FACTOR,jsonObjectFa))
     {
-        //qDebug() << "jsonObjectFa===>>" << jsonObjectFa;
+        qDebug() << "jsonObjectFa===>>" << jsonObjectFa;
 
         QJsonObject::const_iterator it = jsonObjectFa.constBegin();
         QJsonObject::const_iterator end = jsonObjectFa.constEnd();
         while(it != end)
         {
             QJsonObject pJsonFac = it.value().toObject();
-            //qDebug() << "**********" << it.key();
-            if(pJsonFac.value("id").toString() == id)
+            qDebug() << " 1: " << id <<" 2: "<< it.key();
+//            QString refid;
+//            if(pJsonFac.value("id").toString().split("-").count()>1)
+//            {
+//                refid = pJsonFac.value("id").toString().split("-")[0];
+//            }
+            if(it.key() == id)
             {
-                //qDebug() << "&&&&&&&&&&&" <<pJsonFac.value("factor_code").toString();
+//                qDebug() << "**********=" << id;
+                qDebug() << "&&&&&&&&&&&" <<pJsonFac.value("factor_code").toString();
 
                 bool calc_type = pJsonFac.value("calc_type").toInt() == 0;
                 if(!calc_type)
@@ -133,7 +136,7 @@ void FacEdit::FacEdit_Init(QString id)
 
                 int index = -1;
                 index = ui->comboBox_fcode->findData(pFcode);
-                //qDebug() << "index==>" << index;
+                qDebug() << "index==>" << index;
                 if(index>=0) ui->comboBox_fcode->setCurrentIndex(index);
                 else{
                     ui->comboBox_fcode->setEditable(true);
@@ -318,7 +321,7 @@ void FacEdit::on_pushButton_Saved_clicked()
     if(ui->radioButton_CXBJ->isChecked()) obj.insert(QLatin1String("is_continuous_alarm_over_standard"), 1);
     else obj.insert(QLatin1String("is_continuous_alarm_over_standard"), 0);
 
-    qDebug() << "obj==>>" << obj;
+    qDebug() << "oriobj==>>" << obj;
 
 
     obj1 = obj;
@@ -386,7 +389,11 @@ void FacEdit::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
     QJsonObject jObj = jDoc.object();
     if(!jObj.contains("factors"))
     {
-        jObj.insert("factors",obj);
+        QString keycode = obj.value("device_id").toString()+"-"+obj.value("factor_code").toString();
+        QJsonObject newObj;
+        newObj.insert(keycode,obj);
+
+        jObj.insert("factors",newObj);
     }
     else
     {
@@ -422,30 +429,33 @@ void FacEdit::writeinLocalJson(QString filename,QJsonObject &obj,QString pKey)
         jObj.insert("factors",jFacs);
     }
 
-    writeDevParams();
+    qDebug()<<"factors:"<<jObj<<endl;
 
 
 
-    QJsonDocument jDoc1;
-    jDoc1.setObject(jObj);
+
+
+
+    QMessageBox::information(this,"提示","因子数据已同步到本地JSON,文件路径:\n"+filename);
+
+    QJsonDocument jDocW;
+    jDocW.setObject(jObj);
+
+
     QFile file1(filename);
     file1.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
-    //提示，因子数据已同步到本地JSON,文件路径
-    if(file1.write(jDoc1.toJson()))
-    {
-        QMessageBox::information(this,"提示","因子数据已同步到本地JSON,文件路径:\n"+filename);
-    }
-    else
-    {
-        QMessageBox::warning(this,"提示","因子数据未能同步到本地JSON,文件路径:\n"+filename);
-    }
-
+    file1.write(jDocW.toJson());
+    file1.flush();
     file1.close();
+
+    writeDevParams(jObj);
+
+
     byt.clear();
     file.close();
 }
 
-void FacEdit::writeDevParams()
+void FacEdit::writeDevParams(QJsonObject &mainObj)
 {
     QString devparams;
     QString filename = "/home/rpdzkj/tmpFiles/"+g_Device_ID+".json";
@@ -459,22 +469,42 @@ void FacEdit::writeDevParams()
     byt.append(file.readAll());
     file.flush();
 
-    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
-    QJsonObject jObj = jDoc.object();
-    QJsonObject jDev = jObj.value("device").toObject();
-    QJsonObject jFacs = jObj.value("factors").toObject();
-
-    byt.clear();
     file.close();
+
+    QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+    byt.clear();
+    QJsonObject jObj = jDoc.object();
+    QJsonObject jDev;
+    QJsonObject jFacs;
+//    if(!jObj.contains("device"))
+//    {
+//        jObj.insert("device",mainObj.value("device").toObject());
+//    }
+
+//    if(!jObj.contains("factors"))
+//    {
+//        jObj.insert("factors",mainObj.value("factors").toObject());
+//    }
+
+
+    jDev = jObj.value("device").toObject();
+    jFacs = jObj.value("factors").toObject();
+    qDebug()<<__LINE__<<"jDev==>"<<jDev<<endl;
+    qDebug()<<__LINE__<<"jFacs==>"<<jFacs<<endl;
+
 
     QJsonObject::iterator itFac = jFacs.begin();
     int num=0;
     int numFacs = jFacs.count();
+    qDebug()<<__LINE__<<numFacs<<endl;
     while(itFac != jFacs.end())
     {
         QString alias = QString::number(num+1);
         QString pKey = itFac.key();
+
         QJsonObject jValue = itFac.value().toObject();
+
+        qDebug()<<__LINE__<<"["<<alias<<"]:"<<pKey<<":"<<jValue<<endl;
         if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())
         {
             devparams += "analog_max_"+alias+"="+QString::number(jValue.value(CONF_ANALOG_PARAM_AU1).toDouble(),'f',2)+",";
@@ -491,6 +521,7 @@ void FacEdit::writeDevParams()
         num++;
         itFac++;
     }
+    qDebug()<<__LINE__<<"devPARAMS==>"<<devparams<<endl;
 
     if(jDev.value("dev_type").toString()=="analog")
     {
@@ -501,17 +532,18 @@ void FacEdit::writeDevParams()
         jDev.insert("dev_params",devparams);
     }
 
-    if(jDev.value("dev_type").toString()=="analog")
-    {
-        if(jDev.contains("dev_params"))
-        {
-            jDev.remove("dev_params");
-        }
-        jDev.insert("dev_params",devparams);
-    }
+//    if(jDev.value("dev_type").toString()=="analog")
+//    {
+//        if(jDev.contains("dev_params"))
+//        {
+//            jDev.remove("dev_params");
+//        }
+//        jDev.insert("dev_params",devparams);
+//    }
 
     jObj.remove("device");
     jObj.insert("device",jDev);
+    qDebug()<<__LINE__<<"Dev:"<<jDev<<endl;
 
     QJsonDocument jDocW;
     jDocW.setObject(jObj);
@@ -522,6 +554,8 @@ void FacEdit::writeDevParams()
     file1.write(jDocW.toJson());
     file1.flush();
     file1.close();
+
+
 }
 
 bool FacEdit::Conf_FactorUpdate(QString pKey)

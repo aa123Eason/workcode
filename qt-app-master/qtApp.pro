@@ -26,7 +26,6 @@ SOURCES += \
     facedit.cpp \
     factoradd.cpp \
     httpclinet.cpp \
-    localkeyboard.cpp \
     main.cpp \
     mainwindow.cpp \
     rclogdlg.cpp \
@@ -40,7 +39,8 @@ SOURCES += \
     uartThread/uartthread.cpp \
     devicecmdctrldlg.cpp \
     serial.cpp \
-    serialport.cpp
+    serialport.cpp \
+    selectdtdlg.cpp
 
 HEADERS += \
     addrcdevice.h \
@@ -54,7 +54,6 @@ HEADERS += \
     facedit.h \
     factoradd.h \
     httpclinet.h \
-    localkeyboard.h \
     mainwindow.h \
     rclogdlg.h \
     teshuzhiadd.h \
@@ -67,7 +66,8 @@ HEADERS += \
     uartThread/uartthread.h \
     devicecmdctrldlg.h \
     serial.h \
-    serialport.h
+    serialport.h \
+    selectdtdlg.h
 
 FORMS += \
     addrcdevice.ui \
@@ -79,14 +79,14 @@ FORMS += \
     editrcdevice.ui \
     facedit.ui \
     factoradd.ui \
-    localkeyboard.ui \
     mainwindow.ui \
     rclogdlg.ui \
     teshuzhiadd.ui \
     teshuzhidele.ui \
     upsetadd.ui \
     devicecmdctrldlg.ui \
-    usbupdatedlg.ui
+    usbupdatedlg.ui \
+    selectdtdlg.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

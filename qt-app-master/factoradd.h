@@ -48,7 +48,7 @@ private:
     QString m_DevType;
 
     QButtonGroup *GroupF1 = nullptr;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 };
 
 #endif // FACTORADD_H

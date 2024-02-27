@@ -57,7 +57,7 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     ui->comboBox_falias->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fcode->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    kb = new localKeyboard(this);
+//    kb = new localKeyboard(this);
     connect(ui->keyboard,&QPushButton::clicked,this,[=]()
     {
 
@@ -86,11 +86,7 @@ FactorAdd::~FactorAdd()
 {
     if(GroupF1) GroupF1->deleteLater();
 
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
 
     delete ui;
 }

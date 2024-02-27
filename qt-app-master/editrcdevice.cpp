@@ -162,7 +162,7 @@ void EditRCDevice::init()
 
     ui->editfacBox->setEnabled(false);
     ui->e_modbusindex->installEventFilter(this);
-    kb = new localKeyboard(this);
+//    kb = new localKeyboard(this);
 
     QMessageBox::about(this,"操作提示","指定串口号，modbus设备序号，"\
                        "为四个指令指定不同的时间数字组合，"\

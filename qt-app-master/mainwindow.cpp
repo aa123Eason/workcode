@@ -15,6 +15,8 @@ QMap<QString,bool> avaPortStateMap;
 QMap<QString,SerialPort *> avaSeriPorts;
 bool testModeState = false;
 QString logStr;
+QString m_UDiskPath = "/home/rpdzkj";
+
 
 static char ConvertHexChar(char c);
 
@@ -139,11 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
     /* 打断线程再退出 */
     m_httpWorker->stopWork();
     m_thread.quit();
@@ -304,6 +302,12 @@ ui->device_table->setShowGrid(true);
 
 void MainWindow::setDeviceTableContent()
 {
+    QDir dir;
+    if(!dir.exists(QApplication::applicationDirPath()+"/docu"))
+    {
+        dir.mkdir(QApplication::applicationDirPath()+"/docu");
+    }
+
     QString cmdinfofile = QApplication::applicationDirPath() + CMDINFO;
 
     qDebug()<<__LINE__<<__FUNCTION__<<endl;
@@ -563,15 +567,15 @@ void MainWindow::Widget_Init()
 
     ui->comboBox->setView(new QListView(this));
     ui->comboBox->setView(new QListView(this));
-    kb = new localKeyboard(this);
+//    kb = new localKeyboard(this);
     ui->hexYes->setChecked(true);
     hexGroup = new QButtonGroup(this);
     hexGroup->addButton(ui->hexYes, 0);
     hexGroup->addButton(ui->hexNo, 1);
 
-    ui->dateTimeEdit->setCalendarPopup(true);        // 日历
+    ui->dateTimeEdit->setCalendarPopup(false);        // 日历
     ui->dateTimeEdit->setDisplayFormat(QLatin1String("yyyy-MM-dd hh:mm"));  //格式
-    ui->dateTimeEdit_2->setCalendarPopup(true);        // 日历
+    ui->dateTimeEdit_2->setCalendarPopup(false);        // 日历
     ui->dateTimeEdit_2->setDisplayFormat(QLatin1String("yyyy-MM-dd hh:mm"));  //格式
 
     connect(ui->checkBox, SIGNAL(clicked()), this, SLOT(ClearTable()));
@@ -617,11 +621,7 @@ void MainWindow::Widget_Init()
     {
        if(QMessageBox::Yes == QMessageBox::question(this,"提示","是否关闭软件（Y/N)？",QMessageBox::Yes,QMessageBox::No))
        {
-           if(kb)
-           {
-               kb->close();
-               kb->deleteLater();
-           }
+
            this->close();
        }
     });
@@ -742,6 +742,28 @@ void MainWindow::Widget_Init()
 
 //    connect(ui->pushButtonFind,&QPushButton::clicked,this,&MainWindow::on_pushButtonFind_clicked);
 
+//    connect(ui->setStartDT,&QPushButton::clicked,this,[=]()
+//    {
+//        SelectDTDlg *sd = new SelectDTDlg();
+//        connect(sd,&SelectDTDlg::senddt,this,[=](QDateTime &dt)
+//        {
+//            ui->dateTimeEdit->setDateTime(dt);
+//        });
+//        sd->show();
+//    });
+
+//    connect(ui->setEndDT,&QPushButton::clicked,this,[=]()
+//    {
+//        SelectDTDlg *sd = new SelectDTDlg();
+//        connect(sd,&SelectDTDlg::senddt,this,[=](QDateTime &dt)
+//        {
+//            ui->dateTimeEdit_2->setDateTime(dt);
+//        });
+//        sd->show();
+//    });
+
+
+
 }
 
 void MainWindow::ClearTable()
@@ -853,6 +875,8 @@ void MainWindow::installEvents() {
     ui->pushButton_devicecmdctrl->installEventFilter(this);
     ui->modbus->installEventFilter(this);
 //    ui->pushButtonFind->installEventFilter(this);
+    ui->dateTimeEdit->installEventFilter(this);
+    ui->dateTimeEdit_2->installEventFilter(this);
 }
 
 //事件过滤器
@@ -945,7 +969,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                         return false;
                     }
                     qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
-                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    OpenData_Query();
+//                    ui->stackedWidget->setCurrentWidget(ui->page_9);
                     ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
@@ -970,7 +995,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                         return false;
                     }
                     qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
-                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    OpenData_Query();
                     ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
@@ -999,7 +1024,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                         return false;
                     }
                     qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
-                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    OpenData_Query();
                     ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
@@ -1028,7 +1053,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                         return false;
                     }
                     qDebug()<<__LINE__<<"Fac==>"<<CODE_list.at(i)->text()<<endl;
-                    ui->stackedWidget->setCurrentWidget(ui->page_9);
+                    OpenData_Query();
                     ui->factorBox->setCurrentText(CODE_list.at(i)->text()+"-"+NAME_list.at(i)->text());
                     ui->dateTimeEdit->setDateTime((QDateTime::currentDateTime()).addSecs(-3600));
                     ui->dateTimeEdit_2->setDateTime(QDateTime::currentDateTime());
@@ -1071,6 +1096,36 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 //            }
 //        }
 //        return false;
+//    }
+
+//    if(obj == ui->dateTimeEdit) {
+//        if (event->type() == QEvent::MouseButtonDblClick) {
+//            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+
+//            if(mouseEvent->button() == Qt::LeftButton) {
+//                SelectDTDlg *sd = new SelectDTDlg();
+//                connect(sd,&SelectDTDlg::senddt,this,[=](QDateTime &dt)
+//                {
+//                    ui->dateTimeEdit->setDateTime(dt);
+//                });
+//                sd->show();
+//            }
+//        }
+//    }
+
+//    if(obj == ui->dateTimeEdit_2) {
+//        if (event->type() == QEvent::MouseButtonDblClick) {
+//            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event); // 事件转换
+
+//            if(mouseEvent->button() == Qt::LeftButton) {
+//                SelectDTDlg *sd = new SelectDTDlg();
+//                connect(sd,&SelectDTDlg::senddt,this,[=](QDateTime &dt)
+//                {
+//                    ui->dateTimeEdit_2->setDateTime(dt);
+//                });
+//                sd->show();
+//            }
+//        }
 //    }
 
     return QWidget::eventFilter(obj, event);
@@ -1526,6 +1581,48 @@ void MainWindow::deletecurrid(QString deviceid,QString facname)
     file1.write(jDoc1.toJson());
     file1.close();
 
+}
+
+void MainWindow::buildLocalJson()
+{
+    httpclinet h;
+    QJsonObject jObj,jDevice;
+    if(h.get(DCM_DEVICE,jObj))
+    {
+//        qDebug() << "inputobj==>>" << obj<<endl;
+        qDebug() << "outputobj==>>" << jObj<<endl;
+
+        QJsonObject::iterator it = jObj.begin();
+        QJsonObject::iterator end = jObj.end();
+        while(it != end)
+        {
+            if(!jDevice.contains("device"))
+            {
+                jDevice.insert("device",jObj.value(it.key()).toObject());
+            }
+            if(!it.key().isEmpty())
+            {
+                QString filestr = "/home/rpdzkj/tmpFiles/"+it.key()+".json";
+                qDebug()<<__LINE__<<filestr<<endl;
+
+                QFile file(filestr);
+                QJsonDocument jDoc;
+                jDoc.setObject(jDevice);
+                file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+                file.write(jDoc.toJson());
+                file.close();
+            }
+
+
+
+            it++;
+        }
+
+
+
+
+
+    }
 }
 
 void MainWindow::writeDevParams()
@@ -2484,6 +2581,7 @@ ui->tableWidget_Upload->setTextElideMode(Qt::ElideNone);
 
 bool MainWindow::DevGui_Init()
 {
+//    buildLocalJson();
     disconnect(m_SignalMapper_DevD,SIGNAL(mapped(QString)),this,SLOT(onButtonDevDele(QString)));
     disconnect(m_SignalMapper_DevF,SIGNAL(mapped(QString)),this,SLOT(onButtonDevFactor(QString)));
     disconnect(m_SignalMapper_DevM,SIGNAL(mapped(QString)),this,SLOT(onButtonDevMore(QString)));
@@ -2937,8 +3035,98 @@ void MainWindow::on_pushButtonFind_clicked()
 
 void MainWindow::on_pushButtonExport_clicked()
 {
-    QMessageBox::about(NULL, "提示", "<font color='black'>暂不支持该功能！</font>");
-    return;
+//    QMessageBox::about(NULL, "提示", "<font color='black'>暂不支持该功能！</font>");
+    //选择文件夹
+    QString curPath=QCoreApplication::applicationDirPath(); //获取应用程序的路径
+    //  QString curPath=QDir::currentPath();//获取系统当前目录
+    //调用打开文件对话框打开一个文件
+
+    QString dlgTitle="选择一个目录"; //对话框标题
+    QString selectedDir=QFileDialog::getExistingDirectory(this,dlgTitle,curPath,QFileDialog::ShowDirsOnly);
+    m_UDiskPath = selectedDir;
+    int page = 0;
+//    ui->progressBar->setValue(0);
+//    ui->progressBar->show();
+    while(page<m_TotalPage)
+    {
+        QString str = "开始导出第"+QString::number(page)+"页，一共"+QString::number(m_TotalPage)+"页";
+        ui->resShow->setText(str);
+        exportData(page);
+        ui->progressBar->setValue(page/m_TotalPage*100);
+        ui->progressBar->show();
+        usleep(5000);
+
+        if(m_TotalPage>1)
+            ShowNextPage();
+        page++;
+    }
+
+    ui->progressBar->setValue(100);
+    ui->progressBar->hide();
+    QString path;
+    QString pExportType;
+    if(ui->checkBox->isChecked())
+    {
+        path=QString("%5/Real-time-data_%1_%2_%3%4")
+                                .arg(ui->factorBox->currentText())
+                                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(".xlsx")
+                                .arg(m_UDiskPath);
+    }
+    else if(ui->checkBox_2->isChecked())
+    {
+        pExportType = "minute";
+        path=QString("%5/History-Data_%1_%2_%3%4")
+                                .arg(pExportType)
+                                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(".xlsx")
+                                .arg(m_UDiskPath);
+    }
+    else if(ui->checkBox_4->isChecked())
+    {
+        pExportType = "hour";
+        path=QString("%5/History-Data_%1_%2_%3%4")
+                                .arg(pExportType)
+                                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(".xlsx")
+                                .arg(m_UDiskPath);
+    }
+    else if(ui->checkBox_3->isChecked())
+    {
+        pExportType = "daily";
+        path=QString("%5/History-Data_%1_%2_%3%4")
+                                .arg(pExportType)
+                                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(".xlsx")
+                                .arg(m_UDiskPath);
+    }
+    else if(ui->checkBox_9->isChecked())
+    {
+        pExportType = "month";
+        path=QString("%5/History-Data_%1_%2_%3%4")
+                                .arg(pExportType)
+                                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                                .arg(".xlsx")
+                                .arg(m_UDiskPath);
+    }
+    else if(ui->checkBox_8->isChecked())
+    {
+        path=QString("%5/Real-time-data_%1_%2_%3%4")
+                        .arg(ui->comboBox_3->currentText())
+                        .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(".xlsx")
+                        .arg(m_UDiskPath);
+    }
+
+    xlsx.saveAs(path);
+//    ui->resShow->setText(path);
+    QMessageBox::about(this,"通知", "数据已保存:"+path);
 
 //    m_XlsxFactorCols = 0;
 //    m_HisFactorList.clear();
@@ -2963,11 +3151,11 @@ void MainWindow::on_pushButtonExport_clicked()
 
 //    if(m_UDiskPath != "")
 //    {
-//        m_ExportPage = 0;
-//        m_ExportProgress = 0;
+//        int m_ExportPage = 0;
+//        int m_ExportProgress = 0;
 //        ui->pushButtonExport->setEnabled(false);
-//        ui->progressBar->setValue(0);
-//        ui->progressBar->show();
+////        ui->progressBar->setValue(0);
+////        ui->progressBar->show();
 
 //        if(ui->checkBox->isChecked())
 //        {
@@ -2989,11 +3177,13 @@ void MainWindow::on_pushButtonExport_clicked()
 //        {
 //            this->qingqiuHisData(m_ExportPage,"month");
 //        }
+//        else if(ui->checkBox_8->isChecked())
+//        {
+//            this->qingqiuMessage(m_ExportPage);
+//        }
+
 //    }
-//    else {
-//        msgBox::information(QStringLiteral("通知"), QStringLiteral("未监测到U盘!"));
-//        return;
-//    }
+
 }
 
 void MainWindow::ShowNextPage()
@@ -3189,11 +3379,12 @@ void MainWindow::ShowLastPage()
 
 void MainWindow::qingqiu(int page)
 {
-    if(ui->pushButtonExport->isEnabled())
-    {
-        ui->progressBar->setValue(0);
-        ui->progressBar->show();
-    }
+//    QXlsx::Document xlsx;
+//    if(ui->pushButtonExport->isEnabled())
+//    {
+//        ui->progressBar->setValue(0);
+//        ui->progressBar->show();
+//    }
 
     m_CurPage = page;
 
@@ -3229,45 +3420,63 @@ void MainWindow::qingqiu(int page)
         if(ui->pushButtonExport->isEnabled())
         {
             ui->progressBar->setValue(70+qrand()%9);
-            usleep(200000);
+//            usleep(200000);
             this->setTableHeader();
             this->setTableContents(m_history_rtd);
         }
-//        else
-//        {
-//            // qDebug() << "m_ExportPage=====>" << m_ExportPage;
-//            Export(history_real_time_data);
-//            if((m_ExportPage+1)!= gTotalPage)                               //修改点
-//            {
-//                qingqiu(m_ExportPage++);
-//                // qDebug() << "------------>>>" << (m_ExportPage*100)/gTotalPage;
-//                ui->progressBar->setValue((m_ExportPage*100)/gTotalPage);
-//            }
-//            else    //export done
-//            {
+        else
+        {
+            int m_ExportPage = m_CurPage;
+             qDebug() << "m_ExportPage=====>" << m_ExportPage;
+            exportData(m_ExportPage);
+            if((m_ExportPage+1)!= m_TotalPage)                               //修改点
+            {
+                qingqiu(m_ExportPage++);
+                // qDebug() << "------------>>>" << (m_ExportPage*100)/m_TotalPage;
+                ui->progressBar->setValue((m_ExportPage*100)/m_TotalPage);
+            }
+            else    //export done
+            {
 //                is_first = 1;   // for table head
 
-//                QString path=QString("%5/Real-time-data_%1_%2_%3%4")
-//                        .arg(ui->factorBox->currentText())
-//                        .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
-//                        .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
-//                        .arg(QLatin1String(".xlsx"))
-//                        .arg(m_UDiskPath);
-//                xlsx.saveAs(path);
+                QString path=QString("%5/Real-time-data_%1_%2_%3%4")
+                        .arg(ui->factorBox->currentText())
+                        .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(QLatin1String(".xlsx"))
+                        .arg(m_UDiskPath);
+                xlsx.saveAs(path);
 
-//                ui->progressBar->setValue(100);
-//                usleep(200000);
-//                ui->progressBar->hide();
-//                ui->pushButtonExport->setEnabled(true);
-//                msgBox::information(QStringLiteral("通知"), QStringLiteral("数据已保存到U盘!"));
-//            }
-//        }
+                ui->progressBar->setValue(100);
+//                usleep(5000);
+                ui->progressBar->hide();
+                ui->pushButtonExport->setEnabled(true);
+                QMessageBox::about(this,"通知", "数据已保存:"+path);
+            }
+        }
         return;
     }
     else
     {
         QMessageBox::about(NULL, "提示", "<font color='black'>获取实时数据失败！</font>");
         return;
+    }
+}
+
+void MainWindow::exportData(int curPage)
+{
+    int rows = ui->tableWidget->rowCount();
+    int cols = ui->tableWidget->columnCount();
+    QString tabletile = "Page "+QString::number(curPage+1);
+    xlsx.addSheet(tabletile);
+    for(int i=1;i<=rows;++i)
+    {
+        for(int j=1;j<=cols;++j)
+        {
+            if(ui->tableWidget->item(i-1,j-1)!=nullptr)
+                xlsx.write(i,j,ui->tableWidget->item(i-1,j-1)->text());
+
+        }
     }
 }
 
@@ -3280,6 +3489,14 @@ void MainWindow::setTableHeader()
     border-left-width:0px; border-right-width:1px; border-top-width:0px; border-bottom-width:1px; \
 background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 #525252); }"
 "QTableWidget{background-color:white;border:none;}");
+
+    QScrollBar *vscollbar = new QScrollBar(Qt::Vertical,ui->tableWidget);
+    vscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
+    ui->tableWidget->setVerticalScrollBar(vscollbar);
+
+    QScrollBar *hscollbar = new QScrollBar(Qt::Horizontal,ui->tableWidget);
+    hscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
+    ui->tableWidget->setHorizontalScrollBar(hscollbar);
 
 //设置表头
 QStringList headerText;
@@ -3326,7 +3543,7 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
 
     ui->tableWidget->verticalHeader()->setVisible(false);//表头不可见
     ui->tableWidget->clearContents(); //只清除工作区，不清除表头
-    if(history_real_time_data.isEmpty()) return ;
+    if(history_real_time_data.isEmpty()) return;
 
     int cnt = history_real_time_data.size();
     ui->tableWidget->setRowCount(cnt);
@@ -3376,19 +3593,20 @@ void MainWindow::setTableContents(QJsonArray &history_real_time_data)
 //查询历史shishi数据
 void MainWindow::qingqiuHisData(int page, QString type)
 {
-    if(ui->pushButtonExport->isEnabled())
-    {
-        ui->progressBar->setValue(0);
-//        ui->progressBar->show();
-    }
+//    QXlsx::Document xlsx;
+//    if(ui->pushButtonExport->isEnabled())
+//    {
+//        ui->progressBar->setValue(0);
+////        ui->progressBar->show();
+//    }
 
     m_CurPage = page;
 
-    if(ui->pushButtonExport->isEnabled())
-    {
-        ui->progressBar->setValue(30+qrand()%9);
-        usleep(200000);
-    }
+//    if(ui->pushButtonExport->isEnabled())
+//    {
+//        ui->progressBar->setValue(30+qrand()%9);
+//        usleep(200000);
+//    }
 
     QJsonObject obj;
     obj.insert(QLatin1String("until"), ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd hh:mm")) );
@@ -3398,8 +3616,11 @@ void MainWindow::qingqiuHisData(int page, QString type)
 
     QJsonObject pJsonReply;
     httpclinet pClient;
+    ui->resShow->setText(type);
     if(pClient.post(DCM_HISTORY+type,obj,pJsonReply))
     {
+        qDebug() << "path: " << DCM_HISTORY+type;
+        qDebug() << "conf: " << obj;
         qDebug() << "post reply: " << pJsonReply;
 
         if(pJsonReply.contains(QLatin1String("data"))) {
@@ -3412,14 +3633,23 @@ void MainWindow::qingqiuHisData(int page, QString type)
                 QJsonArray resArray = arrayValue.toArray();
                 qDebug()<<__LINE__<<resArray<<endl;
                 int num = 0;
+                for(int i=0;i<m_history_data.count();++i)
+                {
+                    m_history_data.removeAt(num);
+                }
+
                 for(auto res:resArray)
                 {
                     QJsonObject jObj = res.toObject();
                     qDebug()<<__LINE__<<num<<jObj<<endl;
                     if(jObj.value("FactorCode").toString() == ui->factorBox->currentText().split("-")[0])
                     {
-                        qDebug()<<__LINE__<<num<<arrayValue.toArray()[num]<<endl;
-                        m_history_data.append(res); // 保存下来
+                        if(jObj.value("StatisticsType").toString().toLower() == type)
+                        {
+                            qDebug()<<__LINE__<<num<<arrayValue.toArray()[num]<<endl;
+                            m_history_data.append(res); // 保存下来
+                        }
+
                     }
                 }
 
@@ -3427,7 +3657,7 @@ void MainWindow::qingqiuHisData(int page, QString type)
             }
         }
 
-        qDebug()<<__LINE__<<endl;
+        qDebug()<<__LINE__<<m_history_data<<endl;
 
         if(m_history_data.size() <= 0)
         {
@@ -3443,83 +3673,107 @@ void MainWindow::qingqiuHisData(int page, QString type)
         if(ui->pushButtonExport->isEnabled())
         {
             ui->progressBar->setValue(70+qrand()%9);
-            usleep(200000);
+//            usleep(200000);
             qDebug()<<__LINE__<<endl;
 
             this->setHisTableContents(m_history_data);
         }
         else
         {
+            int m_ExportPage = m_CurPage;
 //            // qDebug()<< "history_real_time_data======>>" << history_real_time_data;
 //            // qDebug() << "m_ExportPage=====>" << m_ExportPage;
 //            ExportHis(history_real_time_data);
-//            if((m_ExportPage+1)!= gTotalPage)                               //修改点
-//            {
-//                if(ui->checkBox_2->isChecked())
-//                {
-//                    this->qingqiuHisData(m_ExportPage++,"minute");
-//                }
-//                else if(ui->checkBox_4->isChecked())
-//                {
-//                    this->qingqiuHisData(m_ExportPage++,"hour");
-//                }
-//                else if(ui->checkBox_3->isChecked())
-//                {
-//                    this->qingqiuHisData(m_ExportPage++,"daily");
-//                }
-//                else if(ui->checkBox_9->isChecked())
-//                {
-//                    this->qingqiuHisData(m_ExportPage++,"month");
-//                }
+            exportData(m_ExportPage);
+            if((m_ExportPage+1)!= m_TotalPage)                               //修改点
+            {
+                if(ui->checkBox_2->isChecked())
+                {
+                    this->qingqiuHisData(m_ExportPage++,"minute");
+                }
+                else if(ui->checkBox_4->isChecked())
+                {
+                    this->qingqiuHisData(m_ExportPage++,"hour");
+                }
+                else if(ui->checkBox_3->isChecked())
+                {
+                    this->qingqiuHisData(m_ExportPage++,"daily");
+                }
+                else if(ui->checkBox_9->isChecked())
+                {
+                    this->qingqiuHisData(m_ExportPage++,"month");
+                }
 
-//                // qDebug() << "------------>>>" << (m_ExportPage*100)/gTotalPage;
-//                ui->progressBar->setValue((m_ExportPage*100)/gTotalPage);
-//            }
-//            else    //export done
-//            {
+                // qDebug() << "------------>>>" << (m_ExportPage*100)/m_TotalPage;
+                ui->progressBar->setValue((m_ExportPage*100)/m_TotalPage);
+            }
+            else    //export done
+            {
 //                is_first = 1;   // for table head
-//                QString pExportType;
-//                if(ui->checkBox_2->isChecked())
-//                {
-//                    pExportType = "minute";
-//                }
-//                else if(ui->checkBox_4->isChecked())
-//                {
-//                    pExportType = "hour";
-//                }
-//                else if(ui->checkBox_3->isChecked())
-//                {
-//                    pExportType = "daily";
-//                }
-//                else if(ui->checkBox_9->isChecked())
-//                {
-//                    pExportType = "month";
-//                }
+                QString pExportType;
+                if(ui->checkBox_2->isChecked())
+                {
+                    pExportType = "minute";
+                }
+                else if(ui->checkBox_4->isChecked())
+                {
+                    pExportType = "hour";
+                }
+                else if(ui->checkBox_3->isChecked())
+                {
+                    pExportType = "daily";
+                }
+                else if(ui->checkBox_9->isChecked())
+                {
+                    pExportType = "month";
+                }
 
-//                QString path=QString("%5/History-Data_%1_%2_%3%4")
-//                        .arg(pExportType)
-//                        .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
-//                        .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
-//                        .arg(QLatin1String(".xlsx"))
-//                        .arg(m_UDiskPath);
-//                xlsx.saveAs(path);
+                QString path=QString("%5/History-Data_%1_%2_%3%4")
+                        .arg(pExportType)
+                        .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                        .arg(QLatin1String(".xlsx"))
+                        .arg(m_UDiskPath);
+                xlsx.saveAs(path);
 
-//                ui->progressBar->setValue(100);
-//                usleep(200000);
-//                ui->progressBar->hide();
-//                ui->pushButtonExport->setEnabled(true);
-//                msgBox::information(QStringLiteral("通知"), QStringLiteral("数据已保存到U盘!"));
-//            }
+                ui->progressBar->setValue(100);
+//                usleep(5000);
+                ui->progressBar->hide();
+                ui->pushButtonExport->setEnabled(true);
+                QMessageBox::about(this,"通知","数据已保存:"+path);
+            }
         }
     }
 }
 
 void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
 {
+    qDebug()<<__LINE__<<"setHisTableContents"<<history_real_time_data<<endl;
     QFont resFont;
     resFont.setPointSize(16);
+    ui->tableWidget->setRowCount(0);
     ui->progressBar->setValue(100);
     usleep(5);
+
+
+    QString pExportType;
+    if(ui->checkBox_2->isChecked())
+    {
+        pExportType = "minute";
+    }
+    else if(ui->checkBox_4->isChecked())
+    {
+        pExportType = "hour";
+    }
+    else if(ui->checkBox_3->isChecked())
+    {
+        pExportType = "daily";
+    }
+    else if(ui->checkBox_9->isChecked())
+    {
+        pExportType = "month";
+    }
+
 
     if(m_CurPage == 0) ui->pushButtonLast->setEnabled(false);
     else ui->pushButtonLast->setEnabled(true);
@@ -3548,15 +3802,20 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         QString pSum = pFactorObj.value("Sum").toString();
         QString pFlag = pFactorObj.value("Flag").toString();
         QString pData = pMax + "-" + pMin + "-" + pAvg + "-" +pSum + "-" + pFlag;
-        if(pMapTimeFacDataList.contains(pTimestamp))
+        QString pType = pFactorObj.value("StatisticsType").toString();
+
+        if(pType.toLower() == pExportType)
         {
-            pMapTimeFacDataList[pTimestamp].insert(pFactID,pData);
-        }
-        else
-        {
-            mapStrString pStrStrList;
-            pStrStrList.insert(pFactID,pData);
-            pMapTimeFacDataList.insert(pTimestamp,pStrStrList);
+            if(pMapTimeFacDataList.contains(pTimestamp))
+            {
+                pMapTimeFacDataList[pTimestamp].insert(pFactID,pData);
+            }
+            else
+            {
+                mapStrString pStrStrList;
+                pStrStrList.insert(pFactID,pData);
+                pMapTimeFacDataList.insert(pTimestamp,pStrStrList);
+            }
         }
     }
 
@@ -3744,8 +4003,9 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
 
 void MainWindow::qingqiuMessage(int page)
 {
-    ui->progressBar->setValue(0);
-    ui->progressBar->show();
+//    QXlsx::Document xlsx;
+//    ui->progressBar->setValue(0);
+//    ui->progressBar->show();
 
     QJsonObject obj;
     obj.insert(QLatin1String("until"), ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd hh:mm")) );
@@ -3768,6 +4028,56 @@ void MainWindow::qingqiuMessage(int page)
 
         this->setMsgTableHeader();
         this->setMsgTableContents(m_history_message);
+    }
+
+    QString str;
+    for(int i=0;i<m_history_message.size();++i)
+    {
+        QJsonObject obj = m_history_message[0].toObject();
+        str += obj.value("timestamp").toString() + ":" + obj.value("message").toString() + "\n";
+    }
+
+
+//    QMessageBox::information(this,"Result",str);
+
+
+    // 通过导出按钮的状态来分辨 是 导出还好是展示
+    if(ui->pushButtonExport->isEnabled())
+    {
+//        ui->progressBar->setValue(70+qrand()%9);
+        usleep(200000);
+        this->setMsgTableHeader();
+        this->setMsgTableContents(m_history_message);
+    }
+    else
+    {
+        int m_ExportPage = 0;
+        qDebug() << "m_ExportPage=====>" << m_ExportPage;
+        exportData(m_ExportPage);
+        if((m_ExportPage+1)!= m_TotalPage)                               //修改点
+        {
+            qingqiuMessage(m_ExportPage++);
+            // qDebug() << "------------>>>" << (m_ExportPage*100)/m_TotalPage;
+            ui->progressBar->setValue((m_ExportPage*100)/m_TotalPage);
+        }
+//                else    //export done
+//                {
+//                        is_first = 1;   // for table head
+
+        QString path=QString("%5/Real-time-data_%1_%2_%3%4")
+                .arg(ui->factorBox->currentText())
+                .arg(ui->dateTimeEdit->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                .arg(ui->dateTimeEdit_2->dateTime().toString(QLatin1String("yyyy-MM-dd")))
+                .arg(QLatin1String(".xlsx"))
+                .arg(m_UDiskPath);
+        xlsx.saveAs(path);
+
+        ui->progressBar->setValue(100);
+        usleep(5000);
+        ui->progressBar->hide();
+        ui->pushButtonExport->setEnabled(true);
+        QMessageBox::about(this,"通知", "数据已保存:"+path);
+//        }
     }
 }
 
@@ -4358,7 +4668,8 @@ bool MainWindow::FactorGui_Init(QString pDev_ID)
                 pOperDele->setText("删除");
 
                 connect(pOperSaved,SIGNAL(clicked()),m_SignalMapper_FaEdit,SLOT(map()));
-                m_SignalMapper_FaEdit->setMapping(pOperSaved,pFactor_ID+"-"+fullfacname.split("-")[0]);
+                qDebug()<<__LINE__<<pFactor_ID+"-"+fullfacname.split("-")[0]<<endl;
+                m_SignalMapper_FaEdit->setMapping(pOperSaved,pDev_ID+"-"+fullfacname.split("-")[0]);
                 connect(pOperDele,SIGNAL(clicked()),m_SignalMapper_FaDele,SLOT(map()));
                 m_SignalMapper_FaDele->setMapping(pOperDele,pFactor_ID);
 

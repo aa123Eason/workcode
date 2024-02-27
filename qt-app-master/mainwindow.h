@@ -37,6 +37,11 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include "rclogdlg.h"
+#include "xlsxworksheet.h"
+#include "xlsxformat.h"
+#include "xlsxdocument.h"
+#include <QFileDialog>
+#include "selectdtdlg.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -59,6 +64,7 @@ class DialogDevProp;
 class DeviceCMDCtrlDlg;
 class AddRCDevice;
 class RCLogDlg;
+class SelectDTDlg;
 
 class MainWindow : public QMainWindow
 {
@@ -116,6 +122,7 @@ public:
     void installEvents();//配置事件过滤器初始化参数
 
     void deletecurrid(QString deviceid,QString facname);//删除当前因子
+    void buildLocalJson();
     void writeDevParams();//将模拟量设备参数的值记入本地json文件
     QJsonObject loadlocalJson(int gettype,QString dev_id);//从本地json文件在读取设备参数、因子和特殊值
     void usbUpdateEvent();//数采仪软件的U盘自动更新函数
@@ -126,6 +133,7 @@ public:
     void checkRCCOMSTate(QMap<QString,bool> &,const QJsonObject &);//检测所有设备反控端口是否已连接
     void addRCPorts();//添加反控参数
     void rcReadWrite();//反控设备的数据读写信号控制
+    void exportData(int curPage);
 
 private slots:
 
@@ -254,7 +262,7 @@ private:
     QMap<QString,QString> specialsMap;
     bool isUsbOn = false;
     USBUpdateDlg *usbdlg = nullptr;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
     AddRCDevice *addRC = nullptr;
     EditRCDevice *editRC = nullptr;
     RCLogDlg *logdlg =  nullptr;
@@ -268,6 +276,8 @@ private:
     QGridLayout al1,al2,al3,al4;
     QStringList ontimecks;
     QStringList cmdlist;
+    QXlsx::Document xlsx;
+
 
 };
 

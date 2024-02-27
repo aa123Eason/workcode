@@ -64,7 +64,7 @@ private:
     Util util;
     httpclinet pClient;
     QString cmdinfofile;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 
 };
 

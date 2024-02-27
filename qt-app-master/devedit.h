@@ -52,7 +52,7 @@ private:
     QMap<QString,QString> namemap;
     QFont font;
     QString strx;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 };
 
 #endif // DEVEDIT_H

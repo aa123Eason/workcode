@@ -17,7 +17,7 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
 
     font.setBold(true);
     font.setPointSize(20);
-kb = new localKeyboard(this);
+//kb = new localKeyboard(this);
 
     connect(ui->radioButton_Com, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));
     connect(ui->radioButton_Net, SIGNAL(clicked()), this, SLOT(typeRadioBtnClicked()));

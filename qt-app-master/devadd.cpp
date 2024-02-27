@@ -52,18 +52,14 @@ DevAdd::DevAdd(QWidget *parent) :
     ui->comboBox_databit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_parity->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-kb = new localKeyboard(this);
+//kb = new localKeyboard(this);
 
 }
 
 DevAdd::~DevAdd()
 {
     if(interGroup) interGroup->deleteLater();
-    if(kb)
-    {
-        kb->close();
-        kb->deleteLater();
-    }
+
     delete ui;
 }
 
@@ -244,25 +240,29 @@ void DevAdd::buildLocalJson(QJsonObject &obj)
         qDebug() << "inputobj==>>" << obj<<endl;
         qDebug() << "outputobj==>>" << jObj<<endl;
         QString currentid;
+
         if(compare2devices(obj,jObj,currentid))
         {
-             jDevice.insert("device",jObj.value(currentid).toObject());
-             QString filestr = "/home/rpdzkj/tmpFiles/"+currentid+".json";
-             qDebug()<<__LINE__<<filestr<<endl;
-//             QDir dir;
-//             if(!dir.exists(filestr))
-//             {
-//                 qDebug()<<__LINE__<<filestr<<" is not exist!"<<endl;
-//                 dir.mkdir(filestr);
+            if(!currentid.isEmpty())
+            {
+                jDevice.insert("device",jObj.value(currentid).toObject());
+                QString filestr = "/home/rpdzkj/tmpFiles/"+currentid+".json";
+                qDebug()<<__LINE__<<filestr<<endl;
+                //             QDir dir;
+                //             if(!dir.exists(filestr))
+                //             {
+                //                 qDebug()<<__LINE__<<filestr<<" is not exist!"<<endl;
+                //                 dir.mkdir(filestr);
 
-//             }
+                //             }
 
-             QFile file(filestr);
-             QJsonDocument jDoc;
-             jDoc.setObject(jDevice);
-             file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
-             file.write(jDoc.toJson());
-             file.close();
+                QFile file(filestr);
+                QJsonDocument jDoc;
+                jDoc.setObject(jDevice);
+                file.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+                file.write(jDoc.toJson());
+                file.close();
+            }
 
         }
     }

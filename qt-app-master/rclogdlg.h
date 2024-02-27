@@ -28,7 +28,7 @@ public slots:
 private:
     Ui::RCLogDlg *ui;
     QString curStr;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 };
 
 #endif // RCLOGDLG_H

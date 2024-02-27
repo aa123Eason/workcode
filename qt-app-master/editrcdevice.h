@@ -66,7 +66,7 @@ private:
     Util util;
     httpclinet pClient;
     QString cmdinfofile;
-    localKeyboard *kb = nullptr;
+//    localKeyboard *kb = nullptr;
 };
 
 #endif // EDITRCDEVICE_H

@@ -21,7 +21,7 @@ void RCLogDlg::init()
 {
     setWindowModality(Qt::ApplicationModal);
     setWindowFlags(Qt::WindowStaysOnTopHint);
-    kb = new localKeyboard(this);
+//    kb = new localKeyboard(this);
 }
 
 void RCLogDlg::connectevent()
