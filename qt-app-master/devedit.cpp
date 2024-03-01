@@ -83,7 +83,8 @@ void DevEdit::DevEdit_Init(QString dev_id)
         QJsonObject::const_iterator end_proto = g_Dcm_SupportDevice.constEnd();
         while(itor != end_proto)
         {
-            ui->comboBox_devProto->addItem(namemap[itor.key()]);
+            if(!namemap[itor.key()].isEmpty())
+                ui->comboBox_devProto->addItem(namemap[itor.key()]);
             itor++;
         }
     }

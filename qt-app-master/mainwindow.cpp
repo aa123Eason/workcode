@@ -555,7 +555,7 @@ void MainWindow::Widget_Init()
     headerfont.setPointSize(16);
 
     itemfont.setBold(true);
-    itemfont.setPointSize(20);
+    itemfont.setPointSize(16);
 
     ckfont.setBold(true);
     ckfont.setPointSize(18);
@@ -762,7 +762,13 @@ void MainWindow::Widget_Init()
 //        sd->show();
 //    });
 
-
+    ui->comFrame->hide();
+    ui->pushButton_Teshuzhi->hide();
+    ui->pushButton_devicecmdctrl->hide();
+    ui->label_71->hide();
+    ui->label_30->hide();
+    ui->label_70->hide();
+    ui->label_9->hide();
 
 }
 
@@ -2001,14 +2007,14 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
     {
 //        usbUpdateEvent();
     }
-    else if(item == "rccom_state")
-    {
-//        emit sendlog("rccom_state");
-        checkRCCOMSTate(avaPortStateMap,results);
-        addRCPorts();
-        rcReadWrite();
+//    else if(item == "rccom_state")
+//    {
+////        emit sendlog("rccom_state");
+//        checkRCCOMSTate(avaPortStateMap,results);
+//        addRCPorts();
+//        rcReadWrite();
 
-    }
+//    }
 }
 
 void MainWindow::rcReadWrite()
@@ -2484,7 +2490,7 @@ ui->tableWidget_Factor->horizontalHeader()->setFont(font);
 
 ui->tableWidget_Factor->setFont(QFont(QLatin1String("Ubuntu"), 20,75)); // 表格内容的字体为10号宋体
 
-int widths[] = {200, 200, 300};
+int widths[] = {300, 200, 300};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Factor->setColumnWidth(i, widths[i]);
 }
@@ -2567,7 +2573,7 @@ ui->tableWidget_Upload->horizontalHeader()->setFont(font);
 
 //ui->tableWidget_Upload->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
 
-int widths[] = {150, 250, 150, 230, 150, 200,120,150, 150, 180, 150, 130};
+int widths[] = {350, 350, 150, 230, 150, 200,120,150, 150, 180, 250, 130};
 for (int i = 0;i < cnt; ++ i){ //列编号从0开始
     ui->tableWidget_Upload->setColumnWidth(i, widths[i]);
 }
@@ -3498,31 +3504,45 @@ background:qlineargradient(spread:pad,x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:1 
     hscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
     ui->tableWidget->setHorizontalScrollBar(hscollbar);
 
-//设置表头
-QStringList headerText;
-headerText << QStringLiteral("序号") << QStringLiteral("采集时间")
-           << QStringLiteral("因子编码") << QStringLiteral("实时值") <<  QStringLiteral("数据标识") ;
-int cnt = headerText.count();
-ui->tableWidget->setColumnCount(cnt);
-ui->tableWidget->setHorizontalHeaderLabels(headerText);
-ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
-ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
+    ui->tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
-ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
-ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-//QFont font =  ui->tableWidget->horizontalHeader()->font();
+    //设置表头
+    QStringList headerText;
+    headerText << QStringLiteral("序号") << QStringLiteral("采集时间")
+               << QStringLiteral("因子编码") << QStringLiteral("实时值") <<  QStringLiteral("数据标识") ;
+    int cnt = headerText.count();
+    ui->tableWidget->setColumnCount(cnt);
+    ui->tableWidget->setHorizontalHeaderLabels(headerText);
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
-ui->tableWidget->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
+    ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
+    ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    //QFont font =  ui->tableWidget->horizontalHeader()->font();
 
-int widths[] = {100, 245,245,245,245};                  //1080
-for (int i = 0;i < cnt; i++ ){ //列编号从0开始
-    ui->tableWidget->setColumnWidth(i, widths[i]);
-}
+    ui->tableWidget->setFont(QFont(QLatin1String("song"), 14)); // 表格内容的字体为10号宋体
 
-ui->tableWidget->setRowHeight(0,22);
-ui->tableWidget->setStyleSheet(qssTV);
-ui->tableWidget->horizontalHeader()->setVisible(true);
-ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
+    int widths[] = {100, 260,280,245,245};                  //1080
+    for (int i = 0;i < cnt; i++){ //列编号从0开始
+        ui->tableWidget->setColumnWidth(i, widths[i]);
+    }
+
+    ui->tableWidget->setWordWrap(true);
+    for(int i=0;i<ui->tableWidget->rowCount();++i)
+    {
+        if(i==0)
+        {
+            ui->tableWidget->setRowHeight(i,22);
+        }
+        else
+        {
+            ui->tableWidget->setRowHeight(i,30);
+        }
+    }
+
+    ui->tableWidget->setStyleSheet(qssTV);
+    ui->tableWidget->horizontalHeader()->setVisible(true);
+    ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
 }
 
 //填充表格
@@ -3755,6 +3775,18 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     ui->progressBar->setValue(100);
     usleep(5);
 
+    ui->tableWidget->horizontalHeader()->setStretchLastSection(false);
+    ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
+
+    QScrollBar *vscollbar = new QScrollBar(Qt::Vertical,ui->tableWidget);
+    vscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
+    ui->tableWidget->setVerticalScrollBar(vscollbar);
+
+    QScrollBar *hscollbar = new QScrollBar(Qt::Horizontal,ui->tableWidget);
+    hscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
+    ui->tableWidget->setHorizontalScrollBar(hscollbar);
+
+    ui->tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     QString pExportType;
     if(ui->checkBox_2->isChecked())
@@ -3773,6 +3805,8 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     {
         pExportType = "month";
     }
+
+    ui->tableWidget->setWordWrap(true);
 
 
     if(m_CurPage == 0) ui->pushButtonLast->setEnabled(false);
@@ -3837,10 +3871,11 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     ui->tableWidget->setRowCount(2+pRowNum);
     ui->tableWidget->setColumnCount(2+pColNum*5);
     ui->tableWidget->clearContents();
-
+    ui->tableWidget->setTextElideMode(Qt::ElideNone);
     ui->tableWidget->setColumnWidth(0, 50); // xuhao
-    ui->tableWidget->setColumnWidth(1, 200); // timestamp
+    ui->tableWidget->setColumnWidth(1, 350); // timestamp
     for (int i = 0;i < pColNum; i++ ){
+
         ui->tableWidget->setColumnWidth(i+2, 100);
     }
 
@@ -3852,13 +3887,13 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
     item0->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(0,0,item0);
     item0->setBackground(Qt::lightGray);
-    item0->setFont(resFont);
+    item0->setFont(itemfont);
 
     QTableWidgetItem *itemStamp = new QTableWidgetItem( "时间戳" );
     itemStamp->setTextAlignment(Qt::AlignCenter);
     ui->tableWidget->setItem(0,1,itemStamp);
     itemStamp->setBackground(Qt::darkGray);
-    itemStamp->setFont(resFont);
+    itemStamp->setFont(itemfont);
 
 
 
@@ -3880,37 +3915,37 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         itemFactorName->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(0,2+i*5,itemFactorName);
         itemFactorName->setBackground(Qt::darkYellow);
-        itemFactorName->setFont(resFont);
+        itemFactorName->setFont(itemfont);
 
         QTableWidgetItem * itemMax = new QTableWidgetItem( "最大值" );
         itemMax->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,2+i*5,itemMax);
         itemMax->setBackground(Qt::red);
-        itemMax->setFont(resFont);
+        itemMax->setFont(itemfont);
 
         QTableWidgetItem * itemMin = new QTableWidgetItem( "最小值" );
         itemMin->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,3+i*5,itemMin);
         itemMin->setBackground(Qt::yellow);
-        itemMin->setFont(resFont);
+        itemMin->setFont(itemfont);
 
         QTableWidgetItem * itemAvg = new QTableWidgetItem( "平均值" );
         itemAvg->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,4+i*5,itemAvg);
         itemAvg->setBackground(Qt::cyan);
-        itemAvg->setFont(resFont);
+        itemAvg->setFont(itemfont);
 
         QTableWidgetItem * itemSum = new QTableWidgetItem( "累计值" );
         itemSum->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,5+i*5,itemSum);
         itemSum->setBackground(Qt::darkCyan);
-        itemSum->setFont(resFont);
+        itemSum->setFont(itemfont);
 
         QTableWidgetItem * itemFlag = new QTableWidgetItem( "数据标记" );
         itemFlag->setTextAlignment(Qt::AlignCenter);
         ui->tableWidget->setItem(1,6+i*5,itemFlag);
         itemFlag->setBackground(Qt::magenta);
-        itemFlag->setFont(resFont);
+        itemFlag->setFont(itemfont);
     }
 
     int pRow = 2;
@@ -3921,10 +3956,12 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
         // 序号
         item = new QTableWidgetItem( QString::number(pRow-1) ); //fixme:  ======>>next page???
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(pRow,0,item);
         //采集时间
         item = new QTableWidgetItem( i.key() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(pRow,1,item);
 
         mapStrString pStrString = i.value();
@@ -3939,31 +3976,31 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
                     if(pDataList[0] == "") pDataList[0] = "-";
                     item = new QTableWidgetItem( pDataList[0] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    item->setFont(resFont);
+                    item->setFont(itemfont);
                     ui->tableWidget->setItem(pRow,2+j*5,item);
 
                     if(pDataList[1] == "") pDataList[1] = "-";
                     item = new QTableWidgetItem( pDataList[1] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    item->setFont(resFont);
+                    item->setFont(itemfont);
                     ui->tableWidget->setItem(pRow,3+j*5,item);
 
                     if(pDataList[2] == "") pDataList[2] = "-";
                     item = new QTableWidgetItem( pDataList[2] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    item->setFont(resFont);
+                    item->setFont(itemfont);
                     ui->tableWidget->setItem(pRow,4+j*5,item);
 
                     if(pDataList[3] == "") pDataList[3] = "-";
                     item = new QTableWidgetItem( pDataList[3] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    item->setFont(resFont);
+                    item->setFont(itemfont);
                     ui->tableWidget->setItem(pRow,5+j*5,item);
 
                     if(pDataList[4] == "") pDataList[4] = "-";
                     item = new QTableWidgetItem( pDataList[4] );
                     item->setTextAlignment(Qt::AlignCenter);
-                    item->setFont(resFont);
+                    item->setFont(itemfont);
                     ui->tableWidget->setItem(pRow,6+j*5,item);
                 }
             }
@@ -3971,27 +4008,27 @@ void MainWindow::setHisTableContents(QJsonArray &history_real_time_data)
             {
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setFont(resFont);
+                item->setFont(itemfont);
                 ui->tableWidget->setItem(pRow,2+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setFont(resFont);
+                item->setFont(itemfont);
                 ui->tableWidget->setItem(pRow,3+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setFont(resFont);
+                item->setFont(itemfont);
                 ui->tableWidget->setItem(pRow,4+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setFont(resFont);
+                item->setFont(itemfont);
                 ui->tableWidget->setItem(pRow,5+j*5,item);
 
                 item = new QTableWidgetItem( "-" );
                 item->setTextAlignment(Qt::AlignCenter);
-                item->setFont(resFont);
+                item->setFont(itemfont);
                 ui->tableWidget->setItem(pRow,6+j*5,item);
             }
         }
@@ -4100,22 +4137,41 @@ ui->tableWidget->setColumnCount(cnt);
 // ui->tableWidget->setRowCount(10);
 ui->tableWidget->setHorizontalHeaderLabels(headerText);
 ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers); //禁止编辑
-ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
+//ui->tableWidget->horizontalHeader()->setStretchLastSection(true); //行头自适应表格
 
 ui->tableWidget->horizontalHeader()->setFont(QFont(QLatin1String("song"), 16));
 ui->tableWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
 QFont font =  ui->tableWidget->horizontalHeader()->font();
 
 ui->tableWidget->setFont(QFont(QLatin1String("song"), 16)); // 表格内容的字体为10号宋体
-
-int widths[] = {50,200,120,200,600};                  //1080
+ui->tableWidget->setTextElideMode(Qt::ElideNone);
+int widths[] = {50,400,120,300,800};                  //1080
 for (int i = 0;i < cnt; i++ ){ //列编号从0开始
     ui->tableWidget->setColumnWidth(i, widths[i]);
 }
 
+for (int i = 1;i < ui->tableWidget->rowCount(); i++ ){ //列编号从0开始
+
+    ui->tableWidget->setRowHeight(i,120);
+}
+
+//ui->tableWidget->resizeRowToContents(4);
+
 ui->tableWidget->setStyleSheet(qssTV);
 ui->tableWidget->horizontalHeader()->setVisible(true);
-ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
+//ui->tableWidget->verticalHeader()->setDefaultSectionSize(45);
+ui->tableWidget->setWordWrap(true);
+
+QScrollBar *vscollbar = new QScrollBar(Qt::Vertical,ui->tableWidget);
+vscollbar->setStyleSheet("QScrollBar:vertical { width: 30px; }");
+ui->tableWidget->setVerticalScrollBar(vscollbar);
+
+QScrollBar *hscollbar = new QScrollBar(Qt::Horizontal,ui->tableWidget);
+hscollbar->setStyleSheet("QScrollBar:horizontal { width: 30px; }");
+ui->tableWidget->setHorizontalScrollBar(hscollbar);
+
+ui->tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
 }
 
 void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
@@ -4124,17 +4180,19 @@ void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
     usleep(200000);
     ui->progressBar->hide();
 
+
+
     if(m_CurPage == 0) ui->pushButtonLast->setEnabled(false);
     else ui->pushButtonLast->setEnabled(true);
     if(m_CurPage+1 == m_TotalPage) ui->pushButtonNext->setEnabled(false);
     else ui->pushButtonNext->setEnabled(true);
 
-    ui->textEditCurPage->setText("当前：第" + QString::number(m_CurPage+1) + "页");
+//    ui->textEditCurPage->setText("当前：第" + QString::number(m_CurPage+1) + "页");
     ui->textEditCurPage->setAlignment(Qt::AlignCenter);
     ui->textEditToPage->setAlignment(Qt::AlignCenter);
     ui->textEditAllPage->setText("共：" + QString::number(m_TotalPage) + "页");
     ui->textEditAllPage->setAlignment(Qt::AlignCenter);
-
+    ui->tableWidget->verticalHeader()->setDefaultSectionSize(120);
     ui->tableWidget->verticalHeader()->setVisible(false);//表头不可见
     ui->tableWidget->clearContents(); //只清除工作区，不清除表头
     if(history_real_time_data.isEmpty())
@@ -4162,28 +4220,43 @@ void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
         // 序号
         item = new QTableWidgetItem( QString::number(i+1,10) );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,0,item);
 
         //因子名称
         item = new QTableWidgetItem( json[QLatin1String("timestamp")].toString() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,1,item);
 
         //实时值
         item = new QTableWidgetItem( "--->" );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,2,item);
 
         //数据标识
         item = new QTableWidgetItem( json[QLatin1String("target_addr")].toString() );
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFont(itemfont);
         ui->tableWidget->setItem(i,3,item);
 
         //数据 content  fixme: ... yingwenzimu zidonghuanhang
-        item = new QTableWidgetItem( json[QLatin1String("message")].toString() );
-        item->setTextAlignment(Qt::AlignCenter);
-        ui->tableWidget->setItem(i,4,item);
+        QLabel *l1 = new QLabel();
+        l1->setWordWrap(true);
+        l1->setFont(itemfont);
+        l1->setAlignment(Qt::AlignVCenter);
+
+        l1->setText(json[QLatin1String("message")].toString());
+        l1->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
+        ui->tableWidget->setCellWidget(i,4,l1);
+//        item = new QTableWidgetItem( json[QLatin1String("message")].toString() );
+//        item->setTextAlignment(Qt::AlignCenter);
+//        item->setFont(itemfont);
+//        item->setToolTip(item->text());
+//        ui->tableWidget->setItem(i,4,item);
     }
+
 }
 
 

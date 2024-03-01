@@ -91,7 +91,7 @@
                <widget class="QRadioButton" name="radioButton_Com">
                 <property name="font">
                  <font>
-                  <pointsize>14</pointsize>
+                  <pointsize>16</pointsize>
                  </font>
                 </property>
                 <property name="text">
@@ -103,7 +103,7 @@
                <widget class="QRadioButton" name="radioButton_Net">
                 <property name="font">
                  <font>
-                  <pointsize>14</pointsize>
+                  <pointsize>16</pointsize>
                  </font>
                 </property>
                 <property name="text">
@@ -152,7 +152,7 @@
               <property name="font">
                <font>
                 <family>Ubuntu</family>
-                <pointsize>18</pointsize>
+                <pointsize>16</pointsize>
                 <weight>50</weight>
                 <italic>false</italic>
                 <bold>false</bold>
@@ -161,7 +161,7 @@
               <property name="styleSheet">
                <string notr="true">background-color: rgb(211, 215, 207);
 height:44px;
-font: 18pt &quot;Ubuntu&quot;;</string>
+font: 16pt &quot;Ubuntu&quot;;</string>
               </property>
               <property name="text">
                <string/>
@@ -206,10 +206,40 @@ font: 18pt &quot;Ubuntu&quot;;</string>
               </property>
               <property name="font">
                <font>
-                <family>Source Han Sans CN</family>
+                <family>Ubuntu</family>
+                <pointsize>18</pointsize>
                 <weight>50</weight>
+                <italic>false</italic>
                 <bold>false</bold>
                </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QComboBox {
+    border: 1px solid #4C84C3;
+	width: 181px;
+	height: 40px;
+	
+	font: 18pt &quot;Ubuntu&quot;;
+	background-color: rgb(211, 215, 207);
+	
+	opacity: 1;
+	border-radius: 0px;
+	
+}
+ 
+QComboBox QAbstractItemView {
+    border-radius:  0px;  
+	background-color: rgb(233, 185, 110);
+	border:1px solid #4C84c3;
+ 	selection-background-color: #2019DC;
+}
+ 
+QComboBox QAbstractItemView::item {
+    height: 40px;   
+	border: none;
+}
+ 
+</string>
               </property>
               <property name="maxVisibleItems">
                <number>50</number>
@@ -261,7 +291,7 @@ font: 18pt &quot;Ubuntu&quot;;</string>
               <property name="font">
                <font>
                 <family>Ubuntu</family>
-                <pointsize>18</pointsize>
+                <pointsize>16</pointsize>
                 <weight>50</weight>
                 <italic>false</italic>
                 <bold>false</bold>
@@ -270,7 +300,7 @@ font: 18pt &quot;Ubuntu&quot;;</string>
               <property name="styleSheet">
                <string notr="true">background-color: rgb(211, 215, 207);
 height:44px;
-font: 18pt &quot;Ubuntu&quot;;</string>
+font: 16pt &quot;Ubuntu&quot;;</string>
               </property>
               <property name="text">
                <string/>
@@ -363,7 +393,7 @@ font: 18pt &quot;Ubuntu&quot;;</string>
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 16px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
@@ -528,7 +558,7 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 16px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
@@ -631,7 +661,7 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 16px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
@@ -706,7 +736,7 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 16px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;
@@ -786,7 +816,7 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 15px;
+	font-size: 16px;
 	font-family: Source Han Sans CN;
 	background-color: rgb(211, 215, 207);
 	font-weight: 400;

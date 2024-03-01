@@ -118,7 +118,7 @@ void FacEdit::FacEdit_Init(QString id)
                 if(is_continuous_alarm_over_standard) ui->radioButton_CXBJ->setChecked(false);
                 else ui->radioButton_CXBJ->setChecked(true);
 
-                bool is_manual_flag = pJsonFac.value("is_manual_flag").toInt() == 0;
+                bool is_manual_flag = pJsonFac.value("is_manual_flag").toInt();
                 if(is_manual_flag)
                 {
                     ui->radioButton_SDSZF->setChecked(false);
@@ -128,6 +128,8 @@ void FacEdit::FacEdit_Init(QString id)
                     ui->radioButton_SDSZF->setChecked(true);
                     ui->lineEdit_mf->setText(pJsonFac.value("manual_flag").toString());
                 }
+
+                ui->radioButton_SDSZF->setChecked(false);
 
                 ui->comboBox_fst->setCurrentText(pJsonFac.value("st").toString());
                 ui->lineEdit_tagId->setText(pJsonFac.value("tag_id").toString());
@@ -146,7 +148,7 @@ void FacEdit::FacEdit_Init(QString id)
                 ui->comboBox_falias->setCurrentText(pJsonFac.value("factor_alias").toString());
                 ui->lineEdit_alarmUpper->setText(QString::number(pJsonFac.value("alarm_upper").toDouble()));
                 ui->lineEdit_alarmLower->setText(QString::number(pJsonFac.value("alarm_lower").toDouble()));
-                ui->lineEdit_coeff->setText(QString::number(pJsonFac.value("coefficient").toInt(),'f',2));
+                ui->lineEdit_coeff->setText(QString::number(pJsonFac.value("coefficient").toDouble(),'f',2));
 
 
 //                m_Fcode = pFcode;
@@ -674,8 +676,8 @@ void FacEdit::loadinfo(QString path)
         if(is_continuous_alarm_over_standard) ui->radioButton_CXBJ->setChecked(false);
         else ui->radioButton_CXBJ->setChecked(true);
 
-        bool is_manual_flag = jValueObj.value("is_manual_flag").toInt() == 0;
-        if(is_manual_flag)
+        bool is_manual_flag = jValueObj.value("is_manual_flag").toInt();
+        if(!is_manual_flag)
         {
             ui->radioButton_SDSZF->setChecked(false);
         }
@@ -684,6 +686,7 @@ void FacEdit::loadinfo(QString path)
             ui->radioButton_SDSZF->setChecked(true);
             ui->lineEdit_mf->setText(jValueObj.value("manual_flag").toString());
         }
+        ui->radioButton_SDSZF->setChecked(false);
 
         ui->comboBox_fst->setCurrentText(jValueObj.value("st").toString());
         ui->lineEdit_tagId->setText(jValueObj.value("tag_id").toString());
@@ -702,7 +705,7 @@ void FacEdit::loadinfo(QString path)
         ui->comboBox_falias->setCurrentText(jValueObj.value("factor_alias").toString());
         ui->lineEdit_alarmUpper->setText(QString::number(jValueObj.value("alarm_upper").toDouble()));
         ui->lineEdit_alarmLower->setText(QString::number(jValueObj.value("alarm_lower").toDouble()));
-        ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toInt(),'f',2));
+        ui->lineEdit_coeff->setText(QString::number(jValueObj.value("coefficient").toDouble(),'f',2));
         ui->modbus_add->setText(QString::number(jValueObj.value("modbus_index").toInt()));
         // read from CONF
 

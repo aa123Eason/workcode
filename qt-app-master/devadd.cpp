@@ -29,12 +29,13 @@ DevAdd::DevAdd(QWidget *parent) :
     QJsonObject::const_iterator end_proto = g_Dcm_SupportDevice.constEnd();
     map = util.Uart_devicetype();
     namemap = util.Uart_devicetypeNameMatch();
-    ui->comboBox_2->addItem("");
+//    ui->comboBox_2->addItem("");
     while(itor != end_proto)
     {
         ui->comboBox_2->addItem(namemap[itor.key()]);
         itor++;
     }
+    ui->comboBox_2->setCurrentIndex(0);
 
     ui->comboBox_2->setView(new QListView(this));
     ui->comboBox->setView(new QListView(this));
