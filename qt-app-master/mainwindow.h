@@ -135,6 +135,10 @@ public:
     void rcReadWrite();//反控设备的数据读写信号控制
     void exportData(int curPage);
 
+    void updateLocalDevice(const QJsonObject &);
+    void updateLocalFactors(const QJsonObject &);
+    void matchparams();
+
 private slots:
 
     void refresh_AnalogDevParam();//更新模拟量参数1

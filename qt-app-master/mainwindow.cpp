@@ -7,6 +7,8 @@ QJsonObject g_Dcm_Factor;
 QJsonArray g_Dcm_SystemCode;
 QJsonObject g_Dcm_SupportDevice;
 QJsonObject g_ConfObjDevParam;
+QJsonObject g_Dcm_Devices;
+QJsonObject g_Dcm_Factors;
 QString g_Device_ID;
 QString g_Device_Type;
 bool g_IsAnalogDevOperated = false;
@@ -2007,6 +2009,19 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
     {
 //        usbUpdateEvent();
     }
+    else if(item == "deviceinfo")
+    {
+        updateLocalDevice(results);
+    }
+    else if(item == "factorinfo")
+    {
+        updateLocalFactors(results);
+    }
+    else if(item == "matchparams")
+    {
+        matchparams();
+    }
+
 //    else if(item == "rccom_state")
 //    {
 ////        emit sendlog("rccom_state");
@@ -2015,6 +2030,277 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
 //        rcReadWrite();
 
 //    }
+}
+
+void MainWindow::updateLocalDevice(const QJsonObject &obj)
+{
+    qDebug()<<__LINE__<<__FUNCTION__<<obj<<endl;
+    QJsonObject::const_iterator it = obj.begin();
+    QJsonObject::const_iterator it_end = obj.end();
+    QString filepath = "/home/rpdzkj/tmpFiles";
+    QDir dir(filepath);
+    if(!dir.exists())
+    {
+       dir.mkdir(filepath);
+    }
+
+    while(it != it_end)
+    {
+        QString decidecode = it.key();
+        if(!decidecode.isEmpty())
+        {
+            QString filename = filepath + "/" +decidecode+".json";
+            qDebug()<<__LINE__<<"file device:"<<filename<<endl;
+            QFile file(filename);
+            if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                qDebug()<<__LINE__<<endl;
+                QByteArray byt = file.readAll();
+                file.flush();
+                QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+                QJsonObject jRefDevices = jDoc.object();
+                file.close();
+                byt.clear();
+                QJsonObject jNewDevice = jRefDevices;
+                if(jNewDevice.contains("device"))
+                {
+                    jNewDevice.remove("device");
+                }
+
+                jNewDevice.insert("device",it.value().toObject());
+
+                QFile fileW(filename);
+                QJsonDocument jDocW;
+                jDocW.setObject(jNewDevice);
+                fileW.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+                fileW.write(jDocW.toJson());
+                fileW.close();
+            }
+            else
+            {
+                QFile fileW(filename);
+                QJsonDocument jDocW;
+                fileW.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Append);
+                fileW.write(jDocW.toJson());
+                fileW.close();
+            }
+        }
+
+        it++;
+    }
+}
+
+void MainWindow::updateLocalFactors(const QJsonObject &obj)
+{
+    qDebug()<<__LINE__<<__FUNCTION__<<obj<<endl;
+    QJsonObject tmpObj = obj;
+    QJsonObject::iterator it0 = tmpObj.begin();
+    QJsonObject::iterator it0_end = tmpObj.end();
+    QJsonObject::iterator it = tmpObj.begin();
+    QJsonObject::iterator it_end = tmpObj.end();
+    QString filepath = "/home/rpdzkj/tmpFiles";
+    QDir dir(filepath);
+    if(!dir.exists())
+    {
+       dir.mkdir(filepath);
+    }
+    QJsonObject newObj;
+    while(it0 != it0_end)
+    {
+        newObj.insert(it0.key(),it0.value().toObject());
+        it0++;
+    }
+    qDebug()<<__LINE__<<__FUNCTION__<<newObj<<endl;
+    while(it != it_end)
+    {
+        qDebug()<<__LINE__<<it.key()<<endl;
+        QJsonObject refObj = it.value().toObject();
+
+        QString decidecode = refObj.value("device_id").toString();
+        qDebug()<<__LINE__<<decidecode<<endl;
+        if(!decidecode.isEmpty())
+        {
+            QString filename = filepath + "/" +decidecode+".json";
+            qDebug()<<__LINE__<<"file factors:"<<filename<<endl;
+            QFile file(filename);
+            if(file.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                QByteArray byt = file.readAll();
+                file.flush();
+                QJsonDocument jDoc = QJsonDocument::fromJson(byt);
+                QJsonObject jRefDevices = jDoc.object();
+                file.close();
+                byt.clear();
+                QJsonObject jNewDevice = jRefDevices;
+                if(jNewDevice.contains("factors"))
+                {
+                    jNewDevice.remove("factors");
+                }
+
+                jNewDevice.insert("factors",newObj);
+                qDebug()<<__LINE__<<__FUNCTION__<<newObj<<endl;
+                QFile fileW(filename);
+                QJsonDocument jDocW;
+                jDocW.setObject(jNewDevice);
+                fileW.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+                fileW.write(jDocW.toJson());
+                fileW.close();
+            }
+
+        }
+        it++;
+    }
+}
+
+void MainWindow::matchparams()
+{
+    httpclinet pHttpCLient;
+    QJsonObject devicesObj;
+    if(!pHttpCLient.get(DCM_DEVICE,devicesObj))
+    {
+        return;
+    }
+
+    QJsonObject::iterator it = devicesObj.begin();
+    QJsonObject::iterator it_end = devicesObj.end();
+    QString filepath = "/home/rpdzkj/tmpFiles";
+    while(it!=it_end)
+    {
+        QString dev_id = it.key();
+        QJsonObject dev_obj = it.value().toObject();
+        QString dev_params = dev_obj.value("dev_params").toString();
+        QString filename = filepath + "/" +dev_id+".json";
+        QFile file(filename);
+        if(!file.open(QIODevice::ReadOnly|QIODevice::Text))
+        {
+            return;
+        }
+
+        QByteArray byt = file.readAll();
+        file.flush();
+        file.close();
+        QJsonDocument jDocR = QJsonDocument::fromJson(byt);
+        QJsonObject jObj = jDocR.object();
+        byt.clear();
+        if(!jObj.contains("factors"))
+        {
+            return;
+        }
+
+        QJsonObject jFactors = jObj.value("factors").toObject();
+
+        if(dev_params.split(",").count()==0)
+            return;
+        QStringList facParams = dev_params.split(",");
+
+        for(QString facParam:facParams)
+        {
+            qDebug()<<__LINE__<<facParam<<endl;
+            if(facParam.split("=").count()<2)
+                return;
+
+            QString key = facParam.split("=")[0];
+            QString value = facParam.split("=")[1];
+            if(key.split("_").count()<3)
+                return;
+            QString paramName = key.split("_")[0]+"_"+key.split("_")[1];
+            QString paramNote = key.split("_")[2];
+            int index= paramNote.toInt();
+
+            for(int i = 0;i<jFactors.count();++i)
+            {
+                if(i+1 == index)
+                {
+                    QString keyName = jFactors.keys()[i];
+                    QJsonObject keyValue = jFactors.value(keyName).toObject();
+
+                    if(key.contains("analog_max"))
+                    {
+
+                        double v = value.toDouble();
+                        if(keyValue.contains(CONF_ANALOG_PARAM_AU1))
+                        {
+                            keyValue.remove(CONF_ANALOG_PARAM_AU1);
+                        }
+                        keyValue.insert(CONF_ANALOG_PARAM_AU1,v);
+                    }
+                    else if(key.contains("analog_min"))
+                    {
+                        double v = value.toDouble();
+                        if(keyValue.contains(CONF_ANALOG_PARAM_AD1))
+                        {
+                            keyValue.remove(CONF_ANALOG_PARAM_AD1);
+                        }
+                        keyValue.insert(CONF_ANALOG_PARAM_AD1,v);
+                    }
+                    else if(key.contains("upper_limit"))
+                    {
+                        double v = value.toDouble();
+                        if(keyValue.contains(CONF_ANALOG_PARAM_AU2))
+                        {
+                            keyValue.remove(CONF_ANALOG_PARAM_AU2);
+                        }
+                        keyValue.insert(CONF_ANALOG_PARAM_AU2,v);
+                    }
+                    else if(key.contains("lower_limit"))
+                    {
+                        double v = value.toDouble();
+                        if(keyValue.contains(CONF_ANALOG_PARAM_AD2))
+                        {
+                            keyValue.remove(CONF_ANALOG_PARAM_AD2);
+                        }
+                        keyValue.insert(CONF_ANALOG_PARAM_AD2,v);
+                    }
+
+                    if(keyValue.contains(CONF_IS_ANALOG_PARAM))
+                    {
+                        keyValue.remove(CONF_IS_ANALOG_PARAM);
+                    }
+
+                        keyValue.insert(CONF_IS_ANALOG_PARAM,true);
+
+                     if(keyValue.contains(CONF_IS_DEVICE_PROPERTY))
+                     {
+                         keyValue.remove(CONF_IS_DEVICE_PROPERTY);
+                     }
+
+                     keyValue.insert(CONF_IS_DEVICE_PROPERTY,false);
+
+                     qDebug()<<__LINE__<<keyName<<keyValue<<endl;
+
+                     jFactors.remove(keyName);
+                     jFactors.insert(keyName,keyValue);
+
+                     QJsonObject pReply;
+
+                     if(pHttpCLient.put(DCM_DEVICE_FACTOR,keyValue,pReply))
+                     {
+                         qDebug()<<__LINE__<<"SUCCESS"<<endl;
+                     }
+                     else
+                     {
+                         qDebug()<<__LINE__<<pReply<<endl;
+                     }
+                }
+            }
+        }
+
+        jObj.remove("factors");
+        jObj.insert("factors",jFactors);
+
+        QJsonDocument jDocW;
+        jDocW.setObject(jObj);
+        QFile fileW(filename);
+        fileW.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate);
+        fileW.write(jDocW.toJson());
+        fileW.flush();
+        fileW.close();
+
+
+
+
+        it++;
+    }
 }
 
 void MainWindow::rcReadWrite()
@@ -2338,6 +2624,8 @@ void CHttpWork::doWork1() {
     bool pDcmDactorFlag = false;
     bool pDcmSystemCodeFlag = false;
     bool pDcmSupportDeviceFlag = false;
+    bool pDcmDeviceFlag = false;
+    bool pDcmFactorFlag = false;
 
     /* 标志位为真 */
     isCanRun = true;
@@ -2381,6 +2669,20 @@ void CHttpWork::doWork1() {
                 pDcmSupportDeviceFlag = true;
             }
         }
+//        if(!pDcmDeviceFlag)
+//        {
+//            if(pClient.get(DCM_DEVICE,g_Dcm_Devices))
+//            {
+//                pDcmDeviceFlag = true;
+//            }
+//        }
+//        if(!pDcmFactorFlag)
+//        {
+//            if(pClient.get(DCM_DEVICE_FACTOR,g_Dcm_Factors))
+//            {
+//                pDcmFactorFlag = true;
+//            }
+//        }
 
         QJsonObject pJsonObj;
         emit resultReady("usb_stat",pJsonObj);
@@ -2395,26 +2697,39 @@ void CHttpWork::doWork1() {
             QThread::sleep(3);
         }
 
-        QString cmdinfofile = QApplication::applicationDirPath() + CMDINFO;
-        QFile fileR(cmdinfofile);
-        QJsonDocument jDocR;
-        if(fileR.open(QIODevice::ReadOnly|QIODevice::Text))
+        if(pClient.get(DCM_DEVICE,pJsonObj))
         {
-            QByteArray byt;
-            byt.append(fileR.readAll());
-            fileR.flush();
-            fileR.close();
-
-            jDocR = QJsonDocument::fromJson(byt);
-            QJsonObject jtmpObj = jDocR.object();
-            byt.clear();
-
-            if(jtmpObj.count()>0)
-            {
-                emit resultReady("rccom_state",jtmpObj);
-                QThread::sleep(3);
-            }
+            emit resultReady("deviceinfo",pJsonObj);
         }
+
+        if(pClient.get(DCM_DEVICE_FACTOR,pJsonObj))
+        {
+            emit resultReady("factorinfo",pJsonObj);
+        }
+
+        emit resultReady("matchparams",QJsonObject());
+
+
+//        QString cmdinfofile = QApplication::applicationDirPath() + CMDINFO;
+//        QFile fileR(cmdinfofile);
+//        QJsonDocument jDocR;
+//        if(fileR.open(QIODevice::ReadOnly|QIODevice::Text))
+//        {
+//            QByteArray byt;
+//            byt.append(fileR.readAll());
+//            fileR.flush();
+//            fileR.close();
+
+//            jDocR = QJsonDocument::fromJson(byt);
+//            QJsonObject jtmpObj = jDocR.object();
+//            byt.clear();
+
+//            if(jtmpObj.count()>0)
+//            {
+//                emit resultReady("rccom_state",jtmpObj);
+//                QThread::sleep(3);
+//            }
+//        }
 
 
     }
