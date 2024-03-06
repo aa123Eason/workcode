@@ -135,9 +135,10 @@ public:
     void rcReadWrite();//反控设备的数据读写信号控制
     void exportData(int curPage);
 
-    void updateLocalDevice(const QJsonObject &);
-    void updateLocalFactors(const QJsonObject &);
+    void updateLocalDevice();
+    void updateLocalFactors();
     void matchparams();
+    void synDataEvent();
 
 private slots:
 

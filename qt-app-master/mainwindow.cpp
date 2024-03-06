@@ -619,6 +619,9 @@ void MainWindow::Widget_Init()
     ui->tableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar{background-color:rgb(218,222,223); height:10px;}""QScrollBar::handle{background-color:rgb(180, 180, 180); border:2px solid transparent; border-radius:5px;}""QScrollBar::handle:hover{background-color:rgb(139, 139, 139);}""QScrollBar::sub-line{background:transparent;}""QScrollBar::add-line{background:transparent;}");  //设置横向滚动条样式
 
 
+    synDataEvent();
+
+
     connect(ui->closewindow,&QPushButton::clicked,this,[=]()
     {
        if(QMessageBox::Yes == QMessageBox::question(this,"提示","是否关闭软件（Y/N)？",QMessageBox::Yes,QMessageBox::No))
@@ -2009,18 +2012,18 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
     {
 //        usbUpdateEvent();
     }
-    else if(item == "deviceinfo")
-    {
-        updateLocalDevice(results);
-    }
-    else if(item == "factorinfo")
-    {
-        updateLocalFactors(results);
-    }
-    else if(item == "matchparams")
-    {
-        matchparams();
-    }
+//    else if(item == "deviceinfo")
+//    {
+//        updateLocalDevice(results);
+//    }
+//    else if(item == "factorinfo")
+//    {
+//        updateLocalFactors(results);
+//    }
+//    else if(item == "matchparams")
+//    {
+//        matchparams();
+//    }
 
 //    else if(item == "rccom_state")
 //    {
@@ -2032,11 +2035,18 @@ void MainWindow::handleResults(QString item,const QJsonObject &results)
 //    }
 }
 
-void MainWindow::updateLocalDevice(const QJsonObject &obj)
+void MainWindow::updateLocalDevice()
 {
+    httpclinet pClient;
+    QJsonObject obj;
+    if(!pClient.get(DCM_DEVICE,obj))
+    {
+        return;
+    }
+
     qDebug()<<__LINE__<<__FUNCTION__<<obj<<endl;
-    QJsonObject::const_iterator it = obj.begin();
-    QJsonObject::const_iterator it_end = obj.end();
+    QJsonObject::iterator it = obj.begin();
+    QJsonObject::iterator it_end = obj.end();
     QString filepath = "/home/rpdzkj/tmpFiles";
     QDir dir(filepath);
     if(!dir.exists())
@@ -2090,8 +2100,14 @@ void MainWindow::updateLocalDevice(const QJsonObject &obj)
     }
 }
 
-void MainWindow::updateLocalFactors(const QJsonObject &obj)
+void MainWindow::updateLocalFactors()
 {
+    httpclinet pClient;
+    QJsonObject obj;
+    if(!pClient.get(DCM_DEVICE,obj))
+    {
+        return;
+    }
     qDebug()<<__LINE__<<__FUNCTION__<<obj<<endl;
     QJsonObject tmpObj = obj;
     QJsonObject::iterator it0 = tmpObj.begin();
@@ -2301,6 +2317,13 @@ void MainWindow::matchparams()
 
         it++;
     }
+}
+
+void MainWindow::synDataEvent()
+{
+    updateLocalDevice();
+    updateLocalFactors();
+    matchparams();
 }
 
 void MainWindow::rcReadWrite()
@@ -2697,17 +2720,17 @@ void CHttpWork::doWork1() {
             QThread::sleep(3);
         }
 
-        if(pClient.get(DCM_DEVICE,pJsonObj))
-        {
-            emit resultReady("deviceinfo",pJsonObj);
-        }
+//        if(pClient.get(DCM_DEVICE,pJsonObj))
+//        {
+//            emit resultReady("deviceinfo",pJsonObj);
+//        }
 
-        if(pClient.get(DCM_DEVICE_FACTOR,pJsonObj))
-        {
-            emit resultReady("factorinfo",pJsonObj);
-        }
+//        if(pClient.get(DCM_DEVICE_FACTOR,pJsonObj))
+//        {
+//            emit resultReady("factorinfo",pJsonObj);
+//        }
 
-        emit resultReady("matchparams",QJsonObject());
+//        emit resultReady("matchparams",QJsonObject());
 
 
 //        QString cmdinfofile = QApplication::applicationDirPath() + CMDINFO;
@@ -2903,6 +2926,7 @@ ui->tableWidget_Upload->setTextElideMode(Qt::ElideNone);
 bool MainWindow::DevGui_Init()
 {
 //    buildLocalJson();
+    synDataEvent();
     disconnect(m_SignalMapper_DevD,SIGNAL(mapped(QString)),this,SLOT(onButtonDevDele(QString)));
     disconnect(m_SignalMapper_DevF,SIGNAL(mapped(QString)),this,SLOT(onButtonDevFactor(QString)));
     disconnect(m_SignalMapper_DevM,SIGNAL(mapped(QString)),this,SLOT(onButtonDevMore(QString)));
@@ -2998,6 +3022,7 @@ bool MainWindow::DevGui_Init()
 void MainWindow::OpenDev_Setting()
 {
     ui->stackedWidget->setCurrentIndex(10);
+
     DevGui_Init();
 }
 

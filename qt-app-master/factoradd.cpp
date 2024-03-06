@@ -16,6 +16,13 @@ FactorAdd::FactorAdd(QString pDevID,QString devtype,QWidget *parent) :
     m_DevType = devtype;
 
     ui->comboBox_fcode->clear();
+    ui->comboBox_falias->clear();
+
+    for(int i=0;i<100;++i)
+    {
+        ui->comboBox_falias->addItem(QString::number(i));
+    }
+
     //g_Dcm_Factor
     {
         QJsonObject::const_iterator itFactor = g_Dcm_Factor.constBegin();
