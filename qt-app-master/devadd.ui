@@ -186,6 +186,9 @@ font: 16pt &quot;Ubuntu&quot;;</string>
             </item>
             <item>
              <widget class="QComboBox" name="comboBox_2">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -213,6 +216,9 @@ font: 16pt &quot;Ubuntu&quot;;</string>
                 <bold>false</bold>
                </font>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="styleSheet">
                <string notr="true">QComboBox {
     border: 1px solid #4C84C3;
@@ -238,6 +244,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox::down{width: 0px;border-left-width: 0px;}
+
+
  
 </string>
               </property>
@@ -246,6 +256,9 @@ QComboBox QAbstractItemView::item {
               </property>
               <property name="insertPolicy">
                <enum>QComboBox::InsertAtTop</enum>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
               </property>
               <property name="frame">
                <bool>true</bool>
@@ -374,6 +387,9 @@ font: 16pt &quot;Ubuntu&quot;;</string>
              </item>
              <item>
               <widget class="QComboBox" name="comboBox">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -382,9 +398,10 @@ font: 16pt &quot;Ubuntu&quot;;</string>
                </property>
                <property name="font">
                 <font>
-                 <family>Source Han Sans CN</family>
-                 <pointsize>-1</pointsize>
+                 <family>Ubuntu</family>
+                 <pointsize>18</pointsize>
                  <weight>50</weight>
+                 <italic>false</italic>
                  <bold>false</bold>
                 </font>
                </property>
@@ -393,10 +410,10 @@ font: 16pt &quot;Ubuntu&quot;;</string>
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 16px;
-	font-family: Source Han Sans CN;
+	
+	font: 18pt &quot;Ubuntu&quot;;
 	background-color: rgb(211, 215, 207);
-	font-weight: 400;
+	
 	opacity: 1;
 	border-radius: 0px;
 	
@@ -413,6 +430,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox:!enable{background-color: rgb(0, 0, 0);}
+
+
  
 </string>
                </property>
@@ -539,6 +560,9 @@ QComboBox QAbstractItemView::item {
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_baud">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -547,9 +571,10 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="font">
                 <font>
-                 <family>Source Han Sans CN</family>
-                 <pointsize>-1</pointsize>
+                 <family>Ubuntu</family>
+                 <pointsize>18</pointsize>
                  <weight>50</weight>
+                 <italic>false</italic>
                  <bold>false</bold>
                 </font>
                </property>
@@ -558,10 +583,10 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 16px;
-	font-family: Source Han Sans CN;
+	
+	font: 18pt &quot;Ubuntu&quot;;
 	background-color: rgb(211, 215, 207);
-	font-weight: 400;
+	
 	opacity: 1;
 	border-radius: 0px;
 	
@@ -578,6 +603,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox:!enable{background-color: rgb(0, 0, 0);}
+
+
  
 </string>
                </property>
@@ -642,6 +671,9 @@ QComboBox QAbstractItemView::item {
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_stopbit">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -650,9 +682,10 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="font">
                 <font>
-                 <family>Source Han Sans CN</family>
-                 <pointsize>-1</pointsize>
+                 <family>Ubuntu</family>
+                 <pointsize>18</pointsize>
                  <weight>50</weight>
+                 <italic>false</italic>
                  <bold>false</bold>
                 </font>
                </property>
@@ -661,10 +694,10 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 16px;
-	font-family: Source Han Sans CN;
+	
+	font: 18pt &quot;Ubuntu&quot;;
 	background-color: rgb(211, 215, 207);
-	font-weight: 400;
+	
 	opacity: 1;
 	border-radius: 0px;
 	
@@ -681,6 +714,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox:!enable{background-color: rgb(0, 0, 0);}
+
+
  
 </string>
                </property>
@@ -717,6 +754,9 @@ QComboBox QAbstractItemView::item {
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_parity">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -725,9 +765,10 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="font">
                 <font>
-                 <family>Source Han Sans CN</family>
-                 <pointsize>-1</pointsize>
+                 <family>Ubuntu</family>
+                 <pointsize>18</pointsize>
                  <weight>50</weight>
+                 <italic>false</italic>
                  <bold>false</bold>
                 </font>
                </property>
@@ -736,10 +777,10 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 16px;
-	font-family: Source Han Sans CN;
+	
+	font: 18pt &quot;Ubuntu&quot;;
 	background-color: rgb(211, 215, 207);
-	font-weight: 400;
+	
 	opacity: 1;
 	border-radius: 0px;
 	
@@ -756,6 +797,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox:!enable{background-color: rgb(0, 0, 0);}
+
+
  
 </string>
                </property>
@@ -797,6 +842,9 @@ QComboBox QAbstractItemView::item {
              </item>
              <item>
               <widget class="QComboBox" name="comboBox_databit">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -805,9 +853,10 @@ QComboBox QAbstractItemView::item {
                </property>
                <property name="font">
                 <font>
-                 <family>Source Han Sans CN</family>
-                 <pointsize>-1</pointsize>
+                 <family>Ubuntu</family>
+                 <pointsize>18</pointsize>
                  <weight>50</weight>
+                 <italic>false</italic>
                  <bold>false</bold>
                 </font>
                </property>
@@ -816,10 +865,10 @@ QComboBox QAbstractItemView::item {
     border: 1px solid #4C84C3;
 	width: 181px;
 	height: 40px;
-	font-size: 16px;
-	font-family: Source Han Sans CN;
+	
+	font: 18pt &quot;Ubuntu&quot;;
 	background-color: rgb(211, 215, 207);
-	font-weight: 400;
+	
 	opacity: 1;
 	border-radius: 0px;
 	
@@ -836,6 +885,10 @@ QComboBox QAbstractItemView::item {
     height: 40px;   
 	border: none;
 }
+
+QComboBox:!enable{background-color: rgb(0, 0, 0);}
+
+
  
 </string>
                </property>

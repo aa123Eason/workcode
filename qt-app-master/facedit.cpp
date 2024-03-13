@@ -34,6 +34,8 @@ FacEdit::FacEdit(QString id, QWidget *parent) :
     ui->comboBox_fst->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
 
+
+
 }
 
 FacEdit::~FacEdit()
@@ -47,6 +49,11 @@ void FacEdit::FacEdit_Init(QString id)
     qDebug()<<__LINE__<<"FacEdit_Init:"<<id<<endl;
     ui->comboBox_fst->clear();
     ui->comboBox_fcode->clear();
+
+    for(int i=0;i<100;++i)
+    {
+        ui->comboBox_falias->addItem(QString::number(i));
+    }
 
     QJsonObject::const_iterator itFactor = g_Dcm_Factor.constBegin();
     QJsonObject::const_iterator endF = g_Dcm_Factor.constEnd();
@@ -501,10 +508,12 @@ void FacEdit::writeDevParams(QJsonObject &mainObj)
     qDebug()<<__LINE__<<numFacs<<endl;
     while(itFac != jFacs.end())
     {
-        QString alias = QString::number(num+1);
+
         QString pKey = itFac.key();
 
         QJsonObject jValue = itFac.value().toObject();
+
+        QString alias = jValue.value("factor_alias").toString();
 
         qDebug()<<__LINE__<<"["<<alias<<"]:"<<pKey<<":"<<jValue<<endl;
         if(jValue.value(CONF_IS_ANALOG_PARAM).toBool())

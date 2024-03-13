@@ -11,6 +11,8 @@
 #include <QMouseEvent>
 #include <QObjectList>
 #include "comboboxselectdlg.h"
+#include <QDesktopWidget>
+#include <QRect>
 
 //添加设备
 

@@ -173,7 +173,7 @@ background-color:#55ff00;</string>
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>9</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_1">
      <widget class="QScrollArea" name="scrollArea_3">
@@ -3935,7 +3935,7 @@ border-style: solid;</string>
        <rect>
         <x>150</x>
         <y>10</y>
-        <width>1101</width>
+        <width>1274</width>
         <height>91</height>
        </rect>
       </property>

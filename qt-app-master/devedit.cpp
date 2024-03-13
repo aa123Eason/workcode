@@ -42,6 +42,7 @@ DevEdit::DevEdit(QString dev_id,QWidget *parent) :
     ui->comboBox_devProto->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->comboBox_devStopBit->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
+    installEvents();
 
 
     QScrollBar *bar = ui->comboBox_devProto->view()->verticalScrollBar();
@@ -329,7 +330,9 @@ void DevEdit::loadParamtable(QString dev_params)
                 QString paramName = paramItem.split("=")[0];
                 QString paramValue = paramItem.split("=")[1];
                 int t = i/4;
-                QString index = QString::number(t+1);
+                if(paramName.split("_").count()<3)
+                    return;
+                QString index = paramName.split("_")[2];
 
                 if(paramName.contains("analog_max_"))
                 {
@@ -444,6 +447,83 @@ void DevEdit::writeloglocal(QString text)
     file.close();
 }
 
+
+void DevEdit::installEvents()
+{
+    ui->comboBox_6->installEventFilter(this);
+    ui->comboBox_devBaud->installEventFilter(this);
+    ui->comboBox_devProto->installEventFilter(this);
+    ui->comboBox_devParity->installEventFilter(this);
+    ui->comboBox_devDatabit->installEventFilter(this);
+    ui->comboBox_devStopBit->installEventFilter(this);
+}
+
+bool DevEdit::eventFilter(QObject *o, QEvent *e)
+{
+    if(e->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *me =(QMouseEvent *)e;
+        if(me->button()==Qt::LeftButton)
+        {
+            if(QString(o->metaObject()->className())==QString("QComboBox"))
+            {
+                QComboBox *box = (QComboBox*)o;
+                box->setEditable(false);
+                qDebug()<<__LINE__<<__FUNCTION__<<box->objectName()<<endl;
+                int count_item = box->count();
+                int row = 0,col = 0;
+                if(dlgbox != nullptr)
+                    dlgbox->close();
+                dlgbox = new ComBoBoxSelectDlg("选择下拉项",count_item,1);
+
+//                // 获取屏幕宽度
+
+//                int screenWidth = QApplication::desktop()->width();
+
+//                // 获取屏幕高度
+
+//                int screenHeight = QApplication::desktop()->height();
+
+                //move(QWindow::pos() + (screenWidth - width()) / 2 - (screenHeight - height()) / 2);
+//               dlgbox->move(QDialog::pos().x()+(screenWidth - width()) / 2,QDialog::pos().y() - (screenHeight - height()) / 2);
+
+
+                for(int i=0;i<count_item;++i)
+                {
+                    qDebug()<<__LINE__<<__FUNCTION__<<"name==>"<<box->itemText(i);
+
+                    if(!box->itemText(i).isEmpty())
+                        dlgbox->addButton(box->itemText(i));
+
+                    dlgbox->setWindowFlags(Qt::WindowStaysOnTopHint);
+
+                    connect(dlgbox,&ComBoBoxSelectDlg::sendSelectedButton,this,[=](QString name)
+                    {
+                        box->setCurrentText(name);
+                    });
+
+
+                    if(col<1)
+                    {
+                        col++;
+                    }
+                    else
+                    {
+                        col=0;
+                        row++;
+                    }
+
+                }
+
+                dlgbox->show();
+            }
+        }
+    }
+
+    return QDialog::eventFilter(o,e);
+}
+
+
 void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
 {
 
@@ -513,7 +593,20 @@ void DevEdit::writeinfile(QString filepath,QJsonObject &obj)
                                 int alias = key.split("_")[2].toInt();
                                 writeloglocal(key.split("_")[2]+" "+QString::number(alias));
                                 QString oriname = key.split("_")[0]+"_"+key.split("_")[1];
-                                QString curFac = jNewFacs.keys()[alias-1];
+                                QString curFac;
+                                for(int i=0;i<jNewFacs.count();++i)
+                                {
+                                    QString curFacName = jNewFacs.keys()[i];
+                                    QJsonObject curFacValue = jNewFacs.value(curFacName).toObject();
+                                    QString refalias = curFacValue.value("factor_alias").toString();
+                                    if(alias == refalias.toInt())
+                                    {
+                                        curFac = curFacName;
+                                        break;
+                                    }
+                                }
+                                if(curFac.isEmpty())
+                                    return;
                                 QJsonObject jValue = jNewFacs.value(curFac).toObject();
                                 qDebug() <<"**********************"<<endl;
                                 qDebug() <<__LINE__<<oriname<<" "<<curFac<<endl;
@@ -622,6 +715,7 @@ QString DevEdit::builddevparams()
         httpclinet h;
         QJsonObject jDevObj;
         int num=0;
+        QList<int> aliaslist;
         if(h.get(DCM_DEVICE_FACTOR,jDevObj))
         {
             QJsonObject::iterator it = jDevObj.begin();
@@ -629,21 +723,27 @@ QString DevEdit::builddevparams()
             {
                 if(it.key().contains(ui->lineEdit_id->text()))
                 {
+                    QJsonObject iValue = it.value().toObject();
+                    QString alias = iValue.value("factor_alias").toString();
+                    aliaslist.append(alias.toInt());
                     num++;
                 }
                 it++;
             }
         }
 
+
         qDebug()<<__LINE__<<num<<endl;
-        for(int i = 0;i<num;++i)
+        int aliascount = aliaslist.count();
+        for(int i = 0;i<aliascount;++i)
         {
 
-            tmpStr2 += "analog_max_"+QString::number(i+1)+"="+ui->paramtable->item(4*i,1)->text()+",";
-            tmpStr2 += "analog_min_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+1,1)->text()+",";
-            tmpStr2 += "upper_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+2,1)->text()+",";
-            tmpStr2 += "lower_limit_"+QString::number(i+1)+"="+ui->paramtable->item(4*i+3,1)->text();
-            if(i!=num-1)
+            int index = aliaslist[i];
+            tmpStr2 += "analog_max_"+QString::number(index)+"="+ui->paramtable->item(4*i,1)->text()+",";
+            tmpStr2 += "analog_min_"+QString::number(index)+"="+ui->paramtable->item(4*i+1,1)->text()+",";
+            tmpStr2 += "upper_limit_"+QString::number(index)+"="+ui->paramtable->item(4*i+2,1)->text()+",";
+            tmpStr2 += "lower_limit_"+QString::number(index)+"="+ui->paramtable->item(4*i+3,1)->text();
+            if(i!=aliascount-1)
             {
                 tmpStr2 += ",";
             }
@@ -651,8 +751,10 @@ QString DevEdit::builddevparams()
         }
 
         resStr = tmpStr2;
+//        QJsonObj subObjx = jDevObj.value(ui->lineEdit_id->text())
     }
     qDebug()<<__LINE__<<resStr<<endl;
+
 
     //write in device_factor
     if(namemap.key(ui->comboBox_devProto->currentText()) == "analog")
@@ -778,7 +880,7 @@ QString DevEdit::builddevparams()
                     }
                     jObj.remove(keyName);
                     jObj.insert(keyName,jSubObj);
-                    qDebug()<<__LINE__<<jSubObj<<endl;
+                    qDebug()<<__LINE__<<"======"<<jSubObj<<endl;
 
 
 
@@ -787,7 +889,8 @@ QString DevEdit::builddevparams()
 
             qDebug()<<__LINE__<<jObj<<endl;
 
-            h.put(DCM_DEVICE_FACTOR,jObj);
+            QJsonObject jReply;
+            h.put(DCM_DEVICE_FACTOR,jObj,jReply);
 
         }
 

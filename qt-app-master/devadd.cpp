@@ -8,7 +8,7 @@ DevAdd::DevAdd(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setModal(true);
+//    setModal(true);
 //    setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle(QStringLiteral(" "));
 
@@ -32,7 +32,8 @@ DevAdd::DevAdd(QWidget *parent) :
 //    ui->comboBox_2->addItem("");
     while(itor != end_proto)
     {
-        ui->comboBox_2->addItem(namemap[itor.key()]);
+        if(!namemap[itor.key()].isEmpty())
+            ui->comboBox_2->addItem(namemap[itor.key()]);
         itor++;
     }
     ui->comboBox_2->setCurrentIndex(0);
@@ -84,38 +85,54 @@ bool DevAdd::eventFilter(QObject *o, QEvent *e)
             if(QString(o->metaObject()->className())==QString("QComboBox"))
             {
                 QComboBox *box = (QComboBox*)o;
+                box->setEditable(false);
+                qDebug()<<__LINE__<<__FUNCTION__<<box->objectName()<<endl;
                 int count_item = box->count();
                 int row = 0,col = 0;
+                if(dlgbox != nullptr)
+                    dlgbox->close();
+                dlgbox = new ComBoBoxSelectDlg("选择下拉项",count_item,1);
+
+//                // 获取屏幕宽度
+
+//                int screenWidth = QApplication::desktop()->width();
+
+//                // 获取屏幕高度
+
+//                int screenHeight = QApplication::desktop()->height();
+
+                //move(QWindow::pos() + (screenWidth - width()) / 2 - (screenHeight - height()) / 2);
+//               dlgbox->move(QDialog::pos().x()+(screenWidth - width()) / 2,QDialog::pos().y() - (screenHeight - height()) / 2);
+
+
                 for(int i=0;i<count_item;++i)
                 {
                     qDebug()<<__LINE__<<__FUNCTION__<<"name==>"<<box->itemText(i);
 
+                    if(!box->itemText(i).isEmpty())
+                        dlgbox->addButton(box->itemText(i));
 
-//                    if(dlgbox==nullptr)
-//                    {
-//                        dlgbox = new ComBoBoxSelectDlg(o->objectName(),count_item/5+1,5);
-//                        dlgbox->addButton(row,col,box->itemText(i));
+                    dlgbox->setWindowFlags(Qt::WindowStaysOnTopHint);
 
-//                        connect(dlgbox,&ComBoBoxSelectDlg::sendSelectedButton,this,[=](QString name)
-//                        {
-//                            box->setCurrentText(name);
-//                        });
+                    connect(dlgbox,&ComBoBoxSelectDlg::sendSelectedButton,this,[=](QString name)
+                    {
+                        box->setCurrentText(name);
+                    });
 
-//                    }
 
-//                    if(col<5)
-//                    {
-//                        col++;
-//                    }
-//                    else
-//                    {
-//                        col=0;
-//                        row++;
-//                    }
+                    if(col<1)
+                    {
+                        col++;
+                    }
+                    else
+                    {
+                        col=0;
+                        row++;
+                    }
 
                 }
 
-//                dlgbox->show();
+                dlgbox->show();
             }
         }
     }

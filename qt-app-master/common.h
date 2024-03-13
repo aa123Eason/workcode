@@ -28,9 +28,9 @@
 #define CONF "./QDesktop.json"
 #define QTAPP_VER "QDesktopV1.0.230307"
 #define SCHEME "http"
-#define SERVER_IP "172.20.0.44"
+//#define SERVER_IP "172.20.0.44"
 //#define SERVER_IP "172.20.0.69"
-//#define SERVER_IP "172.20.0.218"
+#define SERVER_IP "172.20.0.218"
 //#define SERVER_IP "172.20.0.238"
 //#define SERVER_IP "172.26.191.58"
 //#define SERVER_IP "localhost"
@@ -94,6 +94,8 @@ extern bool m_LoginStatus;
 extern QJsonObject g_Dcm_Factor;
 extern QJsonArray g_Dcm_SystemCode;
 extern QJsonObject g_Dcm_SupportDevice;
+extern QJsonObject g_Dcm_Devices;
+extern QJsonObject g_Dcm_Factors;
 extern QJsonObject g_ConfObjDevParam;
 extern QString g_Device_ID;
 extern QString g_Device_Type;

@@ -15,6 +15,10 @@
 #include <QTableWidgetItem>
 #include <QTableWidget>
 #include <QDateTime>
+#include <QEvent>
+#include <QMouseEvent>
+#include <QObjectList>
+#include "comboboxselectdlg.h"
 
 namespace Ui {
 class DevEdit;
@@ -35,6 +39,7 @@ public:
     QString builddevparams();//建立设备参数
     void writeinfile(QString filepath,QJsonObject &obj);
     void writeloglocal(QString);
+    void installEvents();//事件过滤器初始配置
 
 private slots:
     void typeRadioBtnClicked();
@@ -43,6 +48,8 @@ private slots:
     void onComboBoxProtoCurrentChanged(const QString &text);
     void on_pushButton_Cancel_clicked();
 
+protected:
+    bool eventFilter(QObject *, QEvent *) override;
 
 private:
     Ui::DevEdit *ui;
@@ -52,6 +59,7 @@ private:
     QMap<QString,QString> namemap;
     QFont font;
     QString strx;
+    ComBoBoxSelectDlg *dlgbox = nullptr;
 //    localKeyboard *kb = nullptr;
 };
 

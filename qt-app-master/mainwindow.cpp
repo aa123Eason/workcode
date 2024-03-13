@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnBottomHint);
+    setWindowFlags(Qt::FramelessWindowHint);
     setWindowTitle(QTAPP_VER);
 
     setMaximumSize(1280,780);
@@ -124,20 +124,31 @@ MainWindow::MainWindow(QWidget *parent)
     facnamemap = util.Uart_facnameMatch();
 
     this->installEvents();
+	//系统信息=>page_3
     connect(ui->buttonVer,SIGNAL(clicked()),this,SLOT(OpenSysInfo()));
+	//网络设置=>page_4
     connect(ui->interacess,SIGNAL(clicked()),this,SLOT(OpenNeworkSetting()));
+	//串口调试=>page_5
     connect(ui->Com,SIGNAL(clicked()),this,SLOT(OpenComDebug()));
+	//数据补发=>page_6
     connect(ui->bufa,SIGNAL(clicked()),this,SLOT(OpenBufa()));
+	//时间设置=>page_7
     connect(ui->timeset,SIGNAL(clicked()),this,SLOT(OpenTimeSet()));
+	//上位机设置=>page_8
     connect(ui->master,SIGNAL(clicked()),this,SLOT(OpenMasterSet()));
+	//数据查询=>page_9
     connect(ui->Data_Query,SIGNAL(clicked()),this,SLOT(OpenData_Query()));
+	//设备设置=>page_10
     connect(ui->dev_Setting,SIGNAL(clicked()),this,SLOT(OpenDev_Setting()));
+	//特殊值配置=>page_12
     connect(ui->pushButton_Teshuzhi,SIGNAL(clicked()),this,SLOT(OpenTeshuzhi()));
+	//快速输入账号密码的功能=>page中的quickInput按钮
     connect(ui->quickInput,&QPushButton::clicked,this,[=]()
     {
         ui->Username->setText("admin");
         ui->Password->setText("lcdcm");
     });
+	//modbus配置=>page_13
     connect(ui->modbus,SIGNAL(clicked()),this,SLOT(openModbus()));
 }
 
@@ -2221,14 +2232,18 @@ void MainWindow::matchparams()
                 return;
             QString paramName = key.split("_")[0]+"_"+key.split("_")[1];
             QString paramNote = key.split("_")[2];
-            int index= paramNote.toInt();
+//            QString paramAlias = jValue.value("factor_alias").toString();
+
 
             for(int i = 0;i<jFactors.count();++i)
             {
-                if(i+1 == index)
+                QString keyName = jFactors.keys()[i];
+                QJsonObject keyValue = jFactors.value(keyName).toObject();
+                QString keyAlias = keyValue.value("factor_alias").toString();
+                int index= keyAlias.toInt();
+                if(i == index)
                 {
-                    QString keyName = jFactors.keys()[i];
-                    QJsonObject keyValue = jFactors.value(keyName).toObject();
+
 
                     if(key.contains("analog_max"))
                     {
@@ -4603,7 +4618,7 @@ void MainWindow::setMsgTableContents(QJsonArray &history_real_time_data)
 void MainWindow::on_pushButton_AddDev_clicked()
 {
     DevAdd *pDevAdd = new DevAdd();
-    pDevAdd->setWindowModality(Qt::WindowModal);
+//    pDevAdd->setWindowModality(Qt::ApplicationModal);
     pDevAdd->show();
     return;
 }

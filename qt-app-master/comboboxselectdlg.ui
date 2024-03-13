@@ -6,12 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>498</width>
+    <height>619</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(186, 189, 182);
+font: 14pt &quot;Ubuntu&quot;;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,0">
    <property name="spacing">
@@ -33,9 +43,11 @@
     <widget class="QLabel" name="title">
      <property name="font">
       <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <family>Ubuntu</family>
+       <pointsize>14</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
      </property>
      <property name="text">
@@ -47,22 +59,10 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="itemLayout">
+    <widget class="QListWidget" name="listitem">
      <property name="styleSheet">
-      <string notr="true">selection-background-color: rgb(255, 255, 255);</string>
+      <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::DoubleClicked</set>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <attribute name="horizontalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
     </widget>
    </item>
    <item>
@@ -77,9 +77,11 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>20</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Ubuntu</family>
+         <pointsize>14</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
